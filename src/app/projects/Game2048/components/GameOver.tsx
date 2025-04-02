@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 interface GameOverProps {
   score: number;
   onRestart: () => void;
-  submitScore: (playerName: string) => Promise<any>;
+  submitScore: (playerName: string) => Promise<{ success: boolean; message: string }>;
 }
 
 export default function GameOver({ score, onRestart, submitScore }: GameOverProps) {

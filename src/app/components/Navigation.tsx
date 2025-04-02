@@ -41,7 +41,7 @@ export default function Navigation() {
             <NavLink href="/" active={pathname === '/'}>
               首页
             </NavLink>
-            <NavLink href="/projects" active={pathname === '/projects' || pathname.startsWith('/projects/')}>
+            <NavLink href="/projects" active={pathname === '/projects'}>
               项目
             </NavLink>
           </div>
@@ -74,7 +74,7 @@ export default function Navigation() {
             <MobileNavLink href="/" active={pathname === '/'}>
               首页
             </MobileNavLink>
-            <MobileNavLink href="/projects" active={pathname === '/projects' || pathname.startsWith('/projects/')}>
+            <MobileNavLink href="/projects" active={pathname === '/projects'}>
               项目
             </MobileNavLink>
           </div>
