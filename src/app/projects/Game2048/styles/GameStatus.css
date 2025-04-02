@@ -1,7 +1,7 @@
 .score-box {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 5px;
 }
 
 @media (max-width: 1024px) {

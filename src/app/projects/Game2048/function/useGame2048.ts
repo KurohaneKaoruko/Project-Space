@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSize, getHighScore } from './localData'
-import { utf8ToBase64 } from '@/utils/utils';
+import { EncryptData } from './encrypt';
 
 interface GameState {
   board: number[][];
@@ -104,48 +104,49 @@ export function useGame2048() {
       timestamp,
       gameSize: gameState.size
     };
-    
-    // 简单加密函数 - Base64 + 简单密钥混淆
-    const encryptData = (data: {
-      playerName: string,
-      score: number,
-      timestamp: number,
-      gameSize: number
-    }) => {
-      // 转成字符串
-      const jsonStr = JSON.stringify(data);
-      // 简单密钥
-      const secretKey = process.env.NEXT_PUBLIC_GAME_2048_SUBMIT_KEY;
-      // 添加密钥特征码
-      const dataWithKey = jsonStr + '|' + secretKey;
-      // Base64编码
-      return utf8ToBase64(dataWithKey);
-    };
-    
-    // 发送加密后的数据
-    const response = await fetch('/api/game2048/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        data: encryptData(rawData),
-        // 添加一个校验和
-        checksum: utf8ToBase64(String(rawData.score) + rawData.timestamp)
-      }),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`提交分数失败: ${response.status}`);
+
+    try {
+      // 加密数据 - 因为EncryptData是异步函数，需要await
+      const encryptedData = await EncryptData(rawData);
+      
+      // 生成校验和 - 与服务端使用相同算法
+      const checksumData = String(rawData.score) + rawData.timestamp;
+      let checksum;
+      // 在浏览器环境中使用btoa
+      if (typeof window !== 'undefined') {
+        checksum = btoa(checksumData);
+      } else {
+        // 在Node.js环境中使用Buffer
+        checksum = Buffer.from(checksumData).toString('base64');
+      }
+      
+      // 发送加密后的数据
+      const response = await fetch('/api/game2048/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          data: encryptedData,
+          checksum
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`提交分数失败: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.message || '提交分数失败');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('提交分数错误:', error);
+      throw error;
     }
-    
-    const result = await response.json();
-    
-    if (!result.success) {
-      throw new Error(result.message || '提交分数失败');
-    }
-    
-    return result;
   }, [gameState.score, gameState.size]);
 
   // 更新最高分
