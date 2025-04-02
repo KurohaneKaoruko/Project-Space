@@ -119,7 +119,7 @@ export default function GameOver({ score, onRestart, submitScore }: GameOverProp
             {isSubmitting ? (
               <>
                 上传中
-                <span className="loading loading-dots loading-xs"></span>
+                <span className="loading loading-dots loading-xs ml-2"></span>
               </>
             ) : isSubmitted ? (
               <>
