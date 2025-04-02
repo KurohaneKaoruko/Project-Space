@@ -118,8 +118,8 @@ export default function GameOver({ score, onRestart, submitScore }: GameOverProp
           >
             {isSubmitting ? (
               <>
-                <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
-                上传中...
+                上传中
+                <span className="loading loading-dots loading-xs"></span>
               </>
             ) : isSubmitted ? (
               <>

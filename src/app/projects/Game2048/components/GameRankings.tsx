@@ -85,7 +85,7 @@ export default function GameRankings({size = 4}) {
 
             {isLoading ? (
               <div className="py-10 text-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
+                <span className="loading loading-spinner loading-xl mx-auto"></span>
                 <p className="mt-3 text-gray-600">加载中...</p>
               </div>
             ) : error ? (
