@@ -21,7 +21,7 @@ async function dbSave(playerName: string, score: number, timestamp: number, size
   }
 }
 
-export const DecryptData = (encryptedData: string) => {
+function decryptData(encryptedData: string) {
   try {
     // 获取密钥
     const secretKey = process.env.NEXT_PUBLIC_GAME_2048_SUBMIT_KEY;
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     }
     
     // 解密数据
-    const decodedData = DecryptData(data);
+    const decodedData = decryptData(data);
     
     if (!decodedData) {
       return NextResponse.json(
