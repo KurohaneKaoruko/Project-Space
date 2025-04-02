@@ -82,9 +82,10 @@ export async function POST(request: Request) {
     await dbSave(playerName, score, timestamp, gameSize);
     
     return NextResponse.json({
-      success: true,
-      message: '分数已成功提交'
-    });
+        success: true,
+        message: '分数已成功提交'
+      }, { status: 200 }
+    );
     
   } catch (error) {
     return NextResponse.json(

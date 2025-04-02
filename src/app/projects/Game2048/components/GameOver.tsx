@@ -5,16 +5,58 @@ import { useEffect, useState } from 'react';
 interface GameOverProps {
   score: number;
   onRestart: () => void;
-  submitScore: (playerName: string) => void;
+  submitScore: (playerName: string) => Promise<any>;
 }
 
 export default function GameOver({ score, onRestart, submitScore }: GameOverProps) {
   const [isClient, setIsClient] = useState(false);
   const [playerName, setPlayerName] = useState("");
+  const [submitStatus, setSubmitStatus] = useState<{message: string, isError: boolean} | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   
   useEffect(() => {
     setIsClient(true);
   }, []);
+  
+  // 当提交状态更新时显示消息弹窗
+  useEffect(() => {
+    if (submitStatus) {
+      setShowToast(true);
+      // 3秒后自动关闭
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [submitStatus]);
+  
+  // 处理分数提交
+  const handleSubmitScore = async () => {
+    try {
+      setIsSubmitting(true);
+      setSubmitStatus(null);
+      
+      // 调用传入的提交函数
+      await submitScore(playerName || 'No Name');
+      
+      // 提交成功
+      setSubmitStatus({
+        message: '分数上传成功！',
+        isError: false
+      });
+      
+    } catch (error) {
+      console.error('提交分数时出错:', error);
+      setSubmitStatus({
+        message: '分数上传失败，请稍后再试',
+        isError: true
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   if (!isClient) return null;
   
@@ -41,12 +83,13 @@ export default function GameOver({ score, onRestart, submitScore }: GameOverProp
               type="text"
               id="playerName"
               className="w-full px-4 py-3 rounded-lg bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 shadow-sm text-gray-700 placeholder-gray-400 text-center"
-              placeholder="输入名字用于上传分数"
+              placeholder="输入名字以上传分数"
               onChange={(e) => setPlayerName(e.target.value)}
               value={playerName}
             />
           </div>
         </div>
+        
         <div className='flex flex-row gap-4'>
           <button
             type="button"
@@ -60,16 +103,62 @@ export default function GameOver({ score, onRestart, submitScore }: GameOverProp
           </button>
           <button
             type="button"
-            onClick={() => submitScore(playerName)}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+            onClick={handleSubmitScore}
+            disabled={isSubmitting}
+            className={`w-full text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center ${
+              isSubmitting ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 3l5 5h-3v9H8V8H5l5-5zM3 13h14v2H3v-2z"/>
-            </svg>
-            上传得分
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                上传中...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 3l5 5h-3v9H8V8H5l5-5zM3 13h14v2H3v-2z"/>
+                </svg>
+                上传得分
+              </>
+            )}
           </button>
         </div>
       </div>
+      
+      {/* 消息弹窗 */}
+      {showToast && submitStatus && (
+        <div className="fixed inset-x-0 top-5 mx-auto flex justify-center z-50 animate-fade-in-down">
+          <div 
+            className={`rounded-lg shadow-xl p-4 flex items-center ${
+              submitStatus.isError ? 'bg-red-500' : 'bg-green-500'
+            } text-white max-w-xs ${
+              submitStatus.isError ? 'border-red-600' : 'border-green-600'
+            } border-2 backdrop-blur-sm`}
+          >
+            {submitStatus.isError ? (
+              <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+            <span className="font-medium">{submitStatus.message}</span>
+            <button 
+              type="button"
+              className="ml-auto text-white hover:text-gray-200 flex-shrink-0"
+              onClick={() => setShowToast(false)}
+              aria-label="关闭提示"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

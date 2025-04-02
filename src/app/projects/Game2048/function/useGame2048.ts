@@ -93,7 +93,7 @@ export function useGame2048() {
     initGame(size);
   }, [initGame]);
 
-  const submitScore = useCallback((playerName: string = 'No Name') => {
+  const submitScore = useCallback(async (playerName: string = 'No Name') => {
     const score = gameState.score;
     const timestamp = Date.now();
     
@@ -123,7 +123,7 @@ export function useGame2048() {
     };
     
     // 发送加密后的数据
-    fetch('/api/game2048/submit', {
+    const response = await fetch('/api/game2048/submit', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -134,6 +134,18 @@ export function useGame2048() {
         checksum: btoa(String(rawData.score) + rawData.timestamp)
       }),
     });
+    
+    if (!response.ok) {
+      throw new Error(`提交分数失败: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.message || '提交分数失败');
+    }
+    
+    return result;
   }, [gameState.score, gameState.size]);
 
   // 更新最高分
