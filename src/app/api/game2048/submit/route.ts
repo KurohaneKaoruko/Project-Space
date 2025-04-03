@@ -78,12 +78,11 @@ export async function POST(request: Request) {
     
     // 保存到数据库
     const saveResult = await dataSave(playerName, score, gameSize, gameRecordStr);
-    
+
     return NextResponse.json({
       success: true,
-      message: saveResult ? '分数已成功提交' : '分数已接收，但保存到数据库时出错'
+      message: saveResult ? '分数已成功提交' : '分数已接收, 但保存失败'
     });
-    
   } catch (error) {
     console.error('处理提交分数时出错:', error);
     return NextResponse.json(
