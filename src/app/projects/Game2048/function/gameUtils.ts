@@ -1,5 +1,5 @@
 // 检查游戏是否结束
-export const checkGameOver = (board: number[][]) => {
+export function checkGameOver(board: number[][]) {
     // 检查是否有空格
     for (let i = 0; i < board.length; i++) {
       for (let j = 0; j < board.length; j++) {
@@ -24,7 +24,7 @@ export const checkGameOver = (board: number[][]) => {
 };
 
 // 根据方向旋转矩阵，使所有移动都变成向左移动
-export const rotateBoard = (board: number[][], times: number) => {
+export function rotateBoard(board: number[][], times: number) {
     for (let t = 0; t < times; t++) {
       const rotated = Array(board.length).fill(0).map(() => Array(board.length).fill(0));
       for (let i = 0; i < board.length; i++) {
@@ -41,7 +41,7 @@ export const rotateBoard = (board: number[][], times: number) => {
 };
 
 
-export const generateRandomTileNumber = (size: number) => {
+export function generateRandomTileNumber(size: number) {
   if (size <= 4) {
     // 90% 10%
     return Math.random() < 0.9 ? 2 : 4;

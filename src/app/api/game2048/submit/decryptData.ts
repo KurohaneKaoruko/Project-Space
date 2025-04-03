@@ -3,11 +3,12 @@ import { sha256 } from 'js-sha256';
 
 export function decryptData(encryptedData: string) {
     try {
+
       // 获取密钥
-      const secretKey = sha256(process.env.NEXT_PUBLIC_GAME_2048_SUBMIT_KEY ?? '');
-      if (!secretKey || secretKey.length < 32) {
-        throw new Error('Decryption key must be at least 32 characters long');
-      }
+      const timesalt = Math.floor(new Date().getTime() / 300000);
+      const submitkey = process.env.GAME_2048_SUBMIT_KEY ||
+                        process.env.NEXT_PUBLIC_GAME_2048_SUBMIT_KEY || '';
+      const secretKey = sha256(submitkey + sha256(String(timesalt)));
   
       // 解码Base64，创建缓冲区
       const binaryStr = Buffer.from(encryptedData, 'base64');
