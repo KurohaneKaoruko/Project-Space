@@ -45,10 +45,10 @@ export default function Tile({ value }: TileProps) {
       case 32768:
         return "bg-gradient-to-br from-[#E0E0E0] to-[#9E9E9E] text-white"; // 白银
       case 65536:
-        return "bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] text-white"; // 熔岩橙
+        return "bg-gradient-to-br from-[#FF6B6B] to-[#FF8E53] text-white animate-pulse"; // 熔岩橙
       // 百万级数值 (霓虹特效)
       case 131072:
-        return "bg-gradient-to-br from-[#00F2FE] to-[#4FACFE] text-white"; // 霓虹蓝
+        return "bg-gradient-to-br from-[#00F2FE] to-[#4FACFE] text-white animate-pulse"; // 霓虹蓝
       case 262144:
         return "bg-gradient-to-br from-[#FF61D2] to-[#FE9090] text-white animate-pulse"; // 霓虹粉
       case 524288:

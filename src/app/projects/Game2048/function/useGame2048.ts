@@ -3,7 +3,7 @@ import { getValidSize, getGameSize, saveGameSize, getHighScore, saveHighScore } 
 import { submitScore } from './submitScore'
 import { sha256 } from 'js-sha256';
 
-import { checkGameOver, rotateBoard } from './gameUtils'
+import { checkGameOver, rotateBoard, generateRandomTileNumber } from './gameUtils'
 
 interface GameState {
   board: number[][];
@@ -125,21 +125,7 @@ export function useGame2048() {
     }
     if (emptyCells.length > 0) {
       const { x, y } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      let tileValue = 0;
-      
-      if (size <= 4) {
-        // 90% 10%
-        tileValue = Math.random() < 0.9 ? 2 : 4;
-      } else if (size <= 6) {
-        // 70% 21% 9%
-        tileValue = Math.random() < 0.7 ? 2 :
-                    Math.random() < 0.7 ? 4 : 8;
-      } else {
-        // 60% 24% 12.8% 3.2%
-        tileValue = Math.random() < 0.6 ? 2 :
-                    Math.random() < 0.6 ? 4 :
-                    Math.random() < 0.8 ? 8 : 16;
-      }
+      let tileValue = generateRandomTileNumber(size);
       board[x][y] = tileValue;
       return tileValue;
     }
