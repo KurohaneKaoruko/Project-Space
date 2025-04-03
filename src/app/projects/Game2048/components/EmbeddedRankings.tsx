@@ -76,6 +76,7 @@ export default function EmbeddedRankings({ size = 4 }) {
           排行榜 {`(${size}x${size})`}
         </h3>
         <button
+          type="button"
           onClick={fetchRankings}
           className="text-blue-600 hover:text-blue-800"
           title="刷新排行榜"
@@ -96,6 +97,7 @@ export default function EmbeddedRankings({ size = 4 }) {
         <div className="py-6 text-center">
           <p className="text-red-500 text-sm">{error}</p>
           <button 
+            type="button"
             onClick={fetchRankings}
             className="mt-2 text-sm text-blue-600 hover:text-blue-800"
           >

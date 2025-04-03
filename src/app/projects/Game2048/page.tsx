@@ -5,7 +5,6 @@ import { useGame2048 } from './function/useGame2048';
 import GameBoard from './components/GameBoard';
 import GameStatus from './components/GameStatus';
 import GameOver from './components/GameOver';
-import GameRankings from './components/GameRankings';
 import CollapsibleGameRules from './components/CollapsibleGameRules';
 import EmbeddedRankings from './components/EmbeddedRankings';
 import { useEffect, useState } from 'react';
@@ -102,9 +101,6 @@ export default function Game2048Page() {
           {/* 右侧排行榜区域 */}
           <div className="lg:w-80 xl:w-96 bg-white rounded-xl shadow-md overflow-hidden">
             <EmbeddedRankings size={size} />
-            <div className="hidden">
-              <GameRankings size={size} />
-            </div>
           </div>
         </div>
       </div>
