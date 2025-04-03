@@ -26,11 +26,8 @@ export default function GameSettings({ size, onSizeChange }: GameSettingsProps) 
         className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
       >
         <option value={2}>2 × 2</option>
-        <option value={3}>3 × 3</option>
         <option value={4}>4 × 4</option>
-        <option value={5}>5 × 5</option>
         <option value={6}>6 × 6</option>
-        <option value={7}>7 × 7</option>
         <option value={8}>8 × 8</option>
       </select>
     </div>
