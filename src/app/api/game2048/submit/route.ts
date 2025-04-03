@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     
     return NextResponse.json({
       success: true,
-      message: saveResult ? '分数已成功提交' : '分数已接收，但保存时出错'
+      message: saveResult ? '分数已成功提交' : '分数已接收，但保存到数据库时出错'
     });
     
   } catch (error) {
