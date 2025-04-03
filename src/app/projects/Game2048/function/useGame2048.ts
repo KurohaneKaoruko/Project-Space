@@ -125,7 +125,7 @@ export function useGame2048() {
     }
     if (emptyCells.length > 0) {
       const { x, y } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-      let tileValue = generateRandomTileNumber(size);
+      const tileValue = generateRandomTileNumber(size);
       board[x][y] = tileValue;
       return tileValue;
     }
