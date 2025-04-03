@@ -1,16 +1,10 @@
 import crypto from 'crypto';
-import { sha256 } from 'js-sha256';
-import { getTimesalt } from "../utils";
+import { getSecretKey } from "../utils";
 
 export function decryptData(encryptedData: string) {
     try {
-
       // 获取密钥
-      const submitkey = process.env.GAME_2048_SUBMIT_KEY ||
-                        process.env.NEXT_PUBLIC_GAME_2048_SUBMIT_KEY || '';
-      const salt1 = sha256(String(Math.floor(new Date().getTime() / 300000)));
-      const salt2 = getTimesalt(7);
-      const secretKey = sha256(submitkey + salt1 + salt2);
+      const secretKey = getSecretKey();
   
       // 解码Base64，创建缓冲区
       const binaryStr = Buffer.from(encryptedData, 'base64');
