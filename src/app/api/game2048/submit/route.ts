@@ -3,9 +3,9 @@ import { recordCheck } from "./recordCheck";
 import { decryptData } from "./decryptData";
 import { saveScore } from "@/lib/mongodb2048";
 
-export async function dataSave(playerName: string, score: number, size: number) {
+export async function dataSave(playerName: string, score: number, size: number, gameRecordStr: string) {
     try {
-      return await saveScore({ playerName, score, size })
+      return await saveScore({ playerName, score, size, gameRecordStr })
     } catch (error) {
       console.error('保存分数失败:', error);
       return false;
@@ -53,9 +53,9 @@ export async function POST(request: Request) {
     }
 
     // 解析游戏记录 - 从Base64解码为JSON对象
-    let gameRecordObj;
+    let gameRecordStr, gameRecordObj;
     try {
-      const gameRecordStr = atob(decodedData.gameRecord);
+      gameRecordStr = atob(decodedData.gameRecord);
       gameRecordObj = JSON.parse(gameRecordStr);
     } catch (error) {
       console.error('解析游戏记录失败:', error);
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     const { playerName, score, gameSize } = decodedData;
     
     // 保存到数据库
-    const saveResult = await dataSave(playerName, score, gameSize);
+    const saveResult = await dataSave(playerName, score, gameSize, gameRecordStr);
     
     return NextResponse.json({
       success: true,
