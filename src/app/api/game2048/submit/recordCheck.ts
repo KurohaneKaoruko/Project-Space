@@ -16,7 +16,7 @@ function calculateBoardHash(boardStr: string, prevRecord: GameRecordItem | null 
 }
 
 // 验证游戏记录的正确性
-export function recordCheck(record: any) {
+export function recordCheck(record: GameRecordItem[]) {
   // 验证基本游戏记录
   if (!Array.isArray(record)) {
     return false;
