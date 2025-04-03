@@ -1,6 +1,6 @@
 const STORAGE_KEYS = {
     SIZE: 'game2048_size',
-    HIGH_SCORE: (size) => `game2048_high_score_${size}`
+    HIGH_SCORE: (size: number) => `game2048_high_score_${size}`
 };
 
 // 确保大小是有效的数字
