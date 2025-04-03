@@ -26,8 +26,7 @@ export async function getTopScores(size = 4, limit = 10) {
 async function saveScoreToMongoDB(scoreData: {
   playerName: string,
   score: number,
-  size: number,
-  record: string
+  size: number
 }) {
   if (!client) {
     throw new Error('MongoDB client is not initialized');
@@ -53,7 +52,6 @@ async function saveScoreToMongoDB(scoreData: {
         playerName: scoreData.playerName,
         score: scoreData.score,
         size: scoreData.size,
-        record: scoreData.record, // 游戏过程记录
         createdAt: new Date()
       };
 
@@ -73,8 +71,7 @@ async function saveScoreToMongoDB(scoreData: {
 export async function saveScore(scoreData: {
   playerName: string,
   score: number,
-  size: number,
-  record: string
+  size: number
 }) {
   if (client) {
     return await saveScoreToMongoDB(scoreData);

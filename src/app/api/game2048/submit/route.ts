@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
-import { dataSave } from "./dataSave";
 import { recordCheck } from "./recordCheck";
 import { decryptData } from "./decryptData";
+import { saveScore } from "@/lib/mongodb2048";
+
+export async function dataSave(playerName: string, score: number, size: number) {
+    try {
+      return await saveScore({ playerName, score, size })
+    } catch (error) {
+      console.error('保存分数失败:', error);
+      return false;
+    }
+  }
+  
 
 export async function POST(request: Request) {
   try {
@@ -56,7 +66,7 @@ export async function POST(request: Request) {
     }
 
     // 验证游戏记录
-    if (!recordCheck(gameRecordObj)) {
+    if (!recordCheck(decodedData.score, gameRecordObj)) {
       return NextResponse.json(
         { success: false, message: '无效的分数' },
         { status: 400 }
@@ -67,7 +77,7 @@ export async function POST(request: Request) {
     const { playerName, score, gameSize } = decodedData;
     
     // 保存到数据库
-    const saveResult = await dataSave(playerName, score, gameSize, JSON.stringify(gameRecordObj));
+    const saveResult = await dataSave(playerName, score, gameSize);
     
     return NextResponse.json({
       success: true,

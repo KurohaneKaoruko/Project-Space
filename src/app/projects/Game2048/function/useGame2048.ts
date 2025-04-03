@@ -3,6 +3,8 @@ import { getValidSize, getGameSize, saveGameSize, getHighScore, saveHighScore } 
 import { submitScore } from './submitScore'
 import { sha256 } from 'js-sha256';
 
+import { checkGameOver, rotateBoard } from './gameUtils'
+
 interface GameState {
   board: number[][];
   score: number;
@@ -14,6 +16,7 @@ interface GameState {
 // 定义游戏记录项的类型
 interface GameRecordItem {
   board: string;
+  score: number;
   hash: string;
 }
 
@@ -29,13 +32,12 @@ export function useGame2048() {
   const [gameRecord, setGameRecord] = useState<GameRecordItem[]>([])
 
   // 计算游戏盘面的哈希值
-  const calculateBoardHash = (boardStr: string, prevRecord: GameRecordItem | null = null) => {
+  const calculateBoardHash = (prevRecord: GameRecordItem | null = null) => {
     if (!prevRecord) {
-      // 初始记录，只用当前盘面计算
-      return sha256(boardStr);
+      return sha256('GAME_2048_RECORD');
     }
     // 使用上一个记录的完整信息和当前盘面计算
-    return sha256(JSON.stringify(prevRecord) + boardStr);
+    return sha256(JSON.stringify(prevRecord));
   };
 
   // 初始化游戏
@@ -50,14 +52,14 @@ export function useGame2048() {
       
       // 初始盘面记录，哈希值为空字符串
       const boardStr = JSON.stringify(newBoard);
-      const initialHash = calculateBoardHash(boardStr);
+      const initialHash = calculateBoardHash(gameRecord[0]);
       setGameRecord([
         {
           board: boardStr,
-          hash: initialHash
+          hash: initialHash,
+          score: 0
         }
       ]);
-      
       setGameState({
         board: newBoard,
         score: 0,
@@ -138,7 +140,6 @@ export function useGame2048() {
                     Math.random() < 0.6 ? 4 :
                     Math.random() < 0.8 ? 8 : 16;
       }
-      
       board[x][y] = tileValue;
       return tileValue;
     }
@@ -154,23 +155,6 @@ export function useGame2048() {
     let newScore = gameState.score;
 
     // 根据方向旋转矩阵，使所有移动都变成向左移动
-    const rotateBoard = (board: number[][], times: number) => {
-      for (let t = 0; t < times; t++) {
-        const rotated = Array(board.length).fill(0).map(() => Array(board.length).fill(0));
-        for (let i = 0; i < board.length; i++) {
-          for (let j = 0; j < board.length; j++) {
-            rotated[i][j] = board[board.length - 1 - j][i];
-          }
-        }
-        for (let i = 0; i < board.length; i++) {
-          for (let j = 0; j < board.length; j++) {
-            board[i][j] = rotated[i][j];
-          }
-        }
-      }
-    };
-
-    // 根据方向旋转矩阵
     switch (direction) {
       case 'up': rotateBoard(newBoard, 1); break;
       case 'right': rotateBoard(newBoard, 2); break;
@@ -211,13 +195,14 @@ export function useGame2048() {
       // 记录游戏盘面
       const boardStr = JSON.stringify(newBoard);
       const prevRecord = gameRecord[gameRecord.length - 1];
-      const newHash = calculateBoardHash(boardStr, prevRecord);
+      const newHash = calculateBoardHash(prevRecord);
       
       setGameRecord(prev => [
         ...prev,
         {
           board: boardStr,
-          hash: newHash
+          score: newScore - gameState.score,
+          hash: newHash,
         }
       ]);
       
@@ -231,31 +216,6 @@ export function useGame2048() {
       updateHighScore(newScore);
     }
   }, [gameState.board, gameState.score, gameState.gameOver, gameState.size, updateHighScore, gameRecord]);
-
-  // 检查游戏是否结束
-  const checkGameOver = (board: number[][]) => {
-    // 检查是否有空格
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board.length; j++) {
-        if (board[i][j] === 0) return false;
-      }
-    }
-
-    // 检查是否有相邻的相同数字
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board.length; j++) {
-        const current = board[i][j];
-        if (
-          (i < board.length - 1 && current === board[i + 1][j]) ||
-          (j < board.length - 1 && current === board[i][j + 1])
-        ) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  };
 
   // 键盘事件处理
   useEffect(() => {
