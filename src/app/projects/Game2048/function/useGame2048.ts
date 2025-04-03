@@ -137,13 +137,8 @@ export function useGame2048() {
     if (gameState.gameOver) return;
 
     // 使用深拷贝，但保留Infinity值
-    const newBoard = JSON.parse(
-      JSON.stringify(gameState.board, (key, value) => 
-        value === Infinity ? "Infinity" : value
-      )
-    ).map((row: string[]) => 
-      row.map((cell: string) => cell === "Infinity" ? Infinity : cell)
-    );
+    const newBoard = gameState.board.map(row => row.map(cell => cell));
+    
     let moved = false;
     let newScore = gameState.score;
 
