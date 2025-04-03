@@ -40,7 +40,7 @@ export default function GameOver({ score, onRestart, onSubmitScore }: GameOverPr
       setSubmitStatus(null);
       
       // 调用传入的提交函数
-      const result = await onSubmitScore(playerName || 'NoName');
+      const result = await onSubmitScore(playerName || 'No Name');
       
       // 提交成功
       setSubmitStatus({

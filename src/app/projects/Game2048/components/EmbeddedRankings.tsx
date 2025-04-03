@@ -52,17 +52,6 @@ export default function EmbeddedRankings({ size = 4 }) {
     }
   }, [isClient, size]);
   
-  // 每5分钟刷新一次数据
-  useEffect(() => {
-    if (!isClient) return;
-    
-    const interval = setInterval(() => {
-      fetchRankings();
-    }, 5 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, [isClient]);
-  
   if (!isClient) return null;
   
   return (
