@@ -28,4 +28,8 @@
     .score-box .text-xl {
         font-size: 1rem;
     }
+
+    .status-container {
+        gap: 10px;
+    }
 }

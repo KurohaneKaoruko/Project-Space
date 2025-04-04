@@ -20,8 +20,7 @@ export default function GameSettings({ size, onSizeChange }: GameSettingsProps) 
   const sizeOptions = [2, 4, 6, 8];
   
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm mb-4">
-      <h3 className="text-sm font-medium text-gray-900 mb-2">游戏网格大小</h3>
+    <div className="bg-white rounded-lg p-3 shadow-sm">
       <div className="grid grid-cols-4 gap-1">
         {sizeOptions.map((sizeOption) => {
           const isSelected = size === sizeOption;

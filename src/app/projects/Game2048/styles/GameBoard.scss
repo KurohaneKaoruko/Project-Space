@@ -24,3 +24,9 @@
   -webkit-user-select: none;
   user-select: none;
 }
+
+@media (max-width: 1024px) {
+  #game-board {
+    gap: 5px;
+  }
+}

@@ -22,7 +22,7 @@ export default function GameStatus({ size, score, highScore = 0, onRestart, onSi
   if (!isClient) return null;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="status-container flex flex-col gap-3">
       <div className="score-box">
         <div className="bg-gray-100 rounded-lg p-3 text-center">
           <p className="text-xs text-gray-500 mb-1">当前分数</p>

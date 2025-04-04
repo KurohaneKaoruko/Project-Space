@@ -89,14 +89,11 @@ export default function Game2048Page() {
                 <div className="mb-3">
                   <GameBoard board={board} />
                 </div>
-                
+
                 {/* 状态区域 */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2 lg:col-span-1">
                     <GameStatus size={size} score={score} highScore={highScore} onRestart={onRestart} onSizeChange={onSizeChange} />
-                  </div>
-                  <div className="col-span-2 lg:col-span-1">
-                    <CollapsibleGameRules />
                   </div>
                 </div>
               </div>
