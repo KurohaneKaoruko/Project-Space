@@ -20,7 +20,7 @@ export async function GET() {
     message: getTimesalt()
   });
 }
-  
+
 
 export async function POST(request: Request) {
   try {

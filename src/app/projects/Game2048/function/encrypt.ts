@@ -49,8 +49,6 @@ export const encryptData = async (data: {
   timestamp: number;
   gameSize: number;
 }) => {
-
-  
   const submitkey = process.env.NEXT_PUBLIC_GAME_2048_SUBMIT_KEY || '';
   const salt1 = sha256(String(Math.floor(new Date().getTime() / 300000)));
   const salt2 = (await fetch('/api/game2048/submit').then(res => res.json())).message;
