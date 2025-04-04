@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { getSecretKey } from "../utils";
+import { getSecretKey } from "./utils";
 
 export function decryptData(encryptedData: string) {
     try {

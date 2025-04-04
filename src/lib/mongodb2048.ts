@@ -80,5 +80,6 @@ export async function saveScore(scoreData: {
     return await saveScoreToMongoDB(scoreData);
   } else {
     console.error('未配置MongoDB连接');
+    return false;
   }
 }

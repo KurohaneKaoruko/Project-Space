@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 import { recordCheck } from "./recordCheck";
 import { decryptData } from "./decryptData";
-import { saveScore } from "@/lib/mongodb2048";
+import { getTimesalt, dataSave } from "./utils";
 
-async function dataSave(playerName: string, score: number, size: number, gameRecordStr: string) {
-  try {
-    return await saveScore({ playerName, score, size, gameRecordStr })
-  } catch (error) {
-    console.error('保存分数失败:', error);
-    return false;
-  }
+
+export async function GET() {
+  return NextResponse.json({ message: getTimesalt() });
 }
   
 
