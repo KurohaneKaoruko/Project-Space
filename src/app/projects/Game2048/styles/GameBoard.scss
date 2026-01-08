@@ -1,0 +1,273 @@
+.game-grid {
+  display: grid;
+  gap: 6px;
+  height: 100%;
+  width: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 根据棋盘大小设置不同的间距 */
+.game-grid[data-size="4"] {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.game-grid[data-size="5"] {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.game-grid[data-size="6"] {
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+
+.game-grid[data-size="7"] {
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+#game-board {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@media (max-width: 1024px) {
+  .game-grid {
+    gap: 2px;
+  }
+}
+
+/* ============================================
+   2048 Game Tile Animations
+   Requirements: 7.1, 7.2, 7.3, 7.4
+   ============================================ */
+
+/* Animation duration variable - configurable, default 150ms */
+:root {
+  --tile-animation-duration: 150ms;
+}
+
+/* ----------------------------------------
+   新方块淡入缩放动画 (New Tile Animation)
+   Requirements: 7.3
+   ---------------------------------------- */
+@keyframes tile-new {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-tile-new {
+  animation: tile-new var(--tile-animation-duration) ease-out forwards;
+}
+
+/* ----------------------------------------
+   合并弹跳动画 (Merge Bounce Animation)
+   Requirements: 7.2
+   ---------------------------------------- */
+@keyframes tile-merged {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  75% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-tile-merged {
+  animation: tile-merged calc(var(--tile-animation-duration) * 1.5) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ----------------------------------------
+   方块出现动画 (Tile Appear Animation)
+   Requirements: 7.1
+   ---------------------------------------- */
+@keyframes tile-appear {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-tile-appear {
+  animation: tile-appear calc(var(--tile-animation-duration) * 0.5) ease-out forwards;
+}
+
+/* ----------------------------------------
+   方块移动过渡效果 (Tile Movement Transition)
+   Requirements: 2.1, 2.4, 2.5, 5.1, 5.2, 5.5
+   使用CSS transform实现平滑位移动画
+   ---------------------------------------- */
+
+/* 移动动画类 - 应用于正在移动的方块 */
+.tile-moving {
+  transition: transform var(--tile-animation-duration) ease-out;
+  will-change: transform;
+}
+
+/* 移动动画完成后的状态 - 清理 will-change 释放 GPU 内存 */
+/* @see Requirements 2.5, 5.5 */
+.tile-move-complete {
+  transition: none;
+  transform: none;
+  will-change: auto;
+}
+
+/* 游戏网格中的方块默认过渡 */
+.game-grid > div {
+  transition: transform var(--tile-animation-duration) ease-out,
+              opacity var(--tile-animation-duration) ease-in-out;
+}
+
+/* 正在执行动画的方块 - 启用GPU加速 */
+/* @see Requirements 5.1, 5.2 */
+.game-grid > div.animating {
+  will-change: transform, opacity;
+}
+
+/* 动画完成后清理will-change以释放GPU内存 */
+/* @see Requirements 5.5 */
+.game-grid > div:not(.animating) {
+  will-change: auto;
+}
+
+/* 绝对定位的方块容器 - 用于动画模式 */
+/* @see Requirements 2.1, 2.3 */
+.game-grid.relative > .absolute {
+  transition: none; /* 容器本身不需要过渡，由内部 GameTile 处理 */
+}
+
+/* 动画完成后的方块 - 重置 transform */
+/* @see Requirements 2.5 */
+.game-grid.relative > .absolute:not(.animating) > div {
+  transform: none;
+  will-change: auto;
+}
+
+/* ----------------------------------------
+   渐变动画 (Gradient Animation for high-value tiles)
+   ---------------------------------------- */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+/* ----------------------------------------
+   发光效果 (Glow Effect for special tiles)
+   ---------------------------------------- */
+.shadow-glow {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5),
+              0 0 30px rgba(255, 255, 255, 0.3),
+              0 0 45px rgba(255, 255, 255, 0.1);
+}
+
+/* ----------------------------------------
+   减少动画偏好支持 (Reduced Motion Support)
+   Requirements: 4.1, 4.2
+   
+   当用户启用 prefers-reduced-motion 时：
+   - 跳过所有动画，直接应用最终状态
+   - 禁用所有过渡效果
+   - 清理 will-change 属性释放 GPU 内存
+   ---------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  /* 禁用新方块动画 - 直接显示最终状态 */
+  .animate-tile-new {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  /* 禁用合并动画 - 直接显示最终状态 */
+  .animate-tile-merged {
+    animation: none;
+    transform: scale(1);
+  }
+  
+  /* 禁用出现动画 - 直接显示最终状态 */
+  .animate-tile-appear {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  /* 禁用渐变动画 */
+  .animate-gradient-x {
+    animation: none;
+    background-position: 0% 50%;
+  }
+  
+  /* 禁用游戏网格中所有方块的过渡效果 */
+  .game-grid > div {
+    transition: none !important;
+  }
+  
+  /* 禁用移动动画过渡 - 直接应用最终位置 */
+  .tile-moving {
+    transition: none !important;
+    transform: none !important;
+  }
+  
+  /* 确保移动完成状态无过渡 */
+  .tile-move-complete {
+    transition: none;
+    transform: none;
+  }
+  
+  /* 禁用绝对定位方块的过渡 */
+  .game-grid.relative > .absolute {
+    transition: none !important;
+  }
+  
+  .game-grid.relative > .absolute > div {
+    transition: none !important;
+    transform: none !important;
+  }
+  
+  /* 清理所有 will-change 属性释放 GPU 内存 */
+  .game-grid > div,
+  .game-grid > div.animating,
+  .tile-moving,
+  .tile-move-complete,
+  .game-grid.relative > .absolute,
+  .game-grid.relative > .absolute > div {
+    will-change: auto !important;
+  }
+}

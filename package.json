@@ -1,0 +1,44 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "commit": "git add . && git-cz",
+    "train:2048": "npx ts-node tools/game2048-trainer/train.ts",
+    "train:2048:fast": "npx ts-node tools/game2048-trainer/train.ts --episodes 10000 --output tools/game2048-trainer/weights-fast.json",
+    "train:2048:full": "npx ts-node tools/game2048-trainer/train.ts --episodes 100000 --decay --output tools/game2048-trainer/weights.json",
+    "train:2048:gpu": "npx ts-node tools/game2048-trainer/train.ts --gpu",
+    "train:2048:gpu:fast": "npx ts-node tools/game2048-trainer/train.ts --gpu --episodes 10000 --output tools/game2048-trainer/weights-gpu-fast.json",
+    "train:2048:gpu:full": "npx ts-node tools/game2048-trainer/train.ts --gpu --episodes 100000 --decay --output tools/game2048-trainer/weights-gpu.json"
+  },
+  "dependencies": {
+    "git-cz": "^4.9.0",
+    "gpu.js": "^2.16.0",
+    "gsap": "^3.12.7",
+    "js-sha256": "^0.11.0",
+    "lenis": "^1.2.3",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.1",
+    "next": "15.2.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sass": "^1.86.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.0.17",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "daisyui": "^5.0.12",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.4",
+    "tailwindcss": "^4.0.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
