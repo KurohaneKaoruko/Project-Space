@@ -376,6 +376,7 @@ async function runGPUTests(): Promise<boolean> {
             outputPath: 'weights.json',
             checkpointInterval: 1000,
             checkpointPath: tempPath,
+            weightsSaveInterval: 300,
             gpu: {
               enabled: true,
               batchSize: 64,
@@ -470,6 +471,7 @@ async function runGPUTests(): Promise<boolean> {
             outputPath: 'weights.json',
             checkpointInterval: 1000,
             checkpointPath: tempPath,
+            weightsSaveInterval: 300,
             gpu: {
               enabled: true,
               batchSize: 64,
@@ -548,6 +550,7 @@ async function runGPUTests(): Promise<boolean> {
               outputPath: 'weights.json',
               checkpointInterval: 1000,
               checkpointPath: tempPath,
+              weightsSaveInterval: 300,
               gpu: {
                 enabled: true,
                 batchSize: 64,
