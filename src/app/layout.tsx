@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "项目空间",
-  description: "展示一些项目",
+  title: "Game-Space",
+  description: "小游戏项目合集",
 };
 
 export default function RootLayout({

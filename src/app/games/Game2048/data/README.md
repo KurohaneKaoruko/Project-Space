@@ -57,12 +57,12 @@ npm run train:2048:full
 训练完成后，将生成的权重文件复制到此目录：
 
 ```bash
-cp weights.json src/app/projects/Game2048/data/trained-weights.json
+cp weights.json src/app/games/Game2048/data/trained-weights.json
 ```
 
 ### 5. 更新应用使用新权重
 
-修改 `src/app/projects/Game2048/function/nTupleWeights.ts` 加载新的权重文件，或替换 `defaultWeights.json` 中的默认权重。
+修改 `src/app/games/Game2048/function/nTupleWeights.ts` 加载新的权重文件，或替换 `defaultWeights.json` 中的默认权重。
 
 ## 权重文件格式
 

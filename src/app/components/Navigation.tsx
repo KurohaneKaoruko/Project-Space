@@ -32,7 +32,7 @@ export default function Navigation() {
               <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
               </svg>
-              <span className="hidden sm:inline">项目空间</span>
+              <span className="hidden sm:inline">Game-Space</span>
             </Link>
           </div>
           
@@ -41,7 +41,7 @@ export default function Navigation() {
             <NavLink href="/" active={pathname === '/'}>
               首页
             </NavLink>
-            <NavLink href="/projects" active={pathname === '/projects'}>
+            <NavLink href="/games" active={pathname === '/games'}>
               项目
             </NavLink>
           </div>
@@ -74,7 +74,7 @@ export default function Navigation() {
             <MobileNavLink href="/" active={pathname === '/'}>
               首页
             </MobileNavLink>
-            <MobileNavLink href="/projects" active={pathname === '/projects'}>
+            <MobileNavLink href="/games" active={pathname === '/games'}>
               项目
             </MobileNavLink>
           </div>

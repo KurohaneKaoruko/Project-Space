@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from './components/Navigation';
-import { projects } from './data/projects';
+import { games } from './data/projects';
 
 export default function Home() {
   return (
@@ -12,14 +12,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              项目展示
+              Game-Space
             </h1>
             <p className="text-xl text-gray-600">
-              一些编程项目
+              小游戏项目合集
             </p>
             {/* <div className="mt-4">
               <Link 
-                href="/projects" 
+                href="/games" 
                 className="inline-flex items-center text-blue-600 hover:text-blue-800"
               >
                 查看所有项目列表
@@ -31,10 +31,10 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
+            {games.map((project) => (
               <Link 
                 key={project.id} 
-                href={`/projects/${project.id}`}
+                href={`/games/${project.id}`}
                 className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
               >
                 <div className="relative h-48">

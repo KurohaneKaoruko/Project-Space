@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '../components/Navigation';
-import { projects } from '../data/projects';
+import { games } from '../data/games';
 
-export default function Projects() {
+export default function games() {
   return (
     <main className="min-h-screen bg-gray-50">
       <Navigation />
@@ -15,17 +15,17 @@ export default function Projects() {
               所有项目
             </h1>
             <p className="text-xl text-gray-600">
-              项目展示列表
+              Game-Space 项目列表
             </p>
           </div>
 
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            {projects.map((project, index) => (
+            {games.map((project, index) => (
               <Link 
                 key={project.id} 
-                href={`/projects/${project.id}`}
+                href={`/games/${project.id}`}
                 className={`block hover:bg-gray-50 transition-colors duration-200 ${
-                  index !== projects.length - 1 ? 'border-b border-gray-200' : ''
+                  index !== games.length - 1 ? 'border-b border-gray-200' : ''
                 }`}
               >
                 <div className="flex items-center p-4">

@@ -75,7 +75,7 @@ export default function Game2048Page() {
           </h1>
           
           <Link 
-            href="/projects" 
+            href="/games" 
             className="inline-flex items-center px-3 py-1.5 rounded-lg bg-white shadow-sm border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-300 hover:shadow transition-all text-sm font-medium"
           >
             更多
