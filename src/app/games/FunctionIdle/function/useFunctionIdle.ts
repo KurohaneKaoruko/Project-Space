@@ -354,7 +354,15 @@ export function useFunctionIdle(): UseFunctionIdleResult {
 
   const pointsText = useMemo(() => (state ? bnFormat(state.points, 4) : '...'), [state]);
   const baseText = useMemo(() => (state ? bnFormat(state.base, 4) : '...'), [state]);
-  const rText = useMemo(() => (state ? `${state.r.toFixed(4)}/s` : '...'), [state]);
+  const rText = useMemo(() => {
+    if (!state) return '...';
+    const r = state.r;
+    if (!Number.isFinite(r)) return '∞/s';
+    const abs = Math.abs(r);
+    const text =
+      abs === 0 ? '0' : abs >= 1e6 || abs < 1e-3 ? r.toExponential(3).replace('e+', 'e') : r.toFixed(3);
+    return `${text}/s`;
+  }, [state]);
 
   return {
     state,

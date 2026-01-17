@@ -18,6 +18,14 @@ function formatDuration(seconds: number): string {
   return `${m}分`;
 }
 
+function formatScalar(n: number, fixedDigits: number, expDigits: number): string {
+  if (!Number.isFinite(n)) return '∞';
+  const abs = Math.abs(n);
+  if (abs === 0) return '0';
+  if (abs >= 1e6 || abs < 1e-3) return n.toExponential(expDigits).replace('e+', 'e');
+  return n.toFixed(fixedDigits);
+}
+
 export default function Page() {
   const { state, offline, dismissOffline, pointsText, baseText, rText, costs, buyBase, buyR, buyMultiplier, buyBCurve, buyRCurve, prestige, prestigeInfo, history, now, autoBuy, toggleAutoBuy, reset, exportSave, importSave } = useFunctionIdle();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -81,7 +89,7 @@ export default function Page() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <ScoreBox title="指数偏置源 b" value={baseText} tone="blue" sub={`Lv.${state?.bLevel ?? 0} · 影响 b`} />
                 <ScoreBox title="指数率 r" value={rText} tone="purple" sub={`Lv.${state?.rLevel ?? 0} · 影响 rate`} />
-                <ScoreBox title="倍率 m" value={`${(multiplierFromLevel(state?.multiplierLevel ?? 0)).toFixed(2)}×`} tone="gray" sub={`Lv.${state?.multiplierLevel ?? 0}`} />
+                <ScoreBox title="倍率 m" value={`${formatScalar(multiplierFromLevel(state?.multiplierLevel ?? 0), 2, 3)}×`} tone="gray" sub={`Lv.${state?.multiplierLevel ?? 0}`} />
                 <ScoreBox title="有效 b_eff" value={effectiveBase ? bnFormat(effectiveBase, 4) : '...'} tone="gray" sub="用于计算 b 与 rate" />
               </div>
             </div>
