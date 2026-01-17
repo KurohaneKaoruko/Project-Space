@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0f172a"/>
-      <stop offset="1" stop-color="#111827"/>
+      <stop offset="0" stop-color="#fff7fa"/>
+      <stop offset="1" stop-color="#f1f8f7"/>
     </linearGradient>
     <linearGradient id="curve" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#60a5fa"/>
@@ -31,9 +31,9 @@
     <circle cx="120" cy="520" r="7" fill="#60a5fa"/>
     <circle cx="760" cy="90" r="7" fill="#a78bfa"/>
   </g>
-  <g fill="#e5e7eb">
-    <text x="160" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="34" opacity="0.9">dP/dt = r·P + b</text>
-    <text x="160" y="210" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'" font-size="18" opacity="0.75">函数 · 指数挂机</text>
+  <g fill="#05070b">
+    <text x="160" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="34" opacity="0.9">函数 · 指数挂机</text>
+    <text x="160" y="210" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'" font-size="18" opacity="0.75">通过函数模拟指数增长的挂机游戏</text>
   </g>
 </svg>
 
