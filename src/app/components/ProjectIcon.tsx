@@ -24,6 +24,7 @@ export type ProjectIconId =
   | 'CryptoVisualizer'
   | 'Mandelbrot'
   | 'DigitSumTurtle'
+  | 'Collatz'
   | 'Brainfuck';
 
 /** 长写动画参数：name + duration，可选 delay / timing */
@@ -412,6 +413,40 @@ function IconBrainfuck() {
   );
 }
 
+function IconCollatz() {
+  return (
+    <Base>
+      {/* 冰雹轨迹：剧烈起伏的路径，hover 时描线生长 */}
+      <path
+        className="icon-collatz-path"
+        d="M8 50 20 50 20 26 30 26 30 42 38 42 38 12 46 12 46 30 56 30 56 38 50 38 50 44 44 44"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+        strokeLinejoin="miter"
+        opacity="0.2"
+      />
+      <g className="icon-motion" style={anim('collatzDraw', 3.2)}>
+        <path
+          className="icon-collatz-path"
+          d="M8 50 20 50 20 26 30 26 30 42 38 42 38 12 46 12 46 30 56 30 56 38 50 38 50 44 44 44"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+          strokeLinejoin="miter"
+        />
+      </g>
+      {/* 峰值点 */}
+      <rect x="36" y="10" width="4" height="4" fill="currentColor" opacity="0.8" />
+      {/* 起点与终点标记 */}
+      <rect x="5" y="47" width="6" height="6" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.5" />
+      <text x="60" y="58" textAnchor="end" fontSize="7" fontFamily="monospace" fill="currentColor" opacity="0.5">
+        ax+b
+      </text>
+    </Base>
+  );
+}
+
 const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Game2048: Icon2048,
   Snake: IconSnake,
@@ -429,6 +464,7 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   CryptoVisualizer: IconCryptoVisualizer,
   Mandelbrot: IconMandelbrot,
   DigitSumTurtle: IconDigitSumTurtle,
+  Collatz: IconCollatz,
   Brainfuck: IconBrainfuck,
 };
 

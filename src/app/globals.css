@@ -251,6 +251,9 @@ body {
 .icon-turtle-path { stroke-dasharray: 124; }
 @keyframes turtlePath { to { stroke-dashoffset: -124 } }
 
+.icon-collatz-path { stroke-dasharray: 190; }
+@keyframes collatzDraw { to { stroke-dashoffset: -190 } }
+
 @keyframes bfBlink { 0%, 100% { opacity: 0.6 } 50% { opacity: 0.1 } }
 
 /* ===== 路由切换骨架屏 ===== */

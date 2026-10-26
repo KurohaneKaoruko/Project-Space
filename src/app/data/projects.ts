@@ -147,6 +147,14 @@ export const visualizations: Project[] = [
     technologies: ['React', 'TypeScript', 'Canvas'],
     link: '/visualizations/DigitSumTurtle'
   },
+  {
+    id: 'Collatz',
+    title: '冰雹猜想',
+    description: '广义冰雹猜想实验台：能被 c 整除则除以 c，否则乘 a 加 b。可调 a/b/c 参数对比 3n+1、5n+1 等规则的收敛、循环环与发散轨道，支持多起点轨迹叠加与逐帧回放。',
+    image: '/images/collatz.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/visualizations/Collatz'
+  },
 ];
 
 export const tools: Project[] = [
