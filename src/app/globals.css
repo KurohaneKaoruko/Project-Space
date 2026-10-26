@@ -131,8 +131,10 @@ body {
 .stagger-in {
   opacity: 0;
   transform: translateY(12px);
-  animation: riseIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--stagger, 0) * 50ms);
+  animation: riseIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  /* 每项 20ms、封顶 20 项：大网格（首页 20+ 磁贴）最迟 0.4s 起始，
+     不会出现"最后一格一秒后才蹦出来"的加载缓慢感 */
+  animation-delay: calc(min(var(--stagger, 0), 20) * 20ms);
   will-change: transform, opacity;
 }
 
@@ -250,3 +252,13 @@ body {
 @keyframes turtlePath { to { stroke-dashoffset: -124 } }
 
 @keyframes bfBlink { 0%, 100% { opacity: 0.6 } 50% { opacity: 0.1 } }
+
+/* ===== 路由切换骨架屏 ===== */
+.skeleton-pulse {
+  animation: skeletonPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.5 }
+  50% { opacity: 1 }
+}

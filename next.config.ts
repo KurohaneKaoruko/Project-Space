@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  productionBrowserSourceMaps: true,
+  // sourcemap 体积大且生成耗时；生产环境默认关闭，需要排查时再开
+  productionBrowserSourceMaps: false,
   async redirects() {
     return [
       // simulations / visualizations -> algorithms（蚁群已迁移至算法分类）
