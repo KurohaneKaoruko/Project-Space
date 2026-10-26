@@ -1,0 +1,61 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#0A0A0A"/>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="52%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="64" fill="url(#glow)"/>
+
+  <!-- 顶面 -->
+  <g transform="matrix(130 -75 130 75 126 175)">
+    <rect width="1" height="1" fill="#111114"/>
+    <g fill="#F2F4F8">
+      <rect x="0.035" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.035" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.035" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+    </g>
+  </g>
+
+  <!-- 左面 -->
+  <g transform="matrix(0 -150 130 75 126 325)">
+    <rect width="1" height="1" fill="#111114"/>
+    <g fill="#1FA85C">
+      <rect x="0.035" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.035" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.035" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+    </g>
+  </g>
+
+  <!-- 右面 -->
+  <g transform="matrix(130 -75 0 150 256 250)">
+    <rect width="1" height="1" fill="#111114"/>
+    <g fill="#DC3B3B">
+      <rect x="0.035" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.035" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.035" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.368" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.035" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.368" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+      <rect x="0.702" y="0.702" width="0.263" height="0.263" rx="0.045"/>
+    </g>
+  </g>
+
+  <!-- 边框高光 -->
+  <path d="M256 100 L386 175 L386 325 L256 400 L126 325 L126 175 Z" stroke="#3B82F6" stroke-opacity="0.28" stroke-width="2" fill="none"/>
+</svg>
