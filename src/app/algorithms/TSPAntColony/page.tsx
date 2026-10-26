@@ -131,7 +131,7 @@ export default function TSPAntColonyPage() {
     <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
       <Navigation title="TSP_ANT_COLONY" />
 
-      <div className="flex-1 flex flex-col lg:flex-row pt-16 h-full overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
         <div ref={wrapRef} className={`h-64 shrink-0 lg:h-full lg:flex-1 relative overflow-hidden ${bgClass}`}>
           <canvas ref={canvasRef} className="block w-full h-full" />
           <div className={`absolute top-4 left-4 ${overlayClass} font-mono text-[11px] pointer-events-none whitespace-pre`}>

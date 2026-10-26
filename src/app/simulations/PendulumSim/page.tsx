@@ -22,7 +22,7 @@ export default function PendulumSimPage() {
     <main className="min-h-screen">
       <Navigation title="CHAOS_PENDULUM" />
       
-      <div className="pt-24 pb-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex min-h-screen flex-col justify-center pb-6 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           {/* Header - Hidden but preserved structure if needed, currently removed for minimal look */}
           

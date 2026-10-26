@@ -239,7 +239,7 @@ export default function SortingVisualizerPage() {
     <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
       <Navigation title="SORTING_VISUALIZER" />
 
-      <div className="flex-1 flex flex-col lg:flex-row pt-16 h-full overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
         {/* 画布区 */}
         <div ref={wrapRef} className="h-64 shrink-0 lg:h-full lg:flex-1 relative overflow-hidden bg-zinc-950">
           <canvas ref={canvasRef} className="block w-full h-full" />

@@ -170,9 +170,9 @@ export default function RubiksCubePage() {
 
       <Navigation title="RUBIK_AI" />
 
-      <div className="px-4 sm:px-6 lg:px-8 relative z-10 pt-16 lg:h-screen lg:overflow-hidden">
+      <div className="px-4 pt-6 pb-4 sm:px-6 lg:px-8 lg:pt-8 lg:pb-6 lg:pr-11 relative z-10 lg:h-screen lg:overflow-hidden">
         <div className="mx-auto w-full max-w-[1560px] h-full">
-          <div className="grid grid-cols-1 lg:grid-cols-[262px_minmax(0,1fr)] xl:grid-cols-[286px_minmax(0,1fr)_340px] gap-5 xl:gap-6 items-start lg:h-[calc(100vh-5.5rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-[262px_minmax(0,1fr)] xl:grid-cols-[286px_minmax(0,1fr)_340px] gap-5 xl:gap-6 items-start lg:h-full">
             <div className="order-2 lg:order-1 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1 hide-scrollbar">
               <ControlPanel
                 cube={cube}

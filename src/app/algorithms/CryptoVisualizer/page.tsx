@@ -80,7 +80,7 @@ export default function CryptoVisualizerPage() {
     <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
       <Navigation title="CRYPTO_VISUALIZER" />
 
-      <div className="flex-1 flex flex-col lg:flex-row pt-16 h-full overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
         {/* 演示区：lg 下列高锁定为容器高，卡片作为唯一弹性元素吸收/让出空间，控制区始终可见 */}
         <div className="flex-1 min-h-0 bg-zinc-950 overflow-y-auto lg:overflow-hidden">
           <div className="min-h-full lg:h-full w-full max-w-4xl mx-auto p-5 lg:px-10 lg:py-6 flex flex-col gap-4">

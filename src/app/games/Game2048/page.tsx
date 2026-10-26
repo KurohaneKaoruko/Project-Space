@@ -59,7 +59,7 @@ export default function Game2048Page() {
     <main className="min-h-screen">
       <Navigation title="2048_EVOLUTION" />
       
-      <div className="pt-24 pb-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex min-h-screen flex-col justify-center pb-6 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
           {/* 移动端布局优化 */}
           <div className="flex flex-col lg:flex-row lg:items-start gap-6">

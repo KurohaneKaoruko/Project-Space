@@ -281,7 +281,7 @@ export default function TuringMachine2DPage() {
         </div>
 
         {/* 右上：大步数 */}
-        <div className="absolute right-4 top-4 sm:right-6 sm:top-6 text-right pointer-events-none">
+        <div className="absolute right-16 top-4 sm:right-20 sm:top-6 text-right pointer-events-none">
           <div className="text-zinc-400 font-mono text-[10px] tracking-[0.3em] uppercase">Steps</div>
           <div className="text-zinc-900 font-mono font-black leading-none tracking-tighter text-5xl sm:text-7xl xl:text-8xl tabular-nums">
             {fmt(stats?.steps ?? 0)}

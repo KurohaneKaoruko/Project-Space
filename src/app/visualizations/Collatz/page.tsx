@@ -294,7 +294,7 @@ export default function CollatzPage() {
         {/* 画布区 */}
         <div ref={wrapRef} className="h-64 shrink-0 lg:h-full lg:flex-1 relative overflow-hidden bg-zinc-950">
           <canvas ref={canvasRef} className="block w-full h-full" />
-          <div className="absolute top-4 right-4 font-mono text-[10px] text-white/40 pointer-events-none text-right leading-5">
+          <div className="absolute top-4 right-14 font-mono text-[10px] text-white/40 pointer-events-none text-right leading-5">
             {'规则: n ≡ 0 (mod c) → n/c'}
             <br />
             {'否则: n → a·n + b'}

@@ -189,7 +189,7 @@ export default function ParticleLifePage() {
     <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
       <Navigation title="PARTICLE_LIFE" />
       
-        <div className="flex-1 flex flex-col lg:flex-row pt-16 h-full overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
         {/* Canvas Area */}
           <div ref={canvasWrapRef} className="h-64 shrink-0 lg:h-full lg:flex-1 relative bg-black overflow-hidden">
           {error && (
