@@ -39,7 +39,7 @@ export default function Home() {
       <Navigation />
       <StaggerCleanup />
 
-      <div className="px-4 pb-20 pt-32 sm:px-6 lg:px-8">
+      <div className="px-4 pb-20 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           {/* 首页头部 */}
           <header className="relative mb-12 border-l-2 border-blue-500/50 pl-6 md:mb-14">

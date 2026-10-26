@@ -23,7 +23,7 @@ export default function CategoryPage({
     <main className="min-h-screen">
       <Navigation />
 
-      <div className="px-4 pb-16 pt-32 sm:px-6 lg:px-8">
+      <div className="px-4 pb-16 pt-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 border-l-2 border-blue-500/50 pl-6">
             <h1 className="mb-2 flex items-center gap-3 text-3xl font-bold text-zinc-900">
