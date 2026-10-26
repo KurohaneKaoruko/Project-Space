@@ -79,8 +79,8 @@ export const simulations: Project[] = [
   },
   {
     id: 'TuringMachine',
-    title: '图灵机 · 忙碌海狸',
-    description: '一维无限纸带图灵机模拟：内置 BB(1)~BB(6) 等多台预设机器，可单步执行、全速运行并对照理论 σ/S 值。',
+    title: '图灵机',
+    description: '一维无限纸带图灵机模拟：忙碌海狸 BB(1)~BB(6) 等预设机器，可单步执行、全速运行并对照理论 σ/S 值。',
     image: '/images/turing-machine.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
     link: '/simulations/TuringMachine'
