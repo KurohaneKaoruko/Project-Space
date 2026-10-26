@@ -47,7 +47,7 @@ export const games: Project[] = [
 export const simulations: Project[] = [
   {
     id: 'GameOfLife',
-    title: '生命游戏 (Game of Life)',
+    title: '生命游戏',
     description: '康威生命游戏：经典的元胞自动机模拟。支持自定义网格大小、速度、颜色主题，可自由绘制初始状态。',
     image: '/images/game-of-life.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
@@ -55,7 +55,7 @@ export const simulations: Project[] = [
   },
   {
     id: 'LangtonsAnt',
-    title: '兰顿蚂蚁 (Langton\'s Ant)',
+    title: '兰顿蚂蚁',
     description: '经典零玩家游戏：简单的转向规则在混沌后会涌现出稳定的“高速公路”结构。支持多蚂蚁、速度/格子大小调节与手动改图。',
     image: '/images/langtons-ant.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
@@ -63,7 +63,7 @@ export const simulations: Project[] = [
   },
   {
     id: 'ParticleLife',
-    title: '粒子生命 (Particle Life)',
+    title: '粒子生命',
     description: '基于 WebGPU 加速的粒子人工生命模拟。数千个粒子根据简单的交互矩阵涌现出复杂的类生命行为。',
     image: '/images/particle-life.svg',
     technologies: ['React', 'WebGPU', 'WGSL', 'TypeScript'],
@@ -79,7 +79,7 @@ export const simulations: Project[] = [
   },
   {
     id: 'TuringMachine',
-    title: '图灵机 · 忙碌海狸 (Busy Beaver)',
+    title: '图灵机 · 忙碌海狸',
     description: '一维无限纸带图灵机模拟：内置 BB(1)~BB(6) 等多台预设机器，可单步执行、全速运行并对照理论 σ/S 值。',
     image: '/images/turing-machine.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
@@ -87,7 +87,7 @@ export const simulations: Project[] = [
   },
   {
     id: 'TuringMachine2D',
-    title: '二维图灵机 (Turmite)',
+    title: '二维图灵机',
     description: '二维图灵机模拟：规则为写符号 + 上下左右移动 + 状态转移，网格无界。内置镜面编织、方形织机、混沌甩尾等预设，点击画布可改格子。',
     image: '/images/turing-machine-2d.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
@@ -133,7 +133,7 @@ export const algorithms: Project[] = [
 export const visualizations: Project[] = [
   {
     id: 'Mandelbrot',
-    title: '分形几何 (Fractal Geometry)',
+    title: '分形几何',
     description: '分形几何可视化合集：Mandelbrot / Julia / Newton 分形，支持中心、缩放、迭代次数与参数调节。',
     image: '/images/fractal-geometry.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
@@ -141,7 +141,7 @@ export const visualizations: Project[] = [
   },
   {
     id: 'DigitSumTurtle',
-    title: '数位和海龟绘图 (Digit-Sum Turtle)',
+    title: '数位和海龟绘图',
     description: '遍历自然数：n 进制数位和为偶数则前进画线，为奇数则旋转 360°/m。n=2 即 Thue–Morse 海龟曲线，默认参数（初始朝向右下、逆时针）呈水平延展的科赫雪花式分形；无限画布、镜头跟随自动展示完整图案。',
     image: '/images/digit-sum-turtle.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],

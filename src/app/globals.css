@@ -39,6 +39,11 @@ body {
   position: relative;
   border: 1px solid var(--border);
   background: var(--surface);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.tech-border:hover {
+  border-color: rgb(37 99 235 / 0.5);
 }
 
 .tech-border::after {
@@ -118,3 +123,124 @@ body {
 .animate-pop-in {
   animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
 }
+
+/* ===== 列表入场动画（GPU 加速，仅 transform/opacity）=====
+   will-change 只在动画期间提升合成层；用 animationend 事件后由浏览器自动回收，
+   forwards 保持最终帧。为避免常驻合成层开销，动画结束后通过 animationturn 移除。
+   简化方案：动画短（450ms）且一次性，will-change 的生命周期与动画一致即可。 */
+.stagger-in {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: riseIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--stagger, 0) * 50ms);
+  will-change: transform, opacity;
+}
+
+/* 动画结束后不再需要提升为合成层 */
+.stagger-in[data-entered='true'] {
+  will-change: auto;
+  transform: none;
+}
+
+@keyframes riseIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== 动态 SVG 图标动画系统 =====
+   默认 paused，仅卡片 hover 时运行，避免后台空转耗 CPU */
+.icon-motion {
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
+}
+
+.group:hover .icon-motion,
+.icon-motion.always-run {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-motion {
+    animation-play-state: paused !important;
+  }
+}
+
+/* ===== 图标 keyframes（集中定义，避免 SVG 内 <style> 泄漏为可见文本）===== */
+@keyframes pulse2048 { 0%, 70%, 100% { opacity: 1 } 85% { opacity: .35 } }
+
+@keyframes snakeCrawl { to { stroke-dashoffset: -32 } }
+.icon-snake-line { stroke-dasharray: 8 4; }
+@keyframes snakeFood { 0%, 100% { opacity: 0.5 } 50% { opacity: 0.15 } }
+
+@keyframes danmakuSpin {
+  from { transform: rotate(0deg) translate(20px) rotate(0deg) }
+  to { transform: rotate(360deg) translate(20px) rotate(-360deg) }
+}
+
+@keyframes cubeTilt { 0%, 100% { transform: rotate(0deg) } 50% { transform: rotate(8deg) } }
+
+@keyframes cellBreathe { 0%, 100% { opacity: 0.7 } 50% { opacity: 0.15 } }
+
+@keyframes cellFlip { 0%, 100% { opacity: 0.25 } 50% { opacity: 0.05 } }
+
+@keyframes antWalk {
+  0% { transform: translate(0, 0) }
+  25% { transform: translate(16px, 0) }
+  50% { transform: translate(16px, 16px) }
+  75% { transform: translate(0, 16px) }
+  100% { transform: translate(0, 0) }
+}
+
+@keyframes orbit { to { transform: rotate(360deg) } }
+
+@keyframes swing1 { 0%, 100% { transform: rotate(-24deg) } 50% { transform: rotate(24deg) } }
+@keyframes swing2 { 0%, 100% { transform: rotate(14deg) } 50% { transform: rotate(-14deg) } }
+
+@keyframes headMove {
+  0% { transform: translateX(0) }
+  33% { transform: translateX(-12px) }
+  66% { transform: translateX(12px) }
+  100% { transform: translateX(0) }
+}
+
+.icon-turmite-path { stroke-dasharray: 216; }
+@keyframes turmiteDraw { to { stroke-dashoffset: -216 } }
+
+@keyframes blockHash { 0%, 100% { opacity: 0.4 } 50% { opacity: 0.15 } }
+
+.icon-pheromone-path { stroke-dasharray: 4 3; }
+@keyframes pheromone { to { stroke-dashoffset: -14 } }
+
+@keyframes barScan { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
+
+@keyframes keyPulse { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
+
+@keyframes probe {
+  0% { transform: translate(0, 0) }
+  50% { transform: translate(22px, -5px) }
+  100% { transform: translate(0, 0) }
+}
+
+.icon-turtle-path { stroke-dasharray: 124; }
+@keyframes turtlePath { to { stroke-dashoffset: -124 } }
+
+@keyframes bfBlink { 0%, 100% { opacity: 0.6 } 50% { opacity: 0.1 } }
