@@ -1,3 +1,5 @@
+export type ProjectCategory = 'GAME' | 'SIMULATION' | 'ALGORITHM' | 'VISUALIZATION' | 'TOOL';
+
 export interface Project {
   id: string;
   title: string;
@@ -31,6 +33,14 @@ export const games: Project[] = [
     image: '/images/bullet-dodge.svg',
     technologies: ['React', 'TypeScript', 'Next.js', 'Canvas'],
     link: '/games/DanmakuDodge'
+  },
+  {
+    id: 'RubiksCube',
+    title: '魔方 · AI 还原',
+    description: 'CSS 3D 渲染的三阶魔方：支持拖动视角、键鼠转动与打乱，内置分层还原求解器（十字全状态查表 + 顶层宏动作 BFS），逐步演示 7 个还原阶段。',
+    image: '/images/rubiks-cube.svg',
+    technologies: ['React', 'TypeScript', 'CSS 3D', 'BFS'],
+    link: '/games/RubiksCube'
   }
 ];
 
@@ -93,6 +103,33 @@ export const simulations: Project[] = [
   },
 ];
 
+export const algorithms: Project[] = [
+  {
+    id: 'TSPAntColony',
+    title: 'TSP 蚁群算法',
+    description: '旅行商问题的蚁群优化：动态可视化信息素演化与最优路径收敛过程，支持参数调节。',
+    image: '/images/tsp-ant-colony.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/algorithms/TSPAntColony'
+  },
+  {
+    id: 'SortingVisualizer',
+    title: '排序算法可视化',
+    description: '覆盖 13 种经典排序算法的动态可视化：冒泡、鸡尾酒、侏儒、梳、插入、希尔、选择、快速、归并、堆、计数、桶、基数，支持调速、单步与多种数据分布。',
+    image: '/images/sorting-visualizer.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/algorithms/SortingVisualizer'
+  },
+  {
+    id: 'CryptoVisualizer',
+    title: '加密算法可视化',
+    description: '7 种加密算法分步演示：凯撒、维吉尼亚、栅栏、XOR、AES-128（完整 10 轮状态矩阵）、RSA、Diffie-Hellman，支持加解密双向演示与逐步播放。',
+    image: '/images/crypto-visualizer.svg',
+    technologies: ['React', 'TypeScript'],
+    link: '/algorithms/CryptoVisualizer'
+  },
+];
+
 export const visualizations: Project[] = [
   {
     id: 'Mandelbrot',
@@ -109,14 +146,6 @@ export const visualizations: Project[] = [
     image: '/images/digit-sum-turtle.svg',
     technologies: ['React', 'TypeScript', 'Canvas'],
     link: '/visualizations/DigitSumTurtle'
-  },
-  {
-    id: 'TSPAntColony',
-    title: 'TSP 蚁群算法',
-    description: '旅行商问题的蚁群优化：动态可视化信息素演化与最优路径收敛过程，支持参数调节。',
-    image: '/images/tsp-ant-colony.svg',
-    technologies: ['React', 'TypeScript', 'Canvas'],
-    link: '/visualizations/TSPAntColony'
   },
 ];
 

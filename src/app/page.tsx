@@ -1,13 +1,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from './components/Navigation';
-import { games, tools, simulations, visualizations, Project } from './data/projects';
+import { games, tools, simulations, visualizations, algorithms, Project, ProjectCategory } from './data/projects';
+
+const CATEGORY_BASE: Record<ProjectCategory, string> = {
+  GAME: '/games',
+  SIMULATION: '/simulations',
+  ALGORITHM: '/algorithms',
+  VISUALIZATION: '/visualizations',
+  TOOL: '/tools',
+};
 
 // 卡片组件复用
-function ProjectCard({ project, type }: { project: Project; type: 'GAME' | 'TOOL' | 'SIMULATION' | 'VISUALIZATION' }) {
+function ProjectCard({ project, type }: { project: Project; type: ProjectCategory }) {
   return (
     <Link
-      href={project.link ?? (type === 'GAME' ? `/games/${project.id}` : type === 'SIMULATION' ? `/simulations/${project.id}` : type === 'VISUALIZATION' ? `/visualizations/${project.id}` : `/tools/${project.id}`)}
+      href={project.link ?? `${CATEGORY_BASE[type]}/${project.id}`}
       className="group relative block bg-white tech-border tech-border-corner hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-md"
     >
       {/* 装饰性顶部标签 */}
@@ -123,6 +131,24 @@ export default function Home() {
             <div className="flex items-end justify-between mb-8 border-b border-zinc-200 pb-4">
               <h2 className="text-3xl font-bold text-zinc-900 flex items-center gap-3">
                 <span className="text-blue-600 font-mono text-lg">03.</span>
+                ALGORITHMS
+              </h2>
+              <span className="hidden md:block font-mono text-xs text-zinc-400">
+                CLASSIC_ALGORITHM_VISUALIZATIONS
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {algorithms.map((algo) => (
+                <ProjectCard key={algo.id} project={algo} type="ALGORITHM" />
+              ))}
+            </div>
+          </section>
+
+          <section className="mb-24">
+            <div className="flex items-end justify-between mb-8 border-b border-zinc-200 pb-4">
+              <h2 className="text-3xl font-bold text-zinc-900 flex items-center gap-3">
+                <span className="text-blue-600 font-mono text-lg">04.</span>
                 VISUALIZATIONS
               </h2>
               <span className="hidden md:block font-mono text-xs text-zinc-400">
@@ -140,7 +166,7 @@ export default function Home() {
           <section>
             <div className="flex items-end justify-between mb-8 border-b border-zinc-200 pb-4">
               <h2 className="text-3xl font-bold text-zinc-900 flex items-center gap-3">
-                <span className="text-blue-600 font-mono text-lg">04.</span>
+                <span className="text-blue-600 font-mono text-lg">05.</span>
                 TOOLS
               </h2>
               <span className="hidden md:block font-mono text-xs text-zinc-400">

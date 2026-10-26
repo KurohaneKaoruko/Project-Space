@@ -4,10 +4,11 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
   async redirects() {
     return [
-      // simulations -> visualizations（分形/海龟绘图/蚁群已迁移至可视化分类）
+      // simulations / visualizations -> algorithms（蚁群已迁移至算法分类）
       { source: '/simulations/Mandelbrot', destination: '/visualizations/Mandelbrot', permanent: true },
       { source: '/simulations/DigitSumTurtle', destination: '/visualizations/DigitSumTurtle', permanent: true },
-      { source: '/simulations/TSPAntColony', destination: '/visualizations/TSPAntColony', permanent: true },
+      { source: '/simulations/TSPAntColony', destination: '/algorithms/TSPAntColony', permanent: true },
+      { source: '/visualizations/TSPAntColony', destination: '/algorithms/TSPAntColony', permanent: true },
     ];
   },
   webpack: (config, { dev, isServer }) => {

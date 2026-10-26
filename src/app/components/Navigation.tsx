@@ -9,6 +9,7 @@ export default function Navigation({ title }: { title?: string }) {
   const isHome = pathname === '/';
   const isGames = pathname.startsWith('/games');
   const isSimulations = pathname.startsWith('/simulations');
+  const isAlgorithms = pathname.startsWith('/algorithms');
   const isVisualizations = pathname.startsWith('/visualizations');
   const isTools = pathname.startsWith('/tools');
   const [scrolled, setScrolled] = useState(false);
@@ -61,10 +62,13 @@ export default function Navigation({ title }: { title?: string }) {
             <NavLink href="/simulations" active={isSimulations} badge="03">
               SIMULATIONS
             </NavLink>
-            <NavLink href="/visualizations" active={isVisualizations} badge="04">
+            <NavLink href="/algorithms" active={isAlgorithms} badge="04">
+              ALGORITHMS
+            </NavLink>
+            <NavLink href="/visualizations" active={isVisualizations} badge="05">
               VISUALIZATIONS
             </NavLink>
-            <NavLink href="/tools" active={isTools} badge="05">
+            <NavLink href="/tools" active={isTools} badge="06">
               TOOLS
             </NavLink>
           </div>
@@ -102,6 +106,9 @@ export default function Navigation({ title }: { title?: string }) {
             </MobileNavLink>
             <MobileNavLink href="/simulations" active={isSimulations}>
               SIMULATIONS
+            </MobileNavLink>
+            <MobileNavLink href="/algorithms" active={isAlgorithms}>
+              ALGORITHMS
             </MobileNavLink>
             <MobileNavLink href="/visualizations" active={isVisualizations}>
               VISUALIZATIONS
