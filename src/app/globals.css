@@ -220,6 +220,11 @@ body {
 
 @keyframes orbit { to { transform: rotate(360deg) } }
 
+@keyframes boidsWave {
+  0%, 100% { transform: translate(0, 0) }
+  50% { transform: translate(3px, -2.5px) }
+}
+
 @keyframes swing1 { 0%, 100% { transform: rotate(-24deg) } 50% { transform: rotate(24deg) } }
 @keyframes swing2 { 0%, 100% { transform: rotate(14deg) } 50% { transform: rotate(-14deg) } }
 

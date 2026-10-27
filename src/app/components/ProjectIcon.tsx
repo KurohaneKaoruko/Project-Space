@@ -25,7 +25,14 @@ export type ProjectIconId =
   | 'Mandelbrot'
   | 'DigitSumTurtle'
   | 'Collatz'
-  | 'Brainfuck';
+  | 'Brainfuck'
+  | 'NBody'
+  | 'BrownianMotion'
+  | 'Pathfinding'
+  | 'HuffmanTree'
+  | 'Lissajous'
+  | 'FourierSeries'
+  | 'Boids';
 
 /** 长写动画参数：name + duration，可选 delay / timing */
 function anim(name: string, dur: number, delay = 0, timing?: string) {
@@ -447,6 +454,147 @@ function IconCollatz() {
   );
 }
 
+/* ---------------- 新增：SIMULATIONS ---------------- */
+
+function IconNBody() {
+  return (
+    <Base>
+      {/* 中心恒星 + 轨道行星（反向两轨道） */}
+      <circle cx="32" cy="32" r="6" fill="currentColor" />
+      <circle cx="32" cy="32" r="9" fill="currentColor" opacity="0.15" />
+      <g stroke="currentColor" strokeWidth="0.5" opacity="0.2" fill="none">
+        <ellipse cx="32" cy="32" rx="14" ry="20" />
+        <ellipse cx="32" cy="32" rx="22" ry="12" />
+      </g>
+      <g className="icon-motion" style={{ ...anim('orbit', 4), transformOrigin: '32px 32px' }}>
+        <circle cx="32" cy="12" r="2.6" fill="currentColor" />
+      </g>
+      <g className="icon-motion" style={{ ...anim('orbit', 6.5, -2), transformOrigin: '32px 32px' }}>
+        <circle cx="54" cy="32" r="2" fill="currentColor" opacity="0.8" />
+      </g>
+      <g className="icon-motion" style={{ ...anim('orbit', 5, -3.4), transformOrigin: '32px 32px' }}>
+        <circle cx="10" cy="32" r="1.6" fill="currentColor" opacity="0.6" />
+      </g>
+    </Base>
+  );
+}
+
+function IconBrownianMotion() {
+  return (
+    <Base>
+      {/* 随机折线轨迹 + 游走粒子 */}
+      <path
+        d="M10 44 L16 38 L13 32 L20 28 L18 22 L26 24 L28 18 L34 22 L40 18 L38 12 L46 16 L52 12"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+        opacity="0.5"
+        strokeLinejoin="round"
+      />
+      <circle cx="10" cy="44" r="1.8" fill="currentColor" opacity="0.5" />
+      <g className="icon-motion" style={anim('cellBreathe', 1.6)}>
+        <circle cx="52" cy="12" r="3.4" fill="currentColor" />
+      </g>
+      <g className="icon-motion" style={{ ...anim('cellBreathe', 2.2, -0.8) }}>
+        <circle cx="30" cy="40" r="2.4" fill="currentColor" opacity="0.6" />
+        <path d="M24 34 L36 46 M36 34 L24 46" stroke="currentColor" strokeWidth="1" opacity="0.5" />
+      </g>
+    </Base>
+  );
+}
+
+/* ---------------- 新增：ALGORITHMS ---------------- */
+
+function IconPathfinding() {
+  return (
+    <Base>
+      {/* 网格 + 墙 + 路径点 */}
+      <g stroke="currentColor" strokeWidth="0.5" opacity="0.2">
+        <path d="M8 22H56 M8 36H56 M22 8V56 M36 8V56" />
+      </g>
+      <rect x="22" y="8" width="14" height="28" fill="currentColor" opacity="0.55" />
+      <rect x="8" y="36" width="14" height="6" fill="currentColor" opacity="0.55" />
+      <rect x="36" y="36" width="20" height="6" fill="currentColor" opacity="0.55" />
+      {[
+        { x: 15, y: 15 }, { x: 29, y: 43 }, { x: 43, y: 15 }, { x: 49, y: 29 },
+      ].map((c, i) => (
+        <circle key={i} className="icon-motion" style={anim('barScan', 1.4, i * 0.3)} cx={c.x} cy={c.y} r="3" fill="currentColor" />
+      ))}
+      <circle cx="13" cy="49" r="4" fill="currentColor" />
+      <circle cx="51" cy="13" r="4" fill="currentColor" opacity="0.7" />
+    </Base>
+  );
+}
+
+function IconHuffmanTree() {
+  return (
+    <Base>
+      {/* 二叉树：根 → 两内部 → 四叶子，叶子码字闪烁 */}
+      <g stroke="currentColor" strokeWidth="1.2" opacity="0.7">
+        <path d="M32 14V22 M32 22L18 34 M32 22L46 34 M18 34L11 46 M18 34L25 46 M46 34L39 46 M46 34L53 46" fill="none" />
+      </g>
+      <circle cx="32" cy="14" r="5" fill="currentColor" />
+      <circle cx="18" cy="34" r="4" fill="currentColor" opacity="0.7" />
+      <circle cx="46" cy="34" r="4" fill="currentColor" opacity="0.7" />
+      {[
+        { x: 11, y: 46 }, { x: 25, y: 46 }, { x: 39, y: 46 }, { x: 53, y: 46 },
+      ].map((c, i) => (
+        <circle key={i} className="icon-motion" style={anim('keyPulse', 1.8, i * 0.4)} cx={c.x} cy={c.y} r="3.4" fill="currentColor" />
+      ))}
+    </Base>
+  );
+}
+
+/* ---------------- 新增：VISUALIZATIONS ---------------- */
+
+function IconLissajous() {
+  return (
+    <Base>
+      {/* 3:2 利萨加曲线 + 光点沿线运行 */}
+      <path
+        d="M32 10 C42 14, 50 22, 50 32 C50 42, 42 50, 32 50 C26 50, 22 46, 22 40 C22 34, 26 30, 32 30 C40 30, 46 24, 46 18"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        fill="none"
+        opacity="0.75"
+      />
+      <g className="icon-motion" style={anim('antWalk', 3.2)}>
+        <circle cx="46" cy="18" r="3" fill="currentColor" />
+      </g>
+      <g className="icon-motion" style={{ ...anim('cellBreathe', 2, -1) }}>
+        <circle cx="32" cy="10" r="2" fill="currentColor" opacity="0.6" />
+        <circle cx="22" cy="40" r="2" fill="currentColor" opacity="0.6" />
+      </g>
+    </Base>
+  );
+}
+
+function IconFourierSeries() {
+  return (
+    <Base>
+      {/* 旋转圆叠加 → 合成波 */}
+      <circle cx="18" cy="32" r="12" stroke="currentColor" strokeWidth="0.8" opacity="0.35" fill="none" />
+      <circle cx="30" cy="32" r="6" stroke="currentColor" strokeWidth="0.8" opacity="0.35" fill="none" />
+      <g className="icon-motion" style={{ ...anim('orbit', 5), transformOrigin: '18px 32px' }}>
+        <line x1="18" y1="32" x2="30" y2="32" stroke="currentColor" strokeWidth="1.2" />
+        <circle cx="30" cy="32" r="2" fill="currentColor" />
+      </g>
+      <g className="icon-motion" style={{ ...anim('orbit', 2.2, -1), transformOrigin: '30px 32px' }}>
+        <line x1="30" y1="32" x2="36" y2="32" stroke="currentColor" strokeWidth="1" opacity="0.8" />
+        <circle cx="36" cy="32" r="1.6" fill="currentColor" />
+      </g>
+      <path
+        d="M40 32 C44 20, 48 20, 52 32 C56 44, 60 44, 64 32"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        fill="none"
+        opacity="0.85"
+        transform="translate(-4 0)"
+      />
+    </Base>
+  );
+}
+
 const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Game2048: Icon2048,
   Snake: IconSnake,
@@ -466,7 +614,37 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   DigitSumTurtle: IconDigitSumTurtle,
   Collatz: IconCollatz,
   Brainfuck: IconBrainfuck,
+  NBody: IconNBody,
+  BrownianMotion: IconBrownianMotion,
+  Pathfinding: IconPathfinding,
+  HuffmanTree: IconHuffmanTree,
+  Lissajous: IconLissajous,
+  FourierSeries: IconFourierSeries,
+  Boids: IconBoids,
 };
+
+/** 鸟群：三只小鸟呈编队飞行，队形轻微摆动 */
+function IconBoids() {
+  const bird = (x: number, y: number, s: number, o: number) => (
+    <g transform={`translate(${x} ${y}) scale(${s})`} opacity={o}>
+      <path d="M5 0 L-4 3.2 L-2 0 L-4 -3.2 Z" fill="currentColor" />
+    </g>
+  );
+  return (
+    <Base>
+      {/* 飞行轨迹虚线 */}
+      <path d="M10 42 C20 34, 30 40, 42 30" stroke="currentColor" strokeWidth="0.8" opacity="0.25" fill="none" strokeDasharray="2 3" />
+      <g className="icon-motion" style={anim('boidsWave', 2.6, 0, 'ease-in-out')}>
+        {bird(30, 26, 1.25, 1)}
+        {bird(20, 33, 1, 0.8)}
+        {bird(22, 20, 1, 0.8)}
+      </g>
+      <g className="icon-motion" style={anim('boidsWave', 2.6, -0.6, 'ease-in-out')}>
+        {bird(42, 31, 0.85, 0.6)}
+      </g>
+    </Base>
+  );
+}
 
 export default function ProjectIcon({ id, className }: { id: string; className?: string }) {
   const Icon = ICONS[id as ProjectIconId];

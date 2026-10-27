@@ -1,0 +1,99 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="30%" cy="40%" r="80%">
+      <stop offset="0%" stop-color="#0c1220"/>
+      <stop offset="100%" stop-color="#070b14"/>
+    </radialGradient>
+    <!-- 飞行轨迹 -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#22d3ee"/>
+    </marker>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+
+  <!-- 残影轨迹带（鸟群整体流向右上） -->
+  <g fill="none" stroke-linecap="round" opacity="0.35">
+    <path d="M60 470 C220 420, 380 380, 560 300" stroke="#155e75" stroke-width="26"/>
+    <path d="M120 520 C300 470, 460 430, 640 350" stroke="#0e7490" stroke-width="22"/>
+    <path d="M40 380 C200 340, 340 320, 480 260" stroke="#164e63" stroke-width="24"/>
+  </g>
+
+  <!-- 主鸟群：箭头形小鸟，朝向飞行方向 -->
+  <g fill="#22d3ee">
+    <!-- 前锋 -->
+    <g transform="translate(560,300) rotate(-32)">
+      <path d="M13 0 L-8 7 L-4 0 L-8 -7 Z"/>
+    </g>
+    <g transform="translate(590,270) rotate(-38)">
+      <path d="M13 0 L-8 7 L-4 0 L-8 -7 Z" opacity="0.9"/>
+    </g>
+    <g transform="translate(575,335) rotate(-28)">
+      <path d="M13 0 L-8 7 L-4 0 L-8 -7 Z" opacity="0.9"/>
+    </g>
+    <!-- 中军 -->
+    <g transform="translate(490,340) rotate(-25)">
+      <path d="M11 0 L-7 6 L-3.5 0 L-7 -6 Z" opacity="0.85"/>
+    </g>
+    <g transform="translate(510,255) rotate(-40)">
+      <path d="M11 0 L-7 6 L-3.5 0 L-7 -6 Z" opacity="0.85"/>
+    </g>
+    <g transform="translate(445,300) rotate(-30)">
+      <path d="M11 0 L-7 6 L-3.5 0 L-7 -6 Z" opacity="0.8"/>
+    </g>
+    <g transform="translate(470,375) rotate(-18)">
+      <path d="M11 0 L-7 6 L-3.5 0 L-7 -6 Z" opacity="0.8"/>
+    </g>
+    <!-- 后卫 -->
+    <g transform="translate(400,255) rotate(-42)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.7"/>
+    </g>
+    <g transform="translate(385,340) rotate(-22)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.7"/>
+    </g>
+    <g transform="translate(415,405) rotate(-12)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.65"/>
+    </g>
+    <g transform="translate(340,300) rotate(-35)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.6"/>
+    </g>
+    <g transform="translate(320,380) rotate(-15)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.55"/>
+    </g>
+  </g>
+
+  <!-- 第二群（暖色，远处，反方向） -->
+  <g fill="#f59e0b" opacity="0.55">
+    <g transform="translate(180,140) rotate(150)">
+      <path d="M10 0 L-6.5 5.5 L-3 0 L-6.5 -5.5 Z"/>
+    </g>
+    <g transform="translate(230,120) rotate(142)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.85"/>
+    </g>
+    <g transform="translate(215,175) rotate(158)">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z" opacity="0.8"/>
+    </g>
+    <g transform="translate(140,175) rotate(165)">
+      <path d="M8 0 L-5.5 4.5 L-2.5 0 L-5.5 -4.5 Z" opacity="0.7"/>
+    </g>
+  </g>
+
+  <!-- 指针驱赶波纹（黄色圆点 + 扩散圈） -->
+  <circle cx="640" cy="480" r="5" fill="#facc15"/>
+  <circle cx="640" cy="480" r="52" fill="none" stroke="#facc15" stroke-width="2" opacity="0.45"/>
+  <circle cx="640" cy="480" r="86" fill="none" stroke="#facc15" stroke-width="1.2" opacity="0.2"/>
+  <!-- 被驱散的两只（往左上逃） -->
+  <g fill="#facc15">
+    <g transform="translate(560,430) rotate(-125)" opacity="0.8">
+      <path d="M10 0 L-6.5 5.5 L-3 0 L-6.5 -5.5 Z"/>
+    </g>
+    <g transform="translate(590,415) rotate(-108)" opacity="0.7">
+      <path d="M9 0 L-6 5 L-3 0 L-6 -5 Z"/>
+    </g>
+  </g>
+
+  <!-- 捕食者（红色大三角 + 警戒圈，左下角潜伏） -->
+  <circle cx="120" cy="520" r="100" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.18"/>
+  <g transform="translate(120,520) rotate(-55)">
+    <path d="M26 0 L-16 12 L-9 0 L-16 -12 Z" fill="#ef4444"/>
+  </g>
+</svg>

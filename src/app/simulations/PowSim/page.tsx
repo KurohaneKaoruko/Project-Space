@@ -41,7 +41,7 @@ export default function PowSimPage() {
   return (
     <div className="h-screen overflow-hidden bg-zinc-50">
       <Navigation title="POW_SIMULATOR" />
-      <div className="h-full flex flex-col max-w-[1800px] mx-auto px-4 sm:px-6 pt-[70px] pb-4 gap-2.5">
+      <div className="h-full flex flex-col max-w-[1800px] mx-auto px-4 sm:px-6 pt-3 pb-4 gap-2.5">
         {/* 模式切换 */}
         <div className={`${PANEL} shrink-0 p-1.5 flex gap-1 w-fit`}>
           {(

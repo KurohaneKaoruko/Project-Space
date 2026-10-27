@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#fafafa"/>
+  <!-- 树：根 → 内部 → 叶子 -->
+  <g stroke="#d4d4d8" stroke-width="1.5">
+    <line x1="200" y1="90" x2="120" y2="150"/>
+    <line x1="200" y1="90" x2="280" y2="150"/>
+    <line x1="120" y1="150" x2="70" y2="210"/>
+    <line x1="120" y1="150" x2="170" y2="210"/>
+    <line x1="280" y1="150" x2="240" y2="210"/>
+    <line x1="280" y1="150" x2="330" y2="210"/>
+  </g>
+  <g font-family="monospace" font-size="11" fill="#a1a1aa" text-anchor="middle">
+    <text x="152" y="116">0</text>
+    <text x="248" y="116">1</text>
+    <text x="88" y="176">0</text>
+    <text x="152" y="176">1</text>
+    <text x="252" y="176">0</text>
+    <text x="312" y="176">1</text>
+  </g>
+  <!-- 根（内部节点） -->
+  <circle cx="200" cy="90" r="17" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="200" y="94" text-anchor="middle" font-family="monospace" font-size="10" fill="#71717a">13</text>
+  <!-- 内部节点 -->
+  <circle cx="120" cy="150" r="14" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="120" y="154" text-anchor="middle" font-family="monospace" font-size="9" fill="#71717a">7</text>
+  <circle cx="280" cy="150" r="14" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+  <text x="280" y="154" text-anchor="middle" font-family="monospace" font-size="9" fill="#71717a">6</text>
+  <!-- 叶子 -->
+  <g font-family="monospace" font-weight="bold" text-anchor="middle">
+    <circle cx="70" cy="210" r="16" fill="#2563eb"/>
+    <text x="70" y="214" font-size="11" fill="#ffffff">a</text>
+    <circle cx="170" cy="210" r="16" fill="#2563eb"/>
+    <text x="170" y="214" font-size="11" fill="#ffffff">b</text>
+    <circle cx="240" cy="210" r="16" fill="#2563eb"/>
+    <text x="240" y="214" font-size="11" fill="#ffffff">c</text>
+    <circle cx="330" cy="210" r="16" fill="#2563eb"/>
+    <text x="330" y="214" font-size="11" fill="#ffffff">d</text>
+  </g>
+  <!-- 码字标注 -->
+  <g font-family="monospace" font-size="9" fill="#52525b" text-anchor="middle">
+    <text x="70" y="242">00</text>
+    <text x="170" y="242">01</text>
+    <text x="240" y="242">10</text>
+    <text x="330" y="242">11</text>
+  </g>
+  <text x="200" y="40" text-anchor="middle" font-family="monospace" font-size="20" font-weight="bold" fill="#18181b">HUFFMAN TREE</text>
+  <text x="200" y="282" text-anchor="middle" font-family="monospace" font-size="11" fill="#71717a">OPTIMAL PREFIX CODE  ·  GREEDY MERGE</text>
+</svg>

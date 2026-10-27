@@ -426,7 +426,7 @@ export default function BrainfuckToolPage() {
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`, backgroundSize: '48px 48px' }} />
       <Navigation title="BRAINFUCK" />
 
-      <div className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="pt-16 pb-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto w-full max-w-[1400px] space-y-8">
           <header className="flex flex-col gap-3">
             <div className="flex items-center gap-3">

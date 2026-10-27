@@ -1018,7 +1018,7 @@ export default function DanmakuDodgePage() {
     <main className="min-h-screen">
       <Navigation title="DANMAKU_DODGE" />
 
-      <div className="pt-20 pb-4 px-4 sm:px-6 lg:px-8">
+      <div className="pt-16 pb-4 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="flex flex-col lg:flex-row lg:items-start gap-6">
             <section className="lg:flex-1 bg-white tech-border border border-zinc-200 p-4 lg:p-6 relative">

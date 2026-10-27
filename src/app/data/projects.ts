@@ -101,6 +101,46 @@ export const simulations: Project[] = [
     technologies: ['React', 'TypeScript'],
     link: '/simulations/PowSim'
   },
+  {
+    id: 'NBody',
+    title: 'N 体引力',
+    description: '牛顿引力 N 体模拟：太阳系、双星、星系碰撞与随机星团等预设，拖拽发射新天体，可调引力常数、时间流速、轨迹持续与软化长度，支持碰撞并合。',
+    image: '/images/n-body.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/simulations/NBody'
+  },
+  {
+    id: 'BrownianMotion',
+    title: '布朗运动',
+    description: '二维随机游走粒子群：方向持久 + 高斯扰动的布朗模型，可调温度、扰动与轨迹长度，实时统计均方位移 MSD 并绘制双对数扩散曲线。',
+    image: '/images/brownian-motion.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/simulations/BrownianMotion'
+  },
+  {
+    id: 'Boids',
+    title: '鸟群算法',
+    description: 'Reynolds Boids 群体智能模拟：分离/对齐/聚合三条局部规则涌现鸟群行为，支持捕食者追击逃逸、指针驱赶、环绕/反弹边界与轨迹残影，可实时调权重观察群形变化。',
+    image: '/images/boids.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/simulations/Boids'
+  },
+  {
+    id: 'Lissajous',
+    title: '利萨加曲线',
+    description: '互垂直正弦叠加 x=sin(at+δ)、y=sin(bt)：频率比与相位差实时可调，残影拖尾与投影引导点，内置 1:1、3:2、5:4 等经典频率比预设。',
+    image: '/images/lissajous.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/visualizations/Lissajous'
+  },
+  {
+    id: 'FourierSeries',
+    title: '傅里叶级数',
+    description: '旋转圆叠加合成方波/锯齿波/三角波：谐波组数实时可调，展示级数系数 bₙ 与吉布斯现象，虚线对照理想目标波形。',
+    image: '/images/fourier-series.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/visualizations/FourierSeries'
+  },
 ];
 
 export const algorithms: Project[] = [
@@ -127,6 +167,22 @@ export const algorithms: Project[] = [
     image: '/images/crypto-visualizer.svg',
     technologies: ['React', 'TypeScript'],
     link: '/algorithms/CryptoVisualizer'
+  },
+  {
+    id: 'Pathfinding',
+    title: '寻路可视化',
+    description: 'A* / Dijkstra / BFS / Greedy BFS 四算法网格寻路：拖拽绘制墙体、移动起终点，可调启发权重 ε 观察最优性权衡，支持随机迷宫与四算法访问范围对比。',
+    image: '/images/pathfinding.svg',
+    technologies: ['React', 'TypeScript', 'Canvas'],
+    link: '/algorithms/Pathfinding'
+  },
+  {
+    id: 'HuffmanTree',
+    title: '哈夫曼编码树',
+    description: '输入任意文本实时构建哈夫曼树：频率统计、贪心建树、前缀码分配、压缩率对照定长编码，点击树叶高亮编码路径。',
+    image: '/images/huffman-tree.svg',
+    technologies: ['React', 'TypeScript', 'SVG'],
+    link: '/algorithms/HuffmanTree'
   },
 ];
 
