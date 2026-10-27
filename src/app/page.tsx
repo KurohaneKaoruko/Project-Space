@@ -24,7 +24,7 @@ function ProjectSection({ no, title, subtitle, projects, type, startIndex = 0 }:
         <span className="hidden font-mono text-xs text-zinc-400 md:block">{subtitle}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7">
+      <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 2xl:grid-cols-9">
         {projects.map((project, i) => (
           <ProjectGridCard key={project.id} project={project} type={type} index={startIndex + i} />
         ))}
@@ -39,8 +39,8 @@ export default function Home() {
       <Navigation />
       <StaggerCleanup />
 
-      <div className="flex min-h-screen flex-col justify-center px-4 pb-12 pt-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <div className="flex min-h-screen flex-col px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[1700px]">
           {/* 首页头部 */}
           <header className="relative mb-12 border-l-2 border-blue-500/50 pl-6 md:mb-14">
             <h1 className="mb-3 text-4xl font-black tracking-tighter text-zinc-900 md:text-6xl">

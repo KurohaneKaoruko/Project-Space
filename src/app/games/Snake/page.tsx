@@ -117,7 +117,7 @@ export default function SnakePage() {
       
       <Navigation title="SNAKE_AI" />
 
-      <div className="flex min-h-screen flex-col justify-center pb-10 px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="flex min-h-screen flex-col pb-10 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto w-full max-w-[1600px]">
           <div className="grid grid-cols-1 xl:grid-cols-[320px_minmax(520px,1fr)_320px] gap-6 items-stretch">
             

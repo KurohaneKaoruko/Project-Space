@@ -23,8 +23,8 @@ export default function CategoryPage({
     <main className="min-h-screen">
       <Navigation />
 
-      <div className="flex min-h-screen flex-col justify-center px-4 pb-12 pt-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+      <div className="flex min-h-screen flex-col px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[1500px]">
           <div className="mb-8 border-l-2 border-blue-500/50 pl-6">
             <h1 className="mb-2 flex items-center gap-3 text-3xl font-bold text-zinc-900">
               <span className="font-mono text-base text-blue-600">{no}.</span>
@@ -33,7 +33,7 @@ export default function CategoryPage({
             <p className="font-mono text-sm text-zinc-500">{'/// ' + subtitle}</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7">
+          <div className="grid grid-cols-3 gap-x-2 gap-y-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 2xl:grid-cols-9">
             {projects.map((project, index) => (
               <Link
                 key={project.id}
