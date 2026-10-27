@@ -48,6 +48,56 @@ function matrix3d(rot: readonly number[]): string {
   return `matrix3d(${rot[0]}, ${rot[3]}, ${rot[6]}, 0, ${rot[1]}, ${rot[4]}, ${rot[7]}, 0, ${rot[2]}, ${rot[5]}, ${rot[8]}, 0, 0, 0, 0, 1)`;
 }
 
+// ---------------------------------------------------------------------------
+// 视角旋转（四元数 trackball）：欧拉角 rotateX·rotateY 在 |x|→90° 时出现万向锁
+// （水平拖拽旋转轴退化、方向反转），改为屏幕空间四元数增量旋转后任意姿态一致
+// ---------------------------------------------------------------------------
+
+type Quat = { x: number; y: number; z: number; w: number };
+
+function quatAxisAngle(axis: 'X' | 'Y' | 'Z', deg: number): Quat {
+  const half = (deg * Math.PI) / 360;
+  const s = Math.sin(half);
+  const c = Math.cos(half);
+  if (axis === 'X') return { x: s, y: 0, z: 0, w: c };
+  if (axis === 'Y') return { x: 0, y: s, z: 0, w: c };
+  return { x: 0, y: 0, z: s, w: c };
+}
+
+function quatMul(a: Quat, b: Quat): Quat {
+  return {
+    w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+    x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+    y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+    z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+  };
+}
+
+function quatNormalize(q: Quat): Quat {
+  const len = Math.hypot(q.x, q.y, q.z, q.w) || 1;
+  return { x: q.x / len, y: q.y / len, z: q.z / len, w: q.w / len };
+}
+
+/** 初始视角：俯视 24°、右偏 34°（与原欧拉角 rotateX(-24) rotateY(-34) 一致） */
+const INITIAL_VIEW: Quat = quatNormalize(quatMul(quatAxisAngle('X', -24), quatAxisAngle('Y', -34)));
+
+function quatToMatrix3d(q: Quat): string {
+  const { x, y, z, w } = q;
+  const m = [
+    1 - 2 * (y * y + z * z),
+    2 * (x * y - z * w),
+    2 * (x * z + y * w),
+    2 * (x * y + z * w),
+    1 - 2 * (x * x + z * z),
+    2 * (y * z - x * w),
+    2 * (x * z - y * w),
+    2 * (y * z + x * w),
+    1 - 2 * (x * x + y * y),
+  ];
+  // CSS matrix3d 列主序
+  return `matrix3d(${m[0]}, ${m[3]}, ${m[6]}, 0, ${m[1]}, ${m[4]}, ${m[7]}, 0, ${m[2]}, ${m[5]}, ${m[8]}, 0, 0, 0, 0, 1)`;
+}
+
 interface Cube3DProps {
   cubies: Cubie[];
   anim: { move: Move; seq: number } | null;
@@ -55,20 +105,20 @@ interface Cube3DProps {
 }
 
 export default function Cube3D({ cubies, anim, duration }: Cube3DProps) {
-  const [view, setView] = useState({ x: -24, y: -34 });
+  const [view, setView] = useState<Quat>(INITIAL_VIEW);
   const [dragging, setDragging] = useState(false);
-  const dragRef = useRef<{ x: number; y: number; vx: number; vy: number } | null>(null);
+  const dragRef = useRef<{ x: number; y: number; view: Quat } | null>(null);
   const layerRef = useRef<Map<number, HTMLDivElement>>(new Map());
   const cubiesRef = useRef(cubies);
   cubiesRef.current = cubies;
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
-      dragRef.current = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+      dragRef.current = { x: e.clientX, y: e.clientY, view };
       setDragging(true);
       (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     },
-    [view.x, view.y],
+    [view],
   );
 
   useEffect(() => {
@@ -76,10 +126,11 @@ export default function Cube3D({ cubies, anim, duration }: Cube3DProps) {
     const onMove = (e: PointerEvent) => {
       const d = dragRef.current;
       if (!d) return;
-      setView({
-        x: Math.max(-82, Math.min(82, d.vx - (e.clientY - d.y) * 0.45)),
-        y: d.vy + (e.clientX - d.x) * 0.45,
-      });
+      // trackball：把屏幕位移换算为绕屏幕 X/Y 轴的四元数增量，左乘到拖拽起点姿态。
+      // 任意视角下手势方向都与手一致，无万向锁、无两极反向。
+      const dx = quatAxisAngle('X', -(e.clientY - d.y) * 0.45);
+      const dy = quatAxisAngle('Y', (e.clientX - d.x) * 0.45);
+      setView(quatNormalize(quatMul(quatMul(dx, dy), d.view)));
     };
     const onUp = () => setDragging(false);
     window.addEventListener('pointermove', onMove);
@@ -121,9 +172,9 @@ export default function Cube3D({ cubies, anim, duration }: Cube3DProps) {
 
   return (
     <div className="relative w-full h-[350px] xl:h-[400px] flex items-center justify-center select-none scale-[0.84] xl:scale-100 origin-center">
-      {/* 地面投影 */}
+      {/* 地面投影（z-0：绘制在魔方下方；positioned 元素默认会盖住 static 的 3D 容器） */}
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 rounded-full"
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 rounded-full"
         style={{
           width: 400,
           height: 400,
@@ -135,7 +186,7 @@ export default function Cube3D({ cubies, anim, duration }: Cube3DProps) {
       />
 
       <div
-        className={dragging ? 'cursor-grabbing' : 'cursor-grab'}
+        className={`relative z-10 ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         style={{ perspective: 1600, perspectiveOrigin: '50% 44%', touchAction: 'none' }}
         onPointerDown={onPointerDown}
       >
@@ -145,7 +196,7 @@ export default function Cube3D({ cubies, anim, duration }: Cube3DProps) {
             height: 0,
             position: 'relative',
             transformStyle: 'preserve-3d',
-            transform: `rotateX(${view.x}deg) rotateY(${view.y}deg)`,
+            transform: quatToMatrix3d(view),
             transition: dragging ? 'none' : 'transform 500ms cubic-bezier(.2,.8,.2,1)',
           }}
         >
