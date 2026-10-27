@@ -64,6 +64,57 @@ export function solveWith(id: SolverId, cubies: Cubie[]): SolveResult {
   return { ok: true, phases, moves: phases.flatMap((p) => p.moves) };
 }
 
+/** 各方法的还原流程预览（无解时展示；与各求解器 makePhase 的阶段命名一致） */
+export const SOLVER_FLOW: Record<SolverId, { name: string; hint: string }[]> = {
+  lbl: [
+    { name: '底面十字', hint: '把 4 个底面棱块归位，形成十字' },
+    { name: '底角归位', hint: '完成整个底层' },
+    { name: '中层棱块', hint: '插入 4 个中层棱块，前两层完成' },
+    { name: '顶面十字', hint: '让顶层 4 个棱块的顶色朝上' },
+    { name: '顶面定向', hint: '让顶层 4 个角块的顶色朝上' },
+    { name: '顶层角块', hint: '把 4 个顶角转到正确位置' },
+    { name: '顶层棱块', hint: '调整顶层棱块，完成还原' },
+  ],
+  cfop: [
+    { name: '底面十字', hint: '查找表一次成型底层十字' },
+    { name: 'F2L', hint: '四槽角棱成对插入，前两层完成' },
+    { name: '顶面十字', hint: '顶层棱定向' },
+    { name: '顶面定向', hint: '顶层角定向' },
+    { name: '顶层角块', hint: '角块循环归位' },
+    { name: '顶层棱块', hint: '棱块循环归位，完成还原' },
+  ],
+  petrus: [
+    { name: '边定向', hint: '全部棱转为 good 状态' },
+    { name: '2×2×2 块', hint: '后左下角四块成块' },
+    { name: '底棱 DF', hint: '保持 2×2×2，EO 安全直落' },
+    { name: '扩展 2×2×3', hint: 'FL 棱 + DLF 角逐件归位' },
+    { name: '底棱 DR', hint: '保持左块与 EO，R 面直落' },
+    { name: '右侧 F2L', hint: '角+棱成对插入两槽' },
+    { name: '末层', hint: '顶角定向 / 排列 + 顶棱排列' },
+  ],
+  zz: [
+    { name: 'EO-Line', hint: '棱定向 + DF/DB 两棱归位' },
+    { name: '左块 1×2×3', hint: '左侧五块逐件成块（EO 保持）' },
+    { name: '右块 1×2×3', hint: '<R,U> 内构建，构造上不碰左块' },
+    { name: '顶面定向', hint: 'EO 已好，跳过顶面十字直接角定向' },
+    { name: '顶层角块', hint: '角块循环归位' },
+    { name: '顶层棱块', hint: '棱块循环归位，完成还原' },
+  ],
+  roux: [
+    { name: 'EO-Line', hint: '棱定向 + 底线两棱归位' },
+    { name: '左块 1×2×3', hint: '左侧五块成块（EO 保持）' },
+    { name: '右块 1×2×3', hint: '右侧五块成块' },
+    { name: 'CMLL · 定向', hint: '顶角定向（双块保持）' },
+    { name: 'CMLL · 排列', hint: '顶角循环归位' },
+    { name: 'EPLL', hint: '顶棱循环归位，完成还原' },
+  ],
+  opt: [
+    { name: '分层还原', hint: '先取得 LBL 完整解' },
+    { name: '窗口最短化', hint: '滑动窗口内 IDDFS 搜更短序列' },
+    { name: '输出', hint: '明显短于 LBL 的等效解' },
+  ],
+};
+
 /**
  * 后台预热：LBL 十字表（全部方法受益）+ EOLine 表（ZZ/Roux/Petrus）。
  * 在页面空闲时调用，避免首次求解卡顿。

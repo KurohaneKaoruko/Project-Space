@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
-import { getSolverMeta, SOLVER_LIST, type SolverId } from '../function/solvers';
+import { getSolverMeta, SOLVER_FLOW, SOLVER_LIST, type SolverId } from '../function/solvers';
 import { PHASE_META, type SolveResult } from '../function/solver';
 
 const SPEEDS = [
@@ -31,6 +31,52 @@ interface Props {
   onSkip: () => void;
   onClear: () => void;
 }
+
+/** 各方法的算法说明（底部介绍条） */
+const ALGO_NOTE: Record<SolverId, React.ReactNode> = {
+  lbl: (
+    <>
+      分层还原（LBL）：十字<span className="font-mono text-blue-700">全状态查表</span>（最优解），
+      前两层<span className="font-mono text-blue-700">按块 BFS</span> 组合公式，
+      顶层以 OLL / PLL 为宏动作在抽象状态空间搜索。
+    </>
+  ),
+  cfop: (
+    <>
+      速拧 CFOP：十字<span className="font-mono text-blue-700">查表直达</span>，
+      F2L 由<span className="font-mono text-blue-700">通用双槽引擎</span>成对插入（踢出重排 + 完备搜索兜底），
+      末层 4-look 公式化完成。
+    </>
+  ),
+  petrus: (
+    <>
+      块构建 Petrus：<span className="font-mono text-blue-700">边定向</span>先行，
+      2×2×2 → 2×2×3 <span className="font-mono text-blue-700">成块推进</span>，
+      底层棱归位后 F2L 收尾——步数短但阶段多。
+    </>
+  ),
+  zz: (
+    <>
+      ZZ：<span className="font-mono text-blue-700">EO-Line</span> 一次完成棱定向与底线，
+      左块逐件插入、右块 <span className="font-mono text-blue-700">&lt;R,U&gt;</span> 纯搜索构建，
+      末层因 EO 已好直接从顶角定向开始。
+    </>
+  ),
+  roux: (
+    <>
+      Roux：双 <span className="font-mono text-blue-700">1×2×3 块</span> + CMLL，
+      原版 LSE 依赖 M 层转动，本引擎以 <span className="font-mono text-blue-700">EO-Line 变体</span>等价实现，
+      步数最少的方法之一。
+    </>
+  ),
+  opt: (
+    <>
+      近似最短：先取 <span className="font-mono text-blue-700">LBL 完整解</span>，
+      再以<span className="font-mono text-blue-700">滑动窗口 IDDFS</span> 逐段重搜更短子序列，
+      保证不长于原解、通常明显更短。
+    </>
+  ),
+};
 
 export default function SolverPanel({
   solution,
@@ -251,9 +297,9 @@ export default function SolverPanel({
             </div>
           ) : (
             <div className="space-y-1">
-              {PHASE_META.filter((m) => m.key !== 'align').map((meta, i) => (
+              {SOLVER_FLOW[solverId].map((meta, i) => (
                 <div
-                  key={meta.key}
+                  key={`${solverId}-${meta.name}`}
                   className="flex items-center gap-2 rounded border border-zinc-100 bg-zinc-50/40 px-2 py-1"
                 >
                   <span className="text-[9px] font-mono font-bold text-zinc-300 w-4 shrink-0">
@@ -329,9 +375,7 @@ export default function SolverPanel({
 
       <div className="text-[10px] text-zinc-500 leading-relaxed bg-blue-50/40 px-3 py-2 rounded-md border border-blue-100/60 shrink-0">
         <span className="font-bold text-blue-900/70">算法 · </span>
-        分层还原（LBL）：十字<span className="font-mono text-blue-700">全状态查表</span>（最优解），
-        前两层<span className="font-mono text-blue-700">按块 BFS</span> 组合公式，
-        顶层以 OLL / PLL 为宏动作在抽象状态空间搜索。
+        {ALGO_NOTE[solverId]}
       </div>
     </section>
   );
