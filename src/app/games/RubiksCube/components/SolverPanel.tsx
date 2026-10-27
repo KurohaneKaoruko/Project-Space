@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
+import { getSolverMeta, SOLVER_LIST, type SolverId } from '../function/solvers';
 import { PHASE_META, type SolveResult } from '../function/solver';
 
 const SPEEDS = [
@@ -19,6 +20,8 @@ interface Props {
   speed: number;
   solved: boolean;
   busy: boolean;
+  solverId: SolverId;
+  onSolver: (id: SolverId) => void;
   onSpeed: (ms: number) => void;
   onSolve: () => void;
   onPause: () => void;
@@ -38,6 +41,8 @@ export default function SolverPanel({
   speed,
   solved,
   busy,
+  solverId,
+  onSolver,
   onSpeed,
   onSolve,
   onPause,
@@ -93,8 +98,34 @@ export default function SolverPanel({
           <div className="text-sm font-bold text-zinc-800 tracking-wide">AI 求解器</div>
         </div>
         <div className="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-mono font-bold rounded">
-          LBL · 7 STAGE
+          {getSolverMeta(solverId).en}
         </div>
+      </div>
+
+      {/* 求解法选择（固定） */}
+      <div className="shrink-0">
+        <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1.5">
+          求解方法
+        </div>
+        <div className="grid grid-cols-3 gap-1">
+          {SOLVER_LIST.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              title={`${s.name} — ${s.hint}`}
+              onClick={() => onSolver(s.id)}
+              disabled={computing || busy}
+              className={`px-1 py-1.5 text-[10px] font-mono font-bold rounded border transition-all active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed ${
+                solverId === s.id
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-sm shadow-blue-600/30'
+                  : 'bg-white text-zinc-500 border-zinc-200 hover:border-zinc-300 hover:text-zinc-800'
+              }`}
+            >
+              {s.en}
+            </button>
+          ))}
+        </div>
+        <p className="mt-1.5 text-[9px] leading-relaxed text-zinc-400">{getSolverMeta(solverId).hint}</p>
       </div>
 
       {/* 状态（固定） */}

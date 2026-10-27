@@ -228,7 +228,7 @@ export function getCrossTableSize(): number {
   return crossTableCache ? crossTableCache.dist.length : 0;
 }
 
-function solveCross(cubies: Cubie[]): Move[] | null {
+export function solveCross(cubies: Cubie[]): Move[] | null {
   const table = crossTableCache ?? buildCrossTable();
   const codes = CROSS_PIECES.map((colors) => edgeCodeOf(findPiece(cubies, colors)));
   let idx = codes[0] * 13824 + codes[1] * 576 + codes[2] * 24 + codes[3];

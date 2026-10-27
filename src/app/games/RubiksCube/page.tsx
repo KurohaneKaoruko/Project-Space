@@ -7,12 +7,14 @@ import Cube3D from './components/Cube3D';
 import SolverPanel from './components/SolverPanel';
 import { invertMove, type Move } from './function/cubeEngine';
 import { solveCube, warmUpSolver, type SolveResult } from './function/solver';
+import { solveWith, warmUpSolvers, type SolverId } from './function/solvers';
 import { useRubiksCube } from './function/useRubiksCube';
 
 export default function RubiksCubePage() {
   const cube = useRubiksCube(110);
   const [speed, setSpeed] = useState(110);
   const [scrambleLen, setScrambleLen] = useState(25);
+  const [solverId, setSolverId] = useState<SolverId>('lbl');
   const [solution, setSolution] = useState<SolveResult | null>(null);
   const [aiApplied, setAiApplied] = useState(0);
   const [computing, setComputing] = useState(false);
@@ -33,11 +35,11 @@ export default function RubiksCubePage() {
     return () => onApplied(null);
   }, [onApplied]);
 
-  // 后台预热十字查找表，避免首次求解时卡顿
+  // 后台预热查找表：LBL 十字表 + 按当前方法的附加表（如 EOLine）
   useEffect(() => {
-    const id = window.setTimeout(() => warmUpSolver(), 260);
+    const id = window.setTimeout(() => warmUpSolvers(solverId), 260);
     return () => window.clearTimeout(id);
-  }, []);
+  }, [solverId]);
 
   const clearSolution = useCallback(() => {
     setSolution(null);
@@ -78,7 +80,7 @@ export default function RubiksCubePage() {
       requestAnimationFrame(() => window.setTimeout(resolve, 0));
     });
     try {
-      const result = solveCube(cube.cubies);
+      const result = solverId === 'lbl' ? solveCube(cube.cubies) : solveWith(solverId, cube.cubies);
       if (!result.ok || result.moves.length === 0) {
         setError('这一步的状态无法求解，请重新打乱后再试。');
         setComputing(false);
@@ -92,7 +94,17 @@ export default function RubiksCubePage() {
       setError('求解器运行异常，请重新打乱后再试。');
     }
     setComputing(false);
-  }, [computing, cube, speed]);
+  }, [computing, cube, speed, solverId]);
+
+  const handleSolverChange = useCallback(
+    (id: SolverId) => {
+      setSolverId(id);
+      clearSolution();
+      // 立即预热新方法的表（若尚未构建）
+      window.setTimeout(() => warmUpSolvers(id), 0);
+    },
+    [clearSolution],
+  );
 
   const handlePause = useCallback(() => cube.pause(), [cube]);
   const handleResume = useCallback(() => cube.resume(), [cube]);
@@ -270,6 +282,8 @@ export default function RubiksCubePage() {
                 speed={speed}
                 solved={cube.solved}
                 busy={cube.isBusy}
+                solverId={solverId}
+                onSolver={handleSolverChange}
                 onSpeed={handleSpeed}
                 onSolve={handleSolve}
                 onPause={handlePause}
