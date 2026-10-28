@@ -253,8 +253,7 @@ export class DigitSumTurtleSim {
     this.dpr = Math.min(window.devicePixelRatio || 1, 3);
     this.canvas.width = Math.round(this.cssW * this.dpr);
     this.canvas.height = Math.round(this.cssH * this.dpr);
-    this.canvas.style.width = this.cssW + 'px';
-    this.canvas.style.height = this.cssH + 'px';
+    // 布局尺寸交给 CSS w-full/h-full，避免 inline px 宽度撑死 flex 项 min-content
     this.needsRedraw = true;
   }
 

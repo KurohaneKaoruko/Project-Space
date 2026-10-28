@@ -7,14 +7,14 @@ const PANEL = 'bg-white/85 backdrop-blur-md border border-zinc-200 rounded-xl sh
 
 type WaveKind = 'square' | 'sawtooth' | 'triangle';
 
-/** 傅里叶奇次谐波系数：方波 4/π·(1, 0, 1/3, 0, 1/5...)；锯齿 2/π·(1, -1/2, 1/3...) 全谐波 */
+/** 傅里叶奇次谐波系数（理想波形单位，±1）：方波 4/π·(1, 0, 1/3, 0, 1/5...)；锯齿 2/π·(1, -1/2, 1/3...) 全谐波；三角波 8/π²·奇次 1/n² 交替符号 */
 function harmonicCoefficient(kind: WaveKind, n: number): number {
-  if (kind === 'square') return n % 2 === 1 ? 1 / n : 0;
-  if (kind === 'sawtooth') return ((n % 2 === 1 ? 1 : -1) * 1) / n;
+  if (kind === 'square') return n % 2 === 1 ? 4 / Math.PI / n : 0;
+  if (kind === 'sawtooth') return (((n % 2 === 1 ? 1 : -1) * 2) / Math.PI) / n;
   // 三角波：奇次谐波交替正负 1/n²
   if (n % 2 === 0) return 0;
   const k = (n - 1) / 2;
-  return ((k % 2 === 0 ? 1 : -1) * 1) / (n * n);
+  return (((k % 2 === 0 ? 1 : -1) * 8) / Math.PI ** 2) / (n * n);
 }
 
 function Slider({
@@ -86,10 +86,11 @@ export default function FourierSeriesPage() {
       const rect = wrap.getBoundingClientRect();
       w = rect.width;
       h = rect.height;
+      // 只设 bitmap；布局尺寸交给 CSS 的 w-full/h-full。
+      // 若在这里写 canvas.style.width，px 宽度会撑死 flex 项的 min-content，
+      // wrap 永远无法缩窄（RO 不再触发），窗口缩小时内容被挤出容器。
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
@@ -97,13 +98,9 @@ export default function FourierSeriesPage() {
     ro.observe(wrap);
     window.addEventListener('resize', resize);
 
-    // 合成波形轨迹（右侧历史）
-    const trace: number[] = [];
-    const MAX_TRACE = 700;
-
-    const loop = () => {
+    const renderFrame = (advanceTime: boolean) => {
       const s = stateRef.current;
-      if (s.running) {
+      if (advanceTime && s.running) {
         s.t += 0.016 * s.speed;
         tRef.current = s.t;
       }
@@ -114,26 +111,29 @@ export default function FourierSeriesPage() {
 
       const cy = h / 2;
       const baseR = Math.min(h * 0.22, 110);
-      const waveAmp = baseR * 1.35; // 合成波振幅（所有系数和的近似上界）
+      // 波形振幅 = 基圆半径：圆链末端纵坐标（cy + value·baseR）与波形首点
+      // （cy - value·waveAmp）恒等，虚线连接线保持水平——傅里叶圆链的教学语义
+      const waveAmp = baseR;
       // 圆链圆心
       const ox = w * 0.24;
       const gapX = ox + baseR * 2.9 + 60;
       const waveW = w - gapX - 24;
 
-      // 计算第 n 次谐波端点（累加圆）
+      // 计算第 n 次谐波端点（累加圆）；coef 以理想波形 ±1 为单位，
+      // 部分和 value 与目标波形同量纲，可同振幅直接对齐比较
       let x = ox;
       let y = cy;
       const pts: [number, number][] = [[x, y]];
-      let value = 0; // 当前合成值（y 偏移）
-      let maxSum = 0;
+      let value = 0; // 当前合成值（理想波形 ±1 单位）
       for (let n = 1; n <= harmonics * 2; n += 1) {
         const coef = harmonicCoefficient(kind, n);
         if (coef === 0) continue;
-        maxSum += Math.abs(coef);
         const r = baseR * coef;
         const th = n * t;
         const px = x + Math.cos(th) * r;
-        const py = y + Math.sin(th) * r;
+        // canvas y 轴向下：用 -sin 翻转圆链旋转方向，使末端纵坐标 = cy - value·baseR，
+        // 与波形点的 cy - value·waveAmp 同向——虚线连接线保持水平
+        const py = y - Math.sin(th) * r;
         if (showCircles) {
           ctx.strokeStyle = 'rgba(96,165,250,0.22)';
           ctx.lineWidth = 1;
@@ -150,9 +150,8 @@ export default function FourierSeriesPage() {
         x = px;
         y = py;
         pts.push([x, y]);
-        value += Math.sin(th) * r;
+        value += Math.sin(th) * coef;
       }
-      const norm = Math.max(1, maxSum);
 
       if (showCircles) {
         // 圆链末端亮点
@@ -160,12 +159,12 @@ export default function FourierSeriesPage() {
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fill();
-        // 从末端连到波形起点
+        // 从末端连到波形当前位置（与轨迹同公式：y = cy - value·waveAmp）
         ctx.strokeStyle = 'rgba(250,250,250,0.35)';
         ctx.setLineDash([3, 3]);
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineTo(gapX, cy + (value / norm) * waveAmp);
+        ctx.lineTo(gapX, cy - value * waveAmp);
         ctx.stroke();
         ctx.setLineDash([]);
       }
@@ -177,14 +176,16 @@ export default function FourierSeriesPage() {
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         for (let i = 0; i <= waveW; i += 2) {
-          const tt = ((i / waveW) * Math.PI * 2 - t) % (Math.PI * 2);
-          // 目标：理想方/锯齿/三角（在 (-π,π] 定义）
+          // 屏幕波形域：x = 时间相位。t 为当前相位，向右为过去（同一相位变量 t，
+          // 保证合成轨迹与目标波永远锁定同速滚动、跳变沿精确对齐）
+          const tt = t - (i / waveW) * Math.PI * 2;
+          // 目标：理想方/锯齿/三角
           let v = 0;
           const ph = ((tt % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2); // [0, 2π)
           if (kind === 'square') v = ph < Math.PI ? 1 : -1;
           else if (kind === 'sawtooth') v = 1 - (2 * ph) / Math.PI;
           else v = ph < Math.PI ? (2 * ph) / Math.PI - 1 : 3 - (2 * ph) / Math.PI;
-          const yy = cy - v * waveAmp * 0.92;
+          const yy = cy - v * waveAmp;
           if (i === 0) ctx.moveTo(gapX + i, yy);
           else ctx.lineTo(gapX + i, yy);
         }
@@ -192,14 +193,20 @@ export default function FourierSeriesPage() {
         ctx.setLineDash([]);
       }
 
-      // 合成波形历史轨迹
-      trace.unshift(value / norm);
-      if (trace.length > MAX_TRACE) trace.pop();
+      // 合成波形：与目标波同公式、同相位、同比例，按屏幕 x 直接求值
+      // （替换旧「每帧 1px 历史栈」——历史栈滚动速度与目标波不一致，跳变沿会漂移失步）
       ctx.strokeStyle = '#60a5fa';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      for (let i = 0; i < trace.length; i += 1) {
-        const yy = cy - trace[i] * waveAmp;
+      for (let i = 0; i <= waveW; i += 1) {
+        const tt = t - (i / waveW) * Math.PI * 2;
+        let v = 0;
+        for (let n = 1; n <= harmonics * 2; n += 1) {
+          const coef = harmonicCoefficient(kind, n);
+          if (coef === 0) continue;
+          v += Math.sin(n * tt) * coef;
+        }
+        const yy = cy - v * waveAmp;
         if (i === 0) ctx.moveTo(gapX + i, yy);
         else ctx.lineTo(gapX + i, yy);
       }
@@ -212,7 +219,11 @@ export default function FourierSeriesPage() {
       ctx.moveTo(gapX - 6, cy);
       ctx.lineTo(w - 12, cy);
       ctx.stroke();
-
+    };
+    // 同步先画一帧：后台 tab（rAF 节流/冻结）下打开页面与 resize 后也能立即看到正确内容
+    renderFrame(false);
+    const loop = () => {
+      renderFrame(true);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -240,7 +251,7 @@ export default function FourierSeriesPage() {
         {/* 画布区 */}
         <div className="relative flex-1 min-h-[320px] lg:min-h-0 p-3 lg:p-4">
           <div ref={wrapRef} className="relative h-full w-full overflow-hidden rounded-xl border border-zinc-800 shadow-2xl shadow-zinc-900/30">
-            <canvas ref={canvasRef} className="block" />
+            <canvas ref={canvasRef} className="block h-full w-full" />
             <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2 font-mono text-[11px] text-zinc-300">
               <span className="border border-white/10 bg-black/50 px-2 py-1 rounded">{waveNames[kind]}</span>
               <span className="border border-white/10 bg-black/50 px-2 py-1 rounded">谐波 {harmonics} 组（最高 n={harmonics * 2 - 1}）</span>

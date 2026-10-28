@@ -262,8 +262,9 @@ export default function DanmakuDodgePage() {
       const height = Math.max(220, rect.height);
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      // 布局尺寸交给 CSS（容器 aspectRatio 定宽），避免 inline px 宽度撑死容器 min-content
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
       render();
     };
 

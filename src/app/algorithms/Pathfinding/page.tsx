@@ -122,8 +122,7 @@ export default function PathfindingPage() {
       dpr = window.devicePixelRatio || 1;
       canvas.width = Math.max(1, Math.round(rect.width * dpr));
       canvas.height = Math.max(1, Math.round(rect.height * dpr));
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+      // 布局尺寸交给 CSS w-full/h-full，避免 inline px 宽度撑死 flex 项 min-content
       draw();
     };
 
@@ -133,7 +132,7 @@ export default function PathfindingPage() {
       const ch = rect.height / ROWS;
       const cell = Math.min(cw, ch);
       const ox = (rect.width - cell * COLS) / 2;
-      const oy = (rect.height - cell * ch) / 2;
+      const oy = (rect.height - cell * ROWS) / 2;
 
       let maxOrder = 1;
       for (const c of grid.cells) if (c.order > maxOrder) maxOrder = c.order;
@@ -290,7 +289,7 @@ export default function PathfindingPage() {
       const ch = rect.height / ROWS;
       const cell = Math.min(cw, ch);
       const ox = (rect.width - cell * COLS) / 2;
-      const oy = (rect.height - cell * ch) / 2;
+      const oy = (rect.height - cell * ROWS) / 2;
       const x = Math.floor((e.clientX - rect.left - ox) / cell);
       const y = Math.floor((e.clientY - rect.top - oy) / cell);
       if (!grid.inside(x, y)) return;
@@ -318,7 +317,7 @@ export default function PathfindingPage() {
         const ch = rect.height / ROWS;
         const cell = Math.min(cw, ch);
         const ox = (rect.width - cell * COLS) / 2;
-        const oy = (rect.height - cell * ch) / 2;
+        const oy = (rect.height - cell * ROWS) / 2;
         const x = Math.floor((e.clientX - rect.left - ox) / cell);
         const y = Math.floor((e.clientY - rect.top - oy) / cell);
         const c = grid.get(x, y);
@@ -362,7 +361,7 @@ export default function PathfindingPage() {
         {/* 画布区 */}
         <div className="relative flex-1 min-h-[300px] lg:min-h-0 p-3 lg:p-4">
           <div ref={wrapRef} className="relative h-full w-full overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl shadow-zinc-900/5">
-            <canvas ref={canvasRef} className="block" />
+            <canvas ref={canvasRef} className="block h-full w-full" />
             {/* 图例 */}
             <div className="pointer-events-none absolute bottom-2 left-3 flex flex-wrap items-center gap-2 font-mono text-[10px] text-zinc-500">
               <span className="flex items-center gap-1"><i className="h-2.5 w-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg,#1d4ed8,#bfdbfe)' }} /> 访问顺序</span>

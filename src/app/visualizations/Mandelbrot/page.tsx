@@ -99,8 +99,7 @@ export default function MandelbrotPage() {
       canvas.width = w;
       canvas.height = h;
     }
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
+    // 布局尺寸交给 CSS w-full/h-full，避免 inline px 宽度撑死 flex 项 min-content
     ctx.imageSmoothingEnabled = true;
 
     const baseScale = 4 / Math.min(w, h);

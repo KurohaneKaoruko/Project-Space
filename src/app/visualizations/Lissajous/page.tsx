@@ -74,8 +74,7 @@ export default function LissajousPage() {
       h = rect.height;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
-      canvas.style.width = `${w}px`;
-      canvas.style.height = `${h}px`;
+      // 布局尺寸交给 CSS w-full/h-full，避免 inline px 宽度撑死 flex 项 min-content
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       // resize 后重画底色
       ctx.fillStyle = '#070b14';
@@ -180,7 +179,7 @@ export default function LissajousPage() {
         {/* 画布区 */}
         <div className="relative flex-1 min-h-[320px] lg:min-h-0 p-3 lg:p-4">
           <div ref={wrapRef} className="relative h-full w-full overflow-hidden rounded-xl border border-zinc-800 shadow-2xl shadow-zinc-900/30">
-            <canvas ref={canvasRef} className="block" />
+            <canvas ref={canvasRef} className="block h-full w-full" />
             <div className="pointer-events-none absolute left-3 top-3 flex flex-wrap gap-2 font-mono text-[11px] text-zinc-300">
               <span className="border border-white/10 bg-black/50 px-2 py-1 rounded">频率比 {ratioStr}</span>
               <span className="border border-white/10 bg-black/50 px-2 py-1 rounded">相位 δ = {phase.toFixed(2)}</span>

@@ -43,10 +43,7 @@ export default function GameOfLifePage() {
        const width = rect.width * dpr;
        const height = rect.height * dpr;
        
-       // Update CSS size
-       canvas.style.width = `${rect.width}px`;
-       canvas.style.height = `${rect.height}px`;
-       
+       // 布局尺寸交给 CSS w-full/h-full，避免 inline px 宽度撑死 flex 项 min-content
        sim.resize(width, height, cellSizeRef.current * dpr);
     };
 
@@ -143,9 +140,9 @@ export default function GameOfLifePage() {
       <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
         {/* Canvas */}
         <div ref={wrapRef} className={`h-64 shrink-0 lg:h-full lg:flex-1 relative ${canvasBgClass} overflow-hidden cursor-crosshair`}>
-          <canvas 
+          <canvas
             ref={canvasRef}
-            className="block"
+            className="block h-full w-full"
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
