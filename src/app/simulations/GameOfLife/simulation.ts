@@ -32,32 +32,43 @@ export class GameOfLife {
   }
 
   resize(width: number, height: number, cellSize: number) {
+    const oldCols = this.cols;
+    const oldRows = this.rows;
+    const oldGrid = this.grid;
+
     this.width = width;
     this.height = height;
     this.cellSize = cellSize;
     this.cols = Math.ceil(width / cellSize);
     this.rows = Math.ceil(height / cellSize);
-    
+
     this.canvas.width = width;
     this.canvas.height = height;
-    
+
     // Re-allocate grids
     const size = this.cols * this.rows;
     const newGrid = new Uint8Array(size);
     const newNextGrid = new Uint8Array(size);
-    
-    // Preserve existing data if possible (simple copy, might be misaligned if width changed)
-    // Ideally we might want to resample, but for simplicity let's just clear or randomize
-    // Let's randomize if it's the first init
-    if (this.grid.length === 0) {
+
+    if (oldGrid.length === 0) {
+      // 首次初始化：随机铺一批活细胞
       for (let i = 0; i < size; i++) {
         newGrid[i] = Math.random() > 0.85 ? 1 : 0;
       }
+    } else {
+      // 尺寸变化时保留重叠区域，避免重排/缩放把整块棋盘清空
+      const copyCols = Math.min(oldCols, this.cols);
+      const copyRows = Math.min(oldRows, this.rows);
+      for (let y = 0; y < copyRows; y++) {
+        for (let x = 0; x < copyCols; x++) {
+          newGrid[y * this.cols + x] = oldGrid[y * oldCols + x];
+        }
+      }
     }
-    
+
     this.grid = newGrid;
     this.nextGrid = newNextGrid;
-    
+
     this.draw();
   }
 

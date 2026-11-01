@@ -1,3 +1,5 @@
+import { anim } from './iconAnim';
+
 /**
  * 动态 SVG 图标组件
  * 每个项目对应一个轻量内联 SVG，动画默认 paused，卡片 hover 时通过 CSS 类运行。
@@ -32,17 +34,16 @@ export type ProjectIconId =
   | 'HuffmanTree'
   | 'Lissajous'
   | 'FourierSeries'
-  | 'Boids';
-
-/** 长写动画参数：name + duration，可选 delay / timing */
-function anim(name: string, dur: number, delay = 0, timing?: string) {
-  return {
-    animationName: name,
-    animationDuration: `${dur}s`,
-    ...(delay ? { animationDelay: `${delay}s` } : {}),
-    ...(timing ? { animationTimingFunction: timing } : {}),
-  };
-}
+  | 'Boids'
+  | 'TopologicalSort'
+  | 'MaxFlow'
+  | 'Factoring'
+  | 'SAT'
+  | 'SubsetSum'
+  | 'Hamiltonian'
+  | 'GraphColoring'
+  | 'BinPacking'
+  | 'TSP';
 
 const S = 64; // viewBox 尺寸
 
@@ -595,6 +596,233 @@ function IconFourierSeries() {
   );
 }
 
+/* ---------------- P & NP ---------------- */
+
+function IconTopologicalSort() {
+  const nodes = [
+    { x: 12, y: 18 },
+    { x: 12, y: 46 },
+    { x: 32, y: 32 },
+    { x: 52, y: 18 },
+    { x: 52, y: 46 },
+  ];
+  return (
+    <Base>
+      <g stroke="currentColor" strokeWidth="1.2" opacity="0.45" fill="none">
+        <path d="M12 18L32 32M12 46L32 32M32 32L52 18M32 32L52 46" />
+      </g>
+      {nodes.map((n, i) => (
+        <circle
+          key={i}
+          className={i === 2 ? 'icon-motion' : undefined}
+          style={i === 2 ? anim('keyPulse', 2) : undefined}
+          cx={n.x}
+          cy={n.y}
+          r={i === 2 ? 6 : 4.5}
+          fill="currentColor"
+        />
+      ))}
+    </Base>
+  );
+}
+
+function IconMaxFlow() {
+  return (
+    <Base>
+      <circle cx="13" cy="32" r="8" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      <circle cx="51" cy="32" r="8" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      <path d="M21 27 Q32 15 43 27" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      <path d="M21 37 Q32 49 43 37" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      <path d="M38 23 l6 3 -6 3z" fill="currentColor" />
+      <path d="M38 41 l6 -3 -6 -3z" fill="currentColor" />
+    </Base>
+  );
+}
+
+function IconFactoring() {
+  return (
+    <Base>
+      {/* 待分解的 n */}
+      <rect x="19" y="8" width="26" height="17" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <text x="32" y="20.5" textAnchor="middle" fontSize="11" fontFamily="monospace" fill="currentColor">
+        n
+      </text>
+      {/* 分裂成两个因子 */}
+      <g stroke="currentColor" strokeWidth="1.2" opacity="0.5" fill="none">
+        <path d="M32 25L19 36M32 25L45 36" />
+      </g>
+      <rect
+        className="icon-motion"
+        style={anim('keyPulse', 2)}
+        x="7"
+        y="36"
+        width="24"
+        height="15"
+        rx="2"
+        fill="currentColor"
+        fillOpacity="0.2"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <rect x="33" y="36" width="24" height="15" rx="2" fill="currentColor" fillOpacity="0.2" stroke="currentColor" strokeWidth="1.4" />
+      <text x="19" y="47" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor">
+        p
+      </text>
+      <text x="45" y="47" textAnchor="middle" fontSize="9" fontFamily="monospace" fill="currentColor">
+        q
+      </text>
+    </Base>
+  );
+}
+
+function IconSAT() {
+  return (
+    <Base>
+      {/* 子句矩阵：每行一个子句，每格一个字面量 */}
+      {[0, 1, 2].map((row) =>
+        [0, 1, 2].map((col) => (
+          <rect
+            key={`${row}-${col}`}
+            className={row === 1 && col === 0 ? 'icon-motion' : undefined}
+            style={row === 1 && col === 0 ? anim('keyPulse', 1.8) : undefined}
+            x={12 + col * 15}
+            y={12 + row * 14}
+            width={11}
+            height={10}
+            rx={1.5}
+            fill="currentColor"
+            fillOpacity={row === 1 ? 0.75 : 0.18}
+            stroke="currentColor"
+            strokeWidth={1}
+          />
+        )),
+      )}
+      <path d="M9 9v46" stroke="currentColor" strokeWidth="1.4" opacity="0.4" />
+    </Base>
+  );
+}
+
+function IconSubsetSum() {
+  return (
+    <Base>
+      {[0, 1, 2, 3].map((row) =>
+        [0, 1, 2, 3].map((col) => (
+          <rect
+            key={`${row}-${col}`}
+            x={9 + col * 12}
+            y={9 + row * 12}
+            width={9}
+            height={9}
+            rx={1.5}
+            fill="currentColor"
+            fillOpacity={(row + col) % 3 === 0 ? 0.8 : 0.14}
+            stroke="currentColor"
+            strokeWidth={0.9}
+          />
+        )),
+      )}
+    </Base>
+  );
+}
+
+function IconHamiltonian() {
+  const pts = Array.from({ length: 6 }, (_, i) => {
+    const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    return { x: 32 + 21 * Math.cos(a), y: 32 + 21 * Math.sin(a) };
+  });
+  return (
+    <Base>
+      <polyline
+        points={[...pts, pts[0]].map((p) => `${p.x},${p.y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        strokeDasharray="4 3"
+        opacity="0.5"
+      />
+      {pts.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={4.6} fill="currentColor" opacity={i === 0 ? 1 : 0.55} />
+      ))}
+    </Base>
+  );
+}
+
+function IconGraphColoring() {
+  const points = Array.from({ length: 5 }, (_, i) => {
+    const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
+    return { x: 32 + 21 * Math.cos(angle), y: 32 + 21 * Math.sin(angle) };
+  });
+  return (
+    <Base>
+      {points.map((p, i) => {
+        const next = points[(i + 1) % 5];
+        return <line key={i} x1={p.x} y1={p.y} x2={next.x} y2={next.y} stroke="currentColor" strokeWidth={1} opacity="0.35" />;
+      })}
+      {points.map((p, i) => (
+        <circle
+          key={i}
+          cx={p.x}
+          cy={p.y}
+          r={5}
+          fill="currentColor"
+          fillOpacity={i % 2 === 0 ? 0.9 : 0.15}
+          stroke="currentColor"
+          strokeWidth={1.3}
+        />
+      ))}
+    </Base>
+  );
+}
+
+function IconBinPacking() {
+  return (
+    <Base>
+      {[10, 26, 42].map((x, i) => (
+        <rect
+          key={x}
+          x={x}
+          y={i === 1 ? 20 : 28}
+          width={12}
+          height={i === 1 ? 30 : 22}
+          rx={1.5}
+          stroke="currentColor"
+          strokeWidth="1.6"
+          fill="currentColor"
+          fillOpacity={i === 1 ? 0.55 : 0.15}
+        />
+      ))}
+    </Base>
+  );
+}
+
+function IconTSP() {
+  const points: [number, number][] = [
+    [12, 40],
+    [20, 16],
+    [44, 12],
+    [54, 36],
+    [38, 52],
+    [18, 54],
+  ];
+  return (
+    <Base>
+      <polyline
+        points={points.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.7}
+        strokeLinejoin="round"
+        opacity="0.75"
+      />
+      <line x1={18} y1={54} x2={12} y2={40} stroke="currentColor" strokeWidth={1.2} strokeDasharray="3 3" opacity="0.5" />
+      {points.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={3.4} fill="currentColor" />
+      ))}
+    </Base>
+  );
+}
+
 const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Game2048: Icon2048,
   Snake: IconSnake,
@@ -621,6 +849,15 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Lissajous: IconLissajous,
   FourierSeries: IconFourierSeries,
   Boids: IconBoids,
+  TopologicalSort: IconTopologicalSort,
+  MaxFlow: IconMaxFlow,
+  Factoring: IconFactoring,
+  SAT: IconSAT,
+  SubsetSum: IconSubsetSum,
+  Hamiltonian: IconHamiltonian,
+  GraphColoring: IconGraphColoring,
+  BinPacking: IconBinPacking,
+  TSP: IconTSP,
 };
 
 /** 鸟群：三只小鸟呈编队飞行，队形轻微摆动 */

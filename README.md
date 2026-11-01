@@ -35,12 +35,45 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 
 | 分区 | 路由 | 当前内容 |
 | --- | --- | --- |
-| 首页 | `/` | 总览入口，聚合所有模块 |
+| 首页 | `/` | 分类索引：每类一张图标卡片，点进去看该类的完整列表 |
+| P & NP | `/complexity` | 拓扑排序、最大流（P）、整数分解（NP）、3-SAT / 子集和 / 哈密顿回路 / 图着色（NP-C）、装箱、旅行商（NP-H） |
 | Games | `/games` | 2048、贪吃蛇、弹幕躲避、魔方 |
-| Simulations | `/simulations` | 生命游戏、兰顿蚂蚁、粒子生命、混沌摆、图灵机、二维图灵机、PoW 模拟器 |
-| Algorithms | `/algorithms` | TSP 蚁群、排序算法可视化、加密算法可视化 |
-| Visualizations | `/visualizations` | 分形几何、数位和海龟绘图 |
-| Tools | `/tools` | Brainfuck 解释器 |
+| Simulations | `/simulations` | 生命游戏、兰顿蚂蚁、粒子生命、混沌摆、图灵机、二维图灵机、PoW 模拟器、N 体引力、布朗运动、鸟群算法、TSP 蚁群 |
+| Algorithms | `/algorithms` | TSP 蚁群、排序算法可视化、加密算法可视化、寻路可视化、哈夫曼编码树 |
+| Visualizations | `/visualizations` | 分形几何、数位和海龟绘图、冰雹猜想、利萨茹曲线、傅里叶级数，以及排序 / 寻路 / 哈夫曼的图形部分 |
+| Tools | `/tools` | Brainfuck 解释器、加密算法可视化 |
+
+> 分类**不是互斥**的：一个项目可以同时属于多个分类（例如「排序算法可视化」既是算法演示也是图形可视化），
+> 因此各分类条目之和大于项目总数。归属关系集中在 `src/app/data/projects.ts` 的 `categories` 数组里，
+> **第一项为主分类**，决定项目路由 `/{主分类}/{id}` 与它在分类页中的排序位置。
+>
+> `Algorithms` 只收**以演示算法本身为目的**的项目；游戏或模拟里内置的求解器、AI（魔方的分层还原、
+> 鸟群的转向规则）只服务于玩法与行为呈现，不重复收录。
+
+### P & NP
+
+按计算复杂度组织的专题，每个问题独立一页，页内包含：
+
+- **内置算法**：同一问题给出一到多种做法（如 3-SAT 的暴力枚举与 DPLL、TSP 的最近邻 / 2-opt / 暴力最优），
+  执行过程压成 trace，可播放、单步、调速。
+- **代码运行器**：点右上角「写代码」按钮打开编辑器，在独立 Web Worker 里运行 `function solve(input)`，
+  与内置算法共用同一套用例判定；**不设时限**，卡住可手动停止。
+  超时保护被有意去掉——这是用来试算法的地方，不是判题竞赛。
+
+每个问题的页面布局各自设计，不套统一模板：拓扑排序是大画布 + 输出流水线，整数分解是短除法竖式，
+3-SAT 是赋值条 + 子句表，图着色是调色盘 + 画布，旅行商是地图 + 数据栏。
+
+| 路由 | 问题 | 复杂度 | 内置算法 |
+| --- | --- | --- | --- |
+| `/complexity/TopologicalSort` | DAG 拓扑排序 | P | Kahn、DFS 逆后序 |
+| `/complexity/MaxFlow` | 最大流 | P | Edmonds–Karp |
+| `/complexity/Factoring` | 整数分解 | NP | 试除法、Pollard's Rho |
+| `/complexity/SAT` | 3-SAT 可满足性 | NP-C | 暴力枚举、DPLL |
+| `/complexity/SubsetSum` | 子集和 | NP-C | DP 表逐格填充 |
+| `/complexity/Hamiltonian` | 哈密顿回路 | NP-C | 回溯 |
+| `/complexity/GraphColoring` | k 色图着色 | NP-C | 回溯、贪心 |
+| `/complexity/BinPacking` | 装箱 | NP-H | First-Fit Decreasing |
+| `/complexity/TSP` | 旅行商（最优化） | NP-H | 最近邻、2-opt、蚁群、暴力最优 |
 
 ### Games
 
@@ -127,7 +160,7 @@ project-rosmarin/
 ├─ src/
 │  ├─ app/
 │  │  ├─ components/      # 通用 UI 组件（如导航）
-│  │  ├─ data/            # 项目元数据（games/simulations/algorithms/visualizations/tools）
+│  │  ├─ data/            # 项目元数据与分类定义（分类为多对多）
 │  │  ├─ games/           # 游戏模块
 │  │  ├─ simulations/     # 模拟模块
 │  │  ├─ algorithms/      # 算法可视化模块

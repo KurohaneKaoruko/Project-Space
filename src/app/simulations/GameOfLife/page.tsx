@@ -134,7 +134,7 @@ export default function GameOfLifePage() {
   const overlayClass = colorTheme === 'dark' ? 'text-white/50' : 'text-zinc-900/60';
 
   return (
-    <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
+    <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col pt-16">
       <Navigation title="GAME_OF_LIFE" />
       
       <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
