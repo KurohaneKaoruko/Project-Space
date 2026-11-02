@@ -307,6 +307,15 @@ export const projects: Project[] = [
     complexity: 'P',
   },
   {
+    id: 'Eulerian',
+    title: '欧拉回路',
+    description:
+      '一笔画走过每条边恰好一次并回到起点：Hierholzer 逐边推进、退栈归位，可调点数与附加边数。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['complexity'],
+    complexity: 'P',
+  },
+  {
     id: 'Factoring',
     title: '整数分解',
     description:
@@ -338,6 +347,33 @@ export const projects: Project[] = [
     title: '哈密顿回路',
     description:
       '找一条经过每个点恰好一次并回到起点的回路：回溯搜索实时可视化，可调节点数与边密度，可导入自己的实现。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['complexity'],
+    complexity: 'NPC',
+  },
+  {
+    id: 'VertexCover',
+    title: '顶点覆盖',
+    description:
+      '选出最少的点，使每条边至少有一个端点被选中：分支定界实时剪枝，可调点数与边密度。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['complexity'],
+    complexity: 'NPC',
+  },
+  {
+    id: 'MaxClique',
+    title: '最大团',
+    description:
+      '找出两两相邻的最大点集：回溯搜索 + 候选剪枝，实时显示当前团、候选点与历史最优。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['complexity'],
+    complexity: 'NPC',
+  },
+  {
+    id: 'SetCover',
+    title: '集合覆盖',
+    description:
+      '用尽量少的集合覆盖全部元素：贪心与精确搜索对比，逐轮点亮已覆盖元素，可导入自己的实现。',
     technologies: ['React', 'TypeScript'],
     categories: ['complexity'],
     complexity: 'NPC',

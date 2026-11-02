@@ -37,10 +37,14 @@ export type ProjectIconId =
   | 'Boids'
   | 'TopologicalSort'
   | 'MaxFlow'
+  | 'Eulerian'
   | 'Factoring'
   | 'SAT'
   | 'SubsetSum'
   | 'Hamiltonian'
+  | 'VertexCover'
+  | 'MaxClique'
+  | 'SetCover'
   | 'GraphColoring'
   | 'BinPacking'
   | 'TSP';
@@ -748,6 +752,141 @@ function IconHamiltonian() {
   );
 }
 
+function IconEulerian() {
+  const pts = Array.from({ length: 6 }, (_, i) => {
+    const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+    return { x: 32 + 21 * Math.cos(a), y: 32 + 21 * Math.sin(a) };
+  });
+  return (
+    <Base>
+      <polygon
+        points={pts.map((p) => `${p.x},${p.y}`).join(' ')}
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+        opacity="0.35"
+      />
+      <polyline
+        points={[pts[0], pts[1], pts[2], pts[3], pts[4]]
+          .map((p) => `${p.x},${p.y}`)
+          .join(' ')}
+        stroke="currentColor"
+        strokeWidth="2.4"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {pts.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={4} fill="currentColor" opacity={i <= 4 ? 1 : 0.3} />
+      ))}
+    </Base>
+  );
+}
+
+function IconVertexCover() {
+  const nodes = [
+    { x: 16, y: 16 },
+    { x: 48, y: 16 },
+    { x: 32, y: 33 },
+    { x: 16, y: 50 },
+    { x: 48, y: 50 },
+  ];
+  const edges: [number, number][] = [
+    [0, 1],
+    [0, 2],
+    [1, 2],
+    [2, 3],
+    [2, 4],
+    [3, 4],
+  ];
+  const picked = new Set([2, 3]);
+  return (
+    <Base>
+      {edges.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={nodes[a].x}
+          y1={nodes[a].y}
+          x2={nodes[b].x}
+          y2={nodes[b].y}
+          stroke="currentColor"
+          strokeWidth="1.5"
+          opacity="0.45"
+        />
+      ))}
+      {nodes.map((p, i) => (
+        <circle
+          key={i}
+          cx={p.x}
+          cy={p.y}
+          r={5}
+          fill={picked.has(i) ? 'currentColor' : 'none'}
+          stroke="currentColor"
+          strokeWidth="1.8"
+          opacity={picked.has(i) ? 0.9 : 0.55}
+        />
+      ))}
+    </Base>
+  );
+}
+
+function IconMaxClique() {
+  const nodes = [
+    { x: 32, y: 12 },
+    { x: 52, y: 32 },
+    { x: 32, y: 52 },
+    { x: 12, y: 32 },
+  ];
+  return (
+    <Base>
+      {nodes.map((a, i) =>
+        nodes.map((b, j) =>
+          i < j ? (
+            <line
+              key={`${i}-${j}`}
+              x1={a.x}
+              y1={a.y}
+              x2={b.x}
+              y2={b.y}
+              stroke="currentColor"
+              strokeWidth="1.6"
+              opacity="0.5"
+            />
+          ) : null,
+        ),
+      )}
+      {nodes.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={5.5} fill="currentColor" opacity={0.9} />
+      ))}
+    </Base>
+  );
+}
+
+function IconSetCover() {
+  const rows = [0, 1, 2];
+  return (
+    <Base>
+      {rows.map((r) =>
+        [0, 1, 2, 3, 4].map((c) => {
+          const on = (r + c) % 3 === 0 || (r === 1 && c < 3);
+          return (
+            <circle
+              key={`${r}-${c}`}
+              cx={12 + c * 10}
+              cy={16 + r * 16}
+              r={3.6}
+              fill={on ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="1.2"
+              opacity={on ? 0.9 : 0.35}
+            />
+          );
+        }),
+      )}
+    </Base>
+  );
+}
+
 function IconGraphColoring() {
   const points = Array.from({ length: 5 }, (_, i) => {
     const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
@@ -851,10 +990,14 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Boids: IconBoids,
   TopologicalSort: IconTopologicalSort,
   MaxFlow: IconMaxFlow,
+  Eulerian: IconEulerian,
   Factoring: IconFactoring,
   SAT: IconSAT,
   SubsetSum: IconSubsetSum,
   Hamiltonian: IconHamiltonian,
+  VertexCover: IconVertexCover,
+  MaxClique: IconMaxClique,
+  SetCover: IconSetCover,
   GraphColoring: IconGraphColoring,
   BinPacking: IconBinPacking,
   TSP: IconTSP,
