@@ -24,7 +24,10 @@ interface ColorStep {
   backtracks: number;
 }
 
-const PALETTE = ['#3b82f6', '#f59e0b', '#10b981', '#a855f7', '#f43f5e', '#06b6d4'];
+const PALETTE = [
+  '#3b82f6', '#f59e0b', '#10b981', '#a855f7', '#f43f5e', '#06b6d4',
+  '#84cc16', '#e879f9', '#fb923c', '#4ade80', '#facc15', '#60a5fa',
+];
 
 function isProperColoring(output: unknown, input: ColorInput): boolean {
   if (!Array.isArray(output) || output.length !== input.n) return false;
@@ -43,7 +46,7 @@ function referenceSolve(input: ColorInput): number[] | null {
   const ok = (node: number, color: number) => adj[node].every((v) => colors[v] !== color);
 
   // 规模放大后回溯可能爆炸，给一个访问上限
-  let budget = 200000;
+  let budget = 1000000;
   const dfs = (node: number): boolean => {
     if (node === n) return true;
     if (--budget <= 0) return false;
@@ -122,7 +125,7 @@ function* backtrackGen(input: ColorInput): Generator<ColorStep, number[] | null,
 
   const colors = new Array<number | null>(n).fill(null);
   let backtracks = 0;
-  let budget = 200000;
+  let budget = 2000000;
 
   const ok = (node: number, color: number) => adj[node].every((v) => colors[v] !== color);
 
@@ -261,7 +264,7 @@ export default function GraphColoringPage() {
   const result = solver.result;
 
   // 椭圆布局；节点多时缩小半径
-  const nodeR = input.n <= 10 ? 23 : input.n <= 16 ? 17 : 12;
+  const nodeR = input.n <= 10 ? 23 : input.n <= 16 ? 17 : input.n <= 30 ? 12 : input.n <= 45 ? 9 : 7;
   const layout = useMemo(() => {
     const W = 820;
     const H = 380;
@@ -431,7 +434,15 @@ export default function GraphColoringPage() {
         </div>
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={4} max={24} step={1} onChange={setN} />
+              <Field
+                label="节点数 (NODES)"
+                value={n}
+                min={4}
+                max={60}
+                step={1}
+                onChange={setN}
+                format={(v) => `k^${v} ≈ 10^${(Math.log10(3) * v).toFixed(1)} 种着色（k=3）`}
+              />
               <Field
                 label="边密度 (DENSITY)"
                 value={Math.round(density * 100)}
@@ -441,7 +452,7 @@ export default function GraphColoringPage() {
                 onChange={(v) => setDensity(v / 100)}
                 format={(v) => `${v}%`}
               />
-              <Field label="颜色数 (K)" value={k} min={2} max={6} step={1} onChange={setK} />
+              <Field label="颜色数 (K)" value={k} min={2} max={12} step={1} onChange={setK} />
               <button
                 onClick={() => setSeed((s) => s + 1)}
                 className="w-full border border-zinc-200 bg-zinc-50 py-2 text-[11px] font-bold uppercase tracking-widest text-zinc-600 transition-colors hover:border-blue-500/50 hover:bg-white hover:text-blue-600"

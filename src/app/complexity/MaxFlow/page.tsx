@@ -242,12 +242,17 @@ export default function MaxFlowPage() {
   const layout = useMemo(() => {
     const W = 820;
     const H = 380;
+    // 节点多时缩小半径并压扁椭圆，避免相邻节点标签重叠
+    const rx = input.n <= 10 ? 290 : input.n <= 16 ? 330 : 350;
+    const ry = input.n <= 10 ? 126 : input.n <= 16 ? 145 : 158;
+    const nodeR = input.n <= 10 ? 22 : input.n <= 16 ? 15 : 11;
     return {
       width: W,
       height: H,
+      nodeR,
       pos: Array.from({ length: input.n }, (_, i) => {
         const angle = (i / input.n) * Math.PI * 2 - Math.PI / 2;
-        return { x: W / 2 + 290 * Math.cos(angle), y: H / 2 + 126 * Math.sin(angle) };
+        return { x: W / 2 + rx * Math.cos(angle), y: H / 2 + ry * Math.sin(angle) };
       }),
     };
   }, [input]);
@@ -317,6 +322,8 @@ export default function MaxFlowPage() {
                         x: (layout.pos[u].x + layout.pos[v].x) / 2,
                         y: (layout.pos[u].y + layout.pos[v].y) / 2,
                       };
+                      // 边很多时只标注「有流量 / 在当前增广路径上」的边，避免文字糊成一片
+                      const showLabel = edgeInfo.length <= 40 || flow > 0 || onPath;
                       return (
                         <g key={`${u}-${v}`}>
                           <line
@@ -330,16 +337,18 @@ export default function MaxFlowPage() {
                             markerEnd="url(#flow-arrow)"
                             style={{ transition: 'color 200ms' }}
                           />
-                          <text
-                            x={mid.x}
-                            y={mid.y - 5}
-                            textAnchor="middle"
-                            fontSize="11"
-                            fontFamily="monospace"
-                            fill={flow > 0 ? '#93c5fd' : '#71717a'}
-                          >
-                            {flow}/{cap}
-                          </text>
+                          {showLabel && (
+                            <text
+                              x={mid.x}
+                              y={mid.y - 5}
+                              textAnchor="middle"
+                              fontSize={edgeInfo.length <= 40 ? '11' : '8'}
+                              fontFamily="monospace"
+                              fill={flow > 0 ? '#93c5fd' : '#71717a'}
+                            >
+                              {flow}/{cap}
+                            </text>
+                          )}
                         </g>
                       );
                     })}
@@ -354,7 +363,7 @@ export default function MaxFlowPage() {
                           <circle
                             cx={x}
                             cy={y}
-                            r={22}
+                            r={layout.nodeR}
                             fill={isS ? 'rgba(16,185,129,0.25)' : isT ? 'rgba(244,63,94,0.25)' : '#111318'}
                             stroke={onPath ? '#fbbf24' : isS ? '#10b981' : isT ? '#f43f5e' : '#3f3f46'}
                             strokeWidth={onPath ? 2.4 : 1.6}
@@ -364,7 +373,7 @@ export default function MaxFlowPage() {
                             x={x}
                             y={y + 4}
                             textAnchor="middle"
-                            fontSize="12"
+                            fontSize={layout.nodeR >= 15 ? '12' : '9'}
                             fontFamily="monospace"
                             fill={isS ? '#6ee7b7' : isT ? '#fda4af' : '#d4d4d8'}
                           >
@@ -419,7 +428,15 @@ export default function MaxFlowPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={3} max={8} step={1} onChange={setN} />
+              <Field
+                label="节点数 (NODES)"
+                value={n}
+                min={3}
+                max={24}
+                step={1}
+                onChange={setN}
+                format={(v) => `${v} 节点 · 边 ~${Math.round(v * (v - 1) * 0.225)} 条`}
+              />
               <button
                 onClick={() => setSeed((s) => s + 1)}
                 className="w-full border border-zinc-200 bg-zinc-50 py-2 text-[11px] font-bold uppercase tracking-widest text-zinc-600 transition-colors hover:border-blue-500/50 hover:bg-white hover:text-blue-600"

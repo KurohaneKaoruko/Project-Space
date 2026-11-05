@@ -112,6 +112,7 @@ export function useLiveSolver<S, R>(
       const budget = Math.floor(budgetRef.current);
       budgetRef.current -= budget;
 
+      const frameStart = performance.now();
       for (let i = 0; i < budget; i++) {
         const t0 = performance.now();
         const r = gen.next();
@@ -122,6 +123,12 @@ export function useLiveSolver<S, R>(
           break;
         }
         batch.push(r.value as S);
+        // 大实例单步可能要几十毫秒：批量循环超过 40ms 就截断本轮并清空配额，
+        // 下一帧重新注入——保证任何规模下都不阻塞主线程
+        if (performance.now() - frameStart > 40) {
+          budgetRef.current = 0;
+          break;
+        }
       }
 
       if (batch.length) {

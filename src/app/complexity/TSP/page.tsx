@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Navigation from '../../components/Navigation';
 import InstrumentPanel from '../components/InstrumentPanel';
 import ControlPanel, { Field, Section } from '../components/ControlPanel';
@@ -20,8 +20,10 @@ interface TspStep {
   tour: number[];
   length: number;
   note: string;
-  /** 蚁群专用：信息素矩阵 */
+  /** 蚁群专用：信息素矩阵（行列索引 = 真实节点编号） */
   pheromone?: number[][];
+  /** 信息素快照对应的节点编号（采样时行列 ≠ 节点编号，需要这层映射） */
+  pheromoneNodes?: number[];
   best?: number[];
   bestLength?: number;
 }
@@ -77,6 +79,13 @@ function optimalTour(points: Point[]): { tour: number[]; length: number } {
 
   dfs();
   return { tour: best, length: bestLen };
+}
+
+/** log10(n!) 用对数累加，避免溢出 */
+function factorialLog10(n: number): number {
+  let s = 0;
+  for (let i = 2; i <= n; i++) s += Math.log10(i);
+  return s;
 }
 
 const CASES: TestCase<TspInput, number[]>[] = [
@@ -264,23 +273,45 @@ function* acoGen(
   rho: number,
 ): Generator<TspStep, number[], void> {
   const n = points.length;
-  const ALPHA = 1;
-  const BETA = 3;
   const tau = Array.from({ length: n }, () => new Array(n).fill(1));
-  const eta = Array.from({ length: n }, (_, i) =>
-    Array.from({ length: n }, (_, j) => (i === j ? 0 : 1 / Math.max(dist(points[i], points[j]), 1e-9))),
+  // 预计算 eta^BETA（BETA=3）：内层选择循环从 2 次 pow 降为 2 次乘法（n=1024 时每圈省千万次 pow）
+  const etaB = Array.from({ length: n }, (_, i) =>
+    Array.from({ length: n }, (_, j) =>
+      i === j ? 0 : Math.pow(1 / Math.max(dist(points[i], points[j]), 1e-9), 3),
+    ),
   );
+  // 大实例（n² > 14400）不再每步全量拷贝信息素矩阵：拷贝 100 万元素/步会把内存吃满。
+  // 快照按均匀间隔采 60 个真实节点（行列索引 = pheromoneNodes 里的节点编号），
+  // 算法本体仍用完整矩阵；渲染端按 pheromoneNodes 把浓度画到正确的节点对上。
+  const SAMPLE = 60;
+  const sampleNodes =
+    n <= SAMPLE
+      ? Array.from({ length: n }, (_, i) => i)
+      : Array.from({ length: SAMPLE }, (_, i) => Math.floor((i * n) / SAMPLE));
+  const snap = (): { tau: number[][]; nodes: number[] } => {
+    if (n <= SAMPLE) return { tau: tau.map((r) => [...r]), nodes: sampleNodes };
+    const k = sampleNodes.length;
+    const out = Array.from({ length: k }, (_, i) => {
+      const row = tau[sampleNodes[i]];
+      return Array.from({ length: k }, (_, j) => row[sampleNodes[j]]);
+    });
+    return { tau: out, nodes: sampleNodes };
+  };
 
   const rnd = mulberry32(7);
   let best: number[] = [];
   let bestLen = Infinity;
 
-  yield {
-    tour: [],
-    length: 0,
-    note: `初始信息素均匀分布，${ants} 只蚂蚁持续搜索`,
-    pheromone: tau.map((r) => [...r]),
-  };
+  {
+    const s = snap();
+    yield {
+      tour: [],
+      length: 0,
+      note: `初始信息素均匀分布，${ants} 只蚂蚁持续搜索`,
+      pheromone: s.tau,
+      pheromoneNodes: s.nodes,
+    };
+  }
 
   // 不设轮数上限：一直跑到用户手动停止
   for (let iter = 0; ; iter++) {
@@ -296,9 +327,11 @@ function* acoGen(
         const cur = tour[tour.length - 1];
         let total = 0;
         const weights = new Array(n).fill(0);
+        const tauRow = tau[cur];
+        const etaRow = etaB[cur];
         for (let j = 0; j < n; j++) {
           if (visited[j]) continue;
-          const w = Math.pow(tau[cur][j], ALPHA) * Math.pow(eta[cur][j], BETA);
+          const w = tauRow[j] * etaRow[j];
           weights[j] = w;
           total += w;
         }
@@ -330,19 +363,27 @@ function* acoGen(
         best = [...tour];
       }
 
-      yield {
-        tour: [...tour],
-        length: len,
-        note: `第 ${iter + 1} 轮 · 第 ${k + 1} 只蚂蚁：${len.toFixed(2)}${improved ? '（刷新最优）' : ''}`,
-        pheromone: tau.map((r) => [...r]),
-        best: [...best],
-        bestLength: bestLen,
-      };
+      {
+        const s = snap();
+        yield {
+          tour: [...tour],
+          length: len,
+          note: `第 ${iter + 1} 轮 · 第 ${k + 1} 只蚂蚁：${len.toFixed(2)}${improved ? '（刷新最优）' : ''}`,
+          pheromone: s.tau,
+          pheromoneNodes: s.nodes,
+          best: [...best],
+          bestLength: bestLen,
+        };
+      }
     }
-
-    // 挥发
+    // 挥发（只处理 i<j 上三角，等价且省一半）
     for (let i = 0; i < n; i++) {
-      for (let j = 0; j < n; j++) tau[i][j] *= 1 - rho;
+      const row = tau[i];
+      for (let j = i + 1; j < n; j++) {
+        const v = row[j] * (1 - rho);
+        row[j] = v;
+        tau[j][i] = v;
+      }
     }
     // 本轮所有蚂蚁按路径长度沉积信息素
     for (const t of tours) {
@@ -447,56 +488,86 @@ export default function TspPage() {
   const hasOptimal = started && Number.isFinite(optimal.length) && optimal.length > 0;
   const gap = hasOptimal ? ((current - optimal.length) / optimal.length) * 100 : Number.NaN;
 
+  // 测量画布容器尺寸：viewBox 与容器比例保持一致，空间才不会浪费
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const [mapSize, setMapSize] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = mapRef.current;
+    if (!el) return;
+    const update = () => setMapSize({ w: el.clientWidth, h: el.clientHeight });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const view = useMemo(() => {
-    const W = 620;
-    const H = 520;
-    const PAD = 56;
-    const xs = points.map((p) => p[0]);
-    const ys = points.map((p) => p[1]);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
-    const spanX = Math.max(maxX - minX, 1);
-    const spanY = Math.max(maxY - minY, 1);
-    const scale = Math.min((W - PAD * 2) / spanX, (H - PAD * 2) / spanY);
-    const offsetX = PAD + (W - PAD * 2 - spanX * scale) / 2;
-    const offsetY = PAD + (H - PAD * 2 - spanY * scale) / 2;
+    // 未测量完成前先用 2:1 的默认比例，首帧后立刻被真实尺寸替换
+    const W = mapSize.w > 0 ? Math.max(320, mapSize.w) : 1000;
+    // SVG 有 max-h-[480px]：测量高度按 480 封顶，viewBox 比例才与实际渲染框一致
+    const H = mapSize.h > 0 ? Math.min(480, Math.max(240, mapSize.h)) : 480;
+    const PAD = 36;
+    // 固定 0..120 的数据域；X/Y 独立缩放铺满整个画布（距离仍按原始坐标计算，
+    // 视觉上只是投影拉伸，不影响算法与长度对比）
+    const SPAN = 120;
+    const scaleX = (W - PAD * 2) / SPAN;
+    const scaleY = (H - PAD * 2) / SPAN;
 
     return {
       width: W,
       height: H,
       pos: points.map(([x, y]) => ({
-        x: offsetX + (x - minX) * scale,
-        y: H - (offsetY + (y - minY) * scale),
+        x: PAD + x * scaleX,
+        y: H - (PAD + y * scaleY),
       })),
     };
-  }, [points]);
+  }, [points, mapSize]);
 
   // 点越多，半径越小、编号越早隐藏
-  const nodeR = points.length <= 16 ? 7 : points.length <= 30 ? 5 : points.length <= 45 ? 3.6 : 2.8;
+  const nodeR = points.length <= 16 ? 7 : points.length <= 30 ? 5 : points.length <= 45 ? 3.6 : points.length <= 80 ? 2.8 : points.length <= 300 ? 2.2 : 1.4;
   const showLabels = points.length <= 24;
 
   const path = step.tour.map((node) => `${view.pos[node].x},${view.pos[node].y}`).join(' ');
   const closed = step.tour.length === points.length;
   const last = step.tour[step.tour.length - 1];
 
-  // 蚁群信息素：归一化后按浓度画线
+  // 蚁群模式：地图只画历史最优回路（试探路径每只蚂蚁都不同，画出来会一直变来变去）；
+  // 当前蚂蚁的路径长度仍通过读数展示
+  const acoBestPath =
+    activeAlgo === 'aco' && step.best && step.best.length
+      ? [...step.best, step.best[0]].map((node) => `${view.pos[node].x},${view.pos[node].y}`).join(' ')
+      : '';
+  const linePath = activeAlgo === 'aco' ? acoBestPath : path;
+  const lineClosed = activeAlgo === 'aco' ? acoBestPath.length > 0 : closed;
+
+  // 蚁群信息素：min-max 对比度拉伸后画线。快照行列通过 pheromoneNodes 映射到真实节点。
+  // 不用 tau/max：初始均匀浓度下大部分边相等、全部贴着 max，看不出层次；
+  // 拉伸后未被沉积的边 → t=0（隐没），被蚂蚁偏好的边 → 高亮，浓度分化一目了然
   const pheromoneEdges = useMemo(() => {
-    if (!step.pheromone || points.length > 30) return [];
+    if (!step.pheromone || activeAlgo !== 'aco') return [];
     const tau = step.pheromone;
+    const nodes = step.pheromoneNodes ?? tau.map((_, i) => i);
+    let min = Infinity;
     let max = 0;
     for (let i = 0; i < tau.length; i++) {
-      for (let j = i + 1; j < tau.length; j++) max = Math.max(max, tau[i][j]);
-    }
-    const out: { a: number; b: number; t: number }[] = [];
-    for (let i = 0; i < tau.length; i++) {
       for (let j = i + 1; j < tau.length; j++) {
-        if (max > 0) out.push({ a: i, b: j, t: tau[i][j] / max });
+        const v = tau[i][j];
+        if (v < min) min = v;
+        if (v > max) max = v;
       }
     }
-    return out;
-  }, [step.pheromone, points.length]);
+    // 浓度还没分化（极差太小）：不画，避免全屏噪声
+    if (max - min < 1e-6) return [];
+    const pairs: { a: number; b: number; t: number }[] = [];
+    for (let i = 0; i < tau.length; i++) {
+      for (let j = i + 1; j < tau.length; j++) {
+        const t = (tau[i][j] - min) / (max - min);
+        if (t > 0.12) pairs.push({ a: nodes[i], b: nodes[j], t });
+      }
+    }
+    pairs.sort((a, b) => b.t - a.t);
+    return pairs.slice(0, 400);
+  }, [step.pheromone, step.pheromoneNodes, activeAlgo]);
 
   return (
     <main className="min-h-screen bg-zinc-50">
@@ -535,10 +606,11 @@ export default function TspPage() {
                 }
               >
                 <div className="flex min-h-0 flex-1 flex-col sm:flex-row">
-                <div className="flex min-h-0 flex-1 items-center justify-center p-2">
+                <div ref={mapRef} className="flex min-h-0 flex-1 items-center justify-center p-2">
                   <svg
                     viewBox={`0 0 ${view.width} ${view.height}`}
                     className="h-full max-h-[480px] w-full"
+                    preserveAspectRatio="xMidYMid meet"
                     role="img"
                     aria-label="旅行商路径"
                   >
@@ -552,7 +624,7 @@ export default function TspPage() {
                       </filter>
                     </defs>
 
-                    {/* 信息素浓度 */}
+                    {/* 信息素浓度：紫色「高速路」，粗细 = 浓度^3 放大层次 */}
                     {pheromoneEdges.map(({ a, b, t }) => (
                       <line
                         key={`p-${a}-${b}`}
@@ -561,15 +633,15 @@ export default function TspPage() {
                         x2={view.pos[b].x}
                         y2={view.pos[b].y}
                         stroke="#a855f7"
-                        strokeWidth={0.6 + t * 5}
-                        opacity={0.05 + t * 0.4}
+                        strokeWidth={0.5 + t * t * t * 6}
+                        opacity={0.08 + t * t * 0.5}
                       />
                     ))}
 
-                    {step.tour.length > 1 && (
+                    {linePath && (
                       <>
                         <polyline
-                          points={path}
+                          points={linePath}
                           fill="none"
                           stroke="#3b82f6"
                           strokeWidth={6}
@@ -578,7 +650,7 @@ export default function TspPage() {
                           strokeLinecap="round"
                         />
                         <polyline
-                          points={path}
+                          points={linePath}
                           fill="none"
                           stroke="#60a5fa"
                           strokeWidth={2.8}
@@ -588,7 +660,7 @@ export default function TspPage() {
                       </>
                     )}
 
-                    {closed && (
+                    {linePath && !lineClosed && (
                       <line
                         x1={view.pos[last].x}
                         y1={view.pos[last].y}
@@ -601,24 +673,34 @@ export default function TspPage() {
                       />
                     )}
 
-                    {points.map((_, i) => (
-                      <g key={i}>
-                        <circle cx={view.pos[i].x} cy={view.pos[i].y} r={nodeR * 2.6} fill="#3b82f6" opacity={0.12} />
-                        <circle cx={view.pos[i].x} cy={view.pos[i].y} r={nodeR} fill="#93c5fd" filter="url(#tsp-glow)" />
-                        {showLabels && (
-                          <text
-                            x={view.pos[i].x}
-                            y={view.pos[i].y - nodeR - 7}
-                            textAnchor="middle"
-                            fontSize="11"
-                            fontFamily="monospace"
-                            fill="#a1a1aa"
-                          >
-                            {i}
-                          </text>
-                        )}
-                      </g>
-                    ))}
+                    {points.map((_, i) => {
+                      const dense = points.length > 200;
+                      return (
+                        <g key={i}>
+                          {!dense && (
+                            <circle cx={view.pos[i].x} cy={view.pos[i].y} r={nodeR * 2.6} fill="#3b82f6" opacity={0.12} />
+                          )}
+                          {dense ? (
+                            // 大规模：纯色小方点，不带滤镜（上千个高斯模糊会把绘制拖垮）
+                            <circle cx={view.pos[i].x} cy={view.pos[i].y} r={nodeR} fill="#93c5fd" />
+                          ) : (
+                            <circle cx={view.pos[i].x} cy={view.pos[i].y} r={nodeR} fill="#93c5fd" filter="url(#tsp-glow)" />
+                          )}
+                          {showLabels && (
+                            <text
+                              x={view.pos[i].x}
+                              y={view.pos[i].y - nodeR - 7}
+                              textAnchor="middle"
+                              fontSize="11"
+                              fontFamily="monospace"
+                              fill="#a1a1aa"
+                            >
+                              {i}
+                            </text>
+                          )}
+                        </g>
+                      );
+                    })}
                   </svg>
                 </div>
 
@@ -701,19 +783,33 @@ export default function TspPage() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-zinc-500">
                       最终回路
                     </div>
-                    <p className="mt-1 break-all font-mono text-[10px] leading-relaxed text-zinc-400">
-                      {activeAlgo === 'aco'
-                        ? step.best && step.best.length
-                          ? `${step.best.join(' → ')} → ${step.best[0]}`
-                          : '—'
-                        : solver.done && solver.result && solver.result.length
-                          ? `${solver.result.join(' → ')} → ${solver.result[0]}`
-                          : '—'}
-                    </p>
+                    {(() => {
+                      const tour =
+                        activeAlgo === 'aco'
+                          ? step.best && step.best.length
+                            ? step.best
+                            : null
+                          : solver.done && solver.result && solver.result.length
+                            ? solver.result
+                            : null;
+                      // 大实例不展开完整路径（上千个编号会把面板刷满），只显示规模 + 前几个节点预览
+                      if (tour && tour.length > 60) {
+                        return (
+                          <p className="mt-1 font-mono text-[10px] leading-relaxed text-zinc-400">
+                            {tour.length} 个节点 · {`${tour.slice(0, 8).join(' → ')} → …`}（完整路径见地图）
+                          </p>
+                        );
+                      }
+                      return (
+                        <p className="mt-1 break-all font-mono text-[10px] leading-relaxed text-zinc-400">
+                          {tour ? `${tour.join(' → ')} → ${tour[0]}` : '—'}
+                        </p>
+                      );
+                    })()}
                   </div>
                 </div>
                 </div>
@@ -740,7 +836,19 @@ export default function TspPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="点数 (POINTS)" value={count} min={5} max={60} step={1} onChange={setCount} />
+              <Field
+                label="点数 (POINTS)"
+                value={count}
+                min={5}
+                max={1024}
+                step={1}
+                onChange={setCount}
+                format={(v) =>
+                  v <= 10
+                    ? `(${v - 1})! / 2 可精确求解`
+                    : `(${v - 1})! / 2 ≈ 10^${factorialLog10(v - 1).toFixed(0)} 条回路，精确解不可行`
+                }
+              />
               <Field
                 label="聚散度 (SPREAD)"
                 value={Math.round(spread * 100)}

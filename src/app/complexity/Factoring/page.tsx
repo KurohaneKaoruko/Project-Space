@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 import Navigation from '../../components/Navigation';
 import InstrumentPanel from '../components/InstrumentPanel';
 import SegmentedControl from '../components/SegmentedControl';
@@ -26,6 +26,13 @@ interface FactorStep {
   d: bigint;
   factors: bigint[];
   note: string;
+}
+
+/** 从步骤里推导结果状态：product === n → 完整分解；否则 → 部分分解（Rho/预算用尽） */
+function resultState(n: bigint, factors: bigint[]): 'complete' | 'partial' | 'pending' {
+  if (factors.length === 0) return 'pending';
+  const product = factors.reduce((a, b) => a * b, 1n);
+  return product === n ? 'complete' : 'partial';
 }
 
 /* ---------------- BigInt 数论工具 ---------------- */
@@ -101,6 +108,13 @@ function ladderFromFactors(n: bigint, factors: bigint[]) {
   return rows;
 }
 
+/** 长数字的紧凑展示：保留头尾 + 省略号 + 位数（如 704074…35844 ·48位），小数字原样 */
+function compactBig(v: bigint): string {
+  const s = v.toString();
+  if (s.length <= 24) return s;
+  return `${s.slice(0, 12)}…${s.slice(-8)} (${s.length}位)`;
+}
+
 /* ---------------- 判题用例（小整数） ---------------- */
 
 const isPrimeNum = (n: number): boolean => {
@@ -167,7 +181,7 @@ function* trialGen(n: bigint): Generator<FactorStep, bigint[], void> {
         m,
         d,
         factors: [...factors],
-        note: `试除 ${TRIAL_BUDGET} 次仍无因子 → 这个规模下试除法不可行，换 Pollard's Rho`,
+        note: `试除 ${TRIAL_BUDGET} 次仍无因子 → 预算耗尽停止${factors.length > 0 ? '（部分分解）' : ''}`,
       };
       return factors;
     }
@@ -182,11 +196,11 @@ function* trialGen(n: bigint): Generator<FactorStep, bigint[], void> {
 
 function* rhoIter(
   value: bigint,
+  c: bigint,
 ): Generator<{ i: number; x: bigint; y: bigint; d: bigint }, bigint, void> {
   if (value % 2n === 0n) return 2n;
   let x = 2n;
   let y = 2n;
-  const c = 1n;
   let d = 1n;
   let guard = 0;
   const f = (v: bigint) => (v * v + c) % value;
@@ -222,21 +236,41 @@ function* pollardGen(n: bigint): Generator<FactorStep, bigint[], void> {
       continue;
     }
 
-    const iter = rhoIter(value);
-    let cursor = iter.next();
-    while (!cursor.done) {
-      yield snap(value, cursor.value.d, `迭代 ${cursor.value.i}：gcd(|x−y|, n) = ${cursor.value.d}`);
-      cursor = iter.next();
+    // Brent 变体轮次：每轮换一个常数 c（c=1 失败后 c=2,3…——单个环上找不到非平凡因子是概率事件，
+    // 换常数等于换一个随机环）。全部轮次失败才放弃
+    let found: bigint | null = null;
+    for (let c = 1n; c <= 8n; c++) {
+      const iter = rhoIter(value, c);
+      let cursor = iter.next();
+      while (!cursor.done) {
+        yield snap(value, cursor.value.d, `迭代 ${cursor.value.i}（c=${c}）：gcd(|x−y|, n) = ${cursor.value.d}`);
+        cursor = iter.next();
+      }
+      const d = cursor.value;
+      if (d > 1n) {
+        found = d;
+        break;
+      }
+      yield snap(value, 0n, `c=${c} 的环只找到平凡因子，换常数重试`);
     }
-    const d = cursor.value;
 
-    if (d <= 1n) {
-      yield snap(value, d, 'Pollard 没找到非平凡因子，放弃该分支');
+    if (found === null) {
+      // 该分支确实分解不动：把它作为「剩余」交给结果层标注部分分解，而不是悄悄丢掉
+      factors.push(value);
+      factors.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+      yield snap(value, 0n, `8 轮常数都未找到非平凡因子，剩余 ${value} 分解不动（部分分解）`);
       continue;
     }
 
-    yield snap(value, d, `找到因子 ${d}，拆成 ${d} × ${value / d}`);
-    stack.push(d, value / d);
+    // 找到的因子若本身是质数，立刻收进 factors——UI 实时显示，不用等该分支递归拆完
+    if (isPrimeBig(found)) {
+      factors.push(found);
+      factors.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    }
+
+    yield snap(value / found, found, `找到因子 ${found}，拆成 ${found} × ${value / found}`);
+    // 已收进 factors 的质数分支不用再走一遍栈（收尾去重）；合数分支继续递归拆
+    stack.push(...(isPrimeBig(found) ? [value / found] : [found, value / found]));
   }
 
   return factors;
@@ -283,6 +317,8 @@ export default function FactoringPage() {
   const ladder = ladderFromFactors(n, step.factors);
   const done = solver.done;
   const total = solver.result?.length ?? null;
+  // 结果诚实性：product === n 才是完整分解；Rho 换常数也拆不动 / 试除预算耗尽时是「部分分解」
+  const resultKind = done && solver.result ? resultState(n, solver.result) : 'pending';
 
 
   return (
@@ -316,38 +352,73 @@ export default function FactoringPage() {
                 }
               >
                 <div className="flex min-h-0 flex-1 flex-col sm:flex-row">
-                  <div className="flex min-h-0 flex-1 items-center justify-center px-6 py-5">
-                    <div className="space-y-1">
-                      {ladder.map((row, i) => (
-                        <div key={i} className="flex items-stretch gap-4 font-mono">
-                          <span className="w-24 self-center text-right text-2xl tabular-nums text-amber-400">
-                            {row.divisor}
-                          </span>
-                          <span className="border-l border-white/[0.14] pl-6 text-[34px] tabular-nums text-zinc-100">
-                            {row.dividend}
-                          </span>
-                        </div>
-                      ))}
-
-                      <div className="flex items-stretch gap-4 font-mono">
-                        <span className="w-24" />
-                        <span className="border-l border-transparent pl-6 text-[34px] tabular-nums">
-                          <span className={done ? 'text-blue-400' : 'text-zinc-700'}>
-                            {done ? (ladder[ladder.length - 1]?.quotient ?? n) : '?'}
-                          </span>
-                        </span>
-                      </div>
+                  <div className="flex min-h-0 flex-1 items-center justify-center overflow-x-auto px-6 py-5">
+                    <div className="flex flex-col items-end space-y-1">
+                      {(() => {
+                        // 短除法竖式：数字右对齐（右缘齐平，经典竖式排法），质因数夹在相邻两数
+                        // 之间、贴右缘成列；字号随位数收缩，长数字整行独占不并排
+                        const widthOf = (v: bigint) => v.toString().length;
+                        const widest = Math.max(
+                          widthOf(n),
+                          ...ladder.map((r) => Math.max(widthOf(r.dividend), widthOf(r.quotient))),
+                        );
+                        const font = Math.max(12, Math.min(34, Math.round((34 * 26) / widest)));
+                        const nums = ladder.map((r) => r.dividend);
+                        // 末数：完成时是最后一轮的商；进行中是剩余未分解部分 step.m
+                        const finalNum = done
+                          ? (ladder[ladder.length - 1]?.quotient ?? n)
+                          : ladder.length > 0
+                            ? step.m
+                            : n;
+                        // 末数颜色：完整分解=蓝；部分分解=琥珀警示（还有合数没拆开）；进行中=灰
+                        const finalTone =
+                          done && resultKind === 'complete'
+                            ? 'text-blue-400'
+                            : done
+                              ? 'text-amber-400'
+                              : ladder.length > 0
+                                ? 'text-zinc-400'
+                                : 'text-zinc-100';
+                        return (
+                          <>
+                            {nums.map((num, i) => (
+                              <Fragment key={`n-${i}`}>
+                                {/* 分解前的数 */}
+                                <div className="text-right font-mono tabular-nums text-zinc-100" style={{ fontSize: font }}>
+                                  {num}
+                                </div>
+                                {/* 质因数：两数之间，右缘对齐成列 */}
+                                <div className="flex items-center justify-end gap-3 font-mono">
+                                  <span className="h-px w-[3ch] bg-white/[0.14]" />
+                                  <span className="text-right tabular-nums text-amber-400" style={{ fontSize: Math.max(11, font * 0.78) }}>
+                                    {ladder[i].divisor}
+                                  </span>
+                                </div>
+                              </Fragment>
+                            ))}
+                            {/* 末数（蓝=完整分解，琥珀=部分分解卡在合数上） */}
+                            <div
+                              className={`text-right font-mono tabular-nums ${finalTone}`}
+                              style={{ fontSize: font }}
+                            >
+                              {finalNum}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
 
                   <div className="flex shrink-0 flex-col justify-center gap-5 border-t border-white/[0.06] p-4 sm:w-[240px] sm:border-l sm:border-t-0">
                     <div>
-                      <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-zinc-500">n</div>
-                      <div className="mt-1 break-all font-mono text-xl font-black tabular-nums text-zinc-100">
-                        {n}
+                      <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-zinc-500">
+                        n · {n.toString().length} 位
+                      </div>
+                      <div className="mt-1 font-mono text-sm font-black tabular-nums leading-snug text-zinc-100">
+                        {compactBig(n)}
                       </div>
                       <div className="mt-1 font-mono text-xs text-zinc-500">
-                        剩余 <span className="text-zinc-300">{step.m}</span>
+                        剩余 <span className="text-zinc-300">{compactBig(step.m)}</span>
                       </div>
                     </div>
 
@@ -365,14 +436,24 @@ export default function FactoringPage() {
                         {step.factors.length === 0 && (
                           <span className="font-mono text-[11px] text-zinc-600">—</span>
                         )}
-                        {step.factors.map((f, i) => (
-                          <span
-                            key={i}
-                            className="rounded border border-blue-500/30 bg-blue-500/15 px-2 py-0.5 font-mono text-sm font-bold text-blue-300"
-                          >
-                            {f}
-                          </span>
-                        ))}
+                        {step.factors.map((f, i) => {
+                          // 部分分解时最后一个「因子」可能是拆不动的合数剩余：用琥珀色区分，不冒充质数
+                          const isCompositeRemainder =
+                            done && resultKind === 'partial' && i === step.factors.length - 1 && !isPrimeBig(f);
+                          return (
+                            <span
+                              key={i}
+                              className={`max-w-full truncate rounded border px-2 py-0.5 font-mono text-sm font-bold ${
+                                isCompositeRemainder
+                                  ? 'border-amber-500/40 bg-amber-500/15 text-amber-300'
+                                  : 'border-blue-500/30 bg-blue-500/15 text-blue-300'
+                              }`}
+                              title={`${f}${isCompositeRemainder ? '（合数，未能继续分解）' : ''}`}
+                            >
+                              {f.toString()}
+                            </span>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -380,8 +461,8 @@ export default function FactoringPage() {
                       <div className="font-mono text-[9px] uppercase tracking-[0.28em] text-zinc-500">
                         {algo === 'trial' ? 'divisor' : 'gcd'}
                       </div>
-                      <div className="mt-1 break-all font-mono text-xl tabular-nums text-zinc-100">
-                        {step.d}
+                      <div className="mt-1 font-mono text-sm tabular-nums leading-snug text-zinc-100">
+                        {compactBig(step.d)}
                       </div>
                       <p className="mt-1 font-mono text-[10px] leading-relaxed text-zinc-500">
                         {step.note}
@@ -393,14 +474,43 @@ export default function FactoringPage() {
                         result
                       </div>
                       <p className="mt-1 break-all font-mono text-xs leading-relaxed">
-                        {done && solver.result ? (
-                          <span className="text-emerald-400">
-                            {n} = {solver.result.join(' × ')}
-                          </span>
+                        {step.factors.length > 0 ? (
+                          // 实时：已找到的因子随时展示，不等分解完成
+                          resultKind === 'partial' ? (
+                            <span className="text-amber-400">
+                              部分分解：{step.factors.length} 个因子 · 剩余 {compactBig(step.m)} 仍为合数
+                              （{algo === 'trial' ? '试除预算耗尽' : "Rho 换 8 个常数仍未拆动"}）
+                            </span>
+                          ) : (
+                            <span className={done ? 'text-emerald-400' : 'text-zinc-400'}>
+                              {step.factors.length} 个因子（实时） ·{' '}
+                              {step.factors.map((f) => f.toString().length + '位').join(' + ')}
+                            </span>
+                          )
                         ) : (
                           <span className="text-zinc-600">求解中…</span>
                         )}
                       </p>
+                      {step.factors.length > 0 && (
+                        <p className="mt-1 break-all font-mono text-[10px] leading-relaxed">
+                          <span className={resultKind === 'complete' ? 'text-emerald-400/90' : 'text-zinc-500'}>
+                            {step.factors.join(' × ')}
+                            {resultKind === 'pending' && (
+                              <span className="text-zinc-600"> × ?（剩余 {compactBig(step.m)}）</span>
+                            )}
+                          </span>
+                        </p>
+                      )}
+                      {done && solver.result && resultKind === 'complete' && (
+                        <details className="mt-1">
+                          <summary className="cursor-pointer select-none font-mono text-[10px] text-zinc-500 hover:text-zinc-300">
+                            完整分解式
+                          </summary>
+                          <p className="mt-1 break-all font-mono text-[10px] leading-relaxed text-emerald-400/90">
+                            {n} = {solver.result.join(' × ')}
+                          </p>
+                        </details>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -443,7 +553,7 @@ export default function FactoringPage() {
                   type="text"
                   inputMode="numeric"
                   value={manual}
-                  onChange={(e) => setManual(e.target.value.replace(/\D/g, '').slice(0, 24))}
+                  onChange={(e) => setManual(e.target.value.replace(/\D/g, '').slice(0, 48))}
                   placeholder={String(generated)}
                   className="w-full rounded-sm border border-zinc-200 bg-zinc-50 px-2 py-1.5 font-mono text-sm tabular-nums text-zinc-900 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none"
                   aria-label="自定义数字"
@@ -451,9 +561,9 @@ export default function FactoringPage() {
                 {manual.length > 0 && !manualValid && (
                   <p className="font-mono text-[10px] text-rose-500">需为不小于 2 的整数</p>
                 )}
-                {manualValid && manual.length > 20 && (
+                {manualValid && manual.length > 25 && (
                   <p className="font-mono text-[10px] text-amber-600">
-                    超过 20 位，Pollard 也可能要跑很久
+                    超过 25 位：Pollard&apos;s Rho 平均 O(n^¼) ≈ 10^{(manual.length / 4).toFixed(1)} 次迭代，大概率跑不完
                   </p>
                 )}
               </div>
@@ -462,12 +572,17 @@ export default function FactoringPage() {
                 label="随机位数 (DIGITS)"
                 value={digits}
                 min={6}
-                max={24}
+                max={48}
                 step={1}
                 onChange={(v) => {
                   setDigits(v);
                   setManual('');
                 }}
+                format={(v) =>
+                  v <= 20
+                    ? `${v} 位`
+                    : `${v} 位 · 试除需 ~10^${(v / 2).toFixed(0)} 次`
+                }
               />
               <button
                 onClick={() => {

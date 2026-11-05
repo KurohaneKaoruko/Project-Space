@@ -24,6 +24,12 @@ interface BinStep {
 const TITLE = '装箱';
 const CLS = 'NPH' as const;
 
+/** log10(Bell(n)) 的 Dobinski 近似：log10(B(n)) ≈ (n·ln n - n)/ln(10)（n≥6 时够用） */
+function bellLog10(n: number): number {
+  if (n < 6) return 0;
+  return (n * Math.log(n) - n) / Math.LN10;
+}
+
 /** 校验：每个物品都有箱子，且每个箱子不超容量 */
 function validate(output: unknown, input: BinInput): boolean {
   if (!Array.isArray(output) || output.length !== input.items.length) return false;
@@ -201,7 +207,10 @@ export default function BinPackingPage() {
                     const load = bin.reduce((s, i) => s + input.items[i], 0);
                     const active = step.active === b;
                     return (
-                      <div key={b} className="flex w-16 shrink-0 flex-col items-center gap-2">
+                      <div
+                        key={b}
+                        className={`flex shrink-0 flex-col items-center gap-2 ${step.bins.length > 14 ? 'w-9' : 'w-16'}`}
+                      >
                         <div
                           className={`flex w-full flex-col-reverse overflow-hidden rounded-b-md border ${
                             active ? 'border-amber-400/70' : 'border-white/[0.12]'
@@ -210,11 +219,11 @@ export default function BinPackingPage() {
                         >
                           {bin.map((itemIdx) => {
                             const size = input.items[itemIdx];
-                            const h = (size / input.capacity) * 220;
+                            const h = Math.max(4, (size / input.capacity) * 220);
                             return (
                               <div
                                 key={itemIdx}
-                                className="flex items-center justify-center border-t border-[#080a0f] bg-blue-500/70 font-mono text-[10px] text-white transition-all duration-200"
+                                className={`flex items-center justify-center border-t border-[#080a0f] bg-blue-500/70 font-mono text-white transition-all duration-200 ${step.bins.length > 14 ? 'text-[7px]' : 'text-[10px]'}`}
                                 style={{ height: h }}
                                 title={`物品 ${itemIdx}：${size}`}
                               >
@@ -271,7 +280,15 @@ export default function BinPackingPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="物品数 (ITEMS)" value={count} min={5} max={14} step={1} onChange={setCount} />
+              <Field
+                label="物品数 (ITEMS)"
+                value={count}
+                min={5}
+                max={60}
+                step={1}
+                onChange={setCount}
+                format={(v) => `精确最优需枚举划分 · Bell(${v}) ≈ 10^${bellLog10(v).toFixed(1)}`}
+              />
               <Field label="箱子容量 (CAPACITY)" value={capacity} min={8} max={30} step={1} onChange={setCapacity} />
               <button
                 onClick={() => setSeed((s) => s + 1)}

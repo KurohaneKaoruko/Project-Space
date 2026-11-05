@@ -40,7 +40,7 @@ function buildAdj(input: CliqueInput) {
 function maxClique(input: CliqueInput): number[] {
   const adj = buildAdj(input);
   let best: number[] = [];
-  let budget = 500000;
+  let budget = 2000000;
 
   const expand = (R: number[], P: number[]) => {
     if (--budget <= 0) return;
@@ -124,7 +124,7 @@ const CASES: TestCase<CliqueInput, number[]>[] = [
 function* cliqueGen(input: CliqueInput): Generator<CliqueStep, number[], void> {
   const adj = buildAdj(input);
   let best: number[] = [];
-  let budget = 300000;
+  let budget = 2000000;
 
   function* expand(R: number[], P: number[]): Generator<CliqueStep, void, void> {
     if (--budget <= 0) {
@@ -232,7 +232,7 @@ export default function MaxCliquePage() {
   const layout = useMemo(() => {
     const W = 820;
     const H = 380;
-    const nodeR = input.n <= 10 ? 23 : input.n <= 14 ? 18 : 14;
+    const nodeR = input.n <= 10 ? 23 : input.n <= 14 ? 18 : input.n <= 26 ? 13 : 9;
     return {
       width: W,
       height: H,
@@ -416,7 +416,15 @@ export default function MaxCliquePage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={6} max={14} step={1} onChange={setN} />
+              <Field
+                label="节点数 (NODES)"
+                value={n}
+                min={6}
+                max={40}
+                step={1}
+                onChange={setN}
+                format={(v) => `2^${v} = ${(2 ** v).toExponential(1)} 个子图待筛`}
+              />
               <Field
                 label="边密度 (DENSITY)"
                 value={Math.round(density * 100)}

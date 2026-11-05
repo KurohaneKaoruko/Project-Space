@@ -111,7 +111,9 @@ function* dpGen(input: SubsetInput): Generator<SubsetStep, number[] | null, void
 
 function randomInstance(count: number, target: number, seed: number): SubsetInput {
   const rnd = mulberry32(seed);
-  const nums = Array.from({ length: count }, () => 1 + Math.floor(rnd() * 20));
+  // 数值范围随目标缩放，保证 target 在可达范围内有挑战性
+  const maxVal = Math.max(20, Math.ceil(target * 0.35));
+  const nums = Array.from({ length: count }, () => 1 + Math.floor(rnd() * maxVal));
   const total = nums.reduce((a, b) => a + b, 0);
   return { nums, target: Math.max(3, Math.min(target, total)) };
 }
@@ -179,7 +181,7 @@ export default function SubsetSumPage() {
 
 
   const cols = input.target + 1;
-  const cell = Math.max(5, Math.min(16, Math.floor(820 / cols)));
+  const cell = Math.max(3, Math.min(16, Math.floor(1200 / cols)));
   const picked = new Set(result ?? []);
 
   return (
@@ -307,8 +309,16 @@ export default function SubsetSumPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="物品数 (ITEMS)" value={count} min={4} max={12} step={1} onChange={setCount} />
-              <Field label="目标和 (TARGET)" value={target} min={20} max={60} step={1} onChange={setTarget} />
+              <Field
+                label="物品数 (ITEMS)"
+                value={count}
+                min={4}
+                max={24}
+                step={1}
+                onChange={setCount}
+                format={(v) => `2^${v} = ${(2 ** v).toLocaleString()} 个子集（暴力搜索空间）`}
+              />
+              <Field label="目标和 (TARGET)" value={target} min={20} max={600} step={1} onChange={setTarget} />
               <button
                 onClick={() => setSeed((s) => s + 1)}
                 className="w-full border border-zinc-200 bg-zinc-50 py-2 text-[11px] font-bold uppercase tracking-widest text-zinc-600 transition-colors hover:border-blue-500/50 hover:bg-white hover:text-blue-600"

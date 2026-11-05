@@ -277,17 +277,22 @@ export default function SatPage() {
   });
 
   // 整个搜索空间：每个赋值对应一格，颜色 = 满足的子句比例
+  // 变量多时空间指数爆炸：全量 2^n 会卡死渲染，超过 512 格就等距抽样 512 格展示
   const total = 1 << input.nVars;
+  const MAX_CELLS = 512;
+  const cellStride = total > MAX_CELLS ? Math.ceil(total / MAX_CELLS) : 1;
+  const sampledCount = Math.ceil(total / cellStride);
   const cells = useMemo(
     () =>
-      Array.from({ length: total }, (_, mask) => {
+      Array.from({ length: sampledCount }, (_, si) => {
+        const mask = si * cellStride;
         const assign = Array.from({ length: input.nVars }, (_, i) => Boolean(mask & (1 << i)));
         const sat = input.clauses.filter((clause) =>
           clause.some((lit) => assign[Math.abs(lit) - 1] === lit > 0),
         ).length;
         return { mask, sat, ok: sat === input.clauses.length };
       }),
-    [input, total],
+    [input, sampledCount, cellStride],
   );
 
   const currentMask = step.assign.every((v) => v !== null)
@@ -295,7 +300,7 @@ export default function SatPage() {
     : -1;
 
   const satCount = clauseStates.filter((s) => s === 'sat').length;
-  const cols = total <= 8 ? total : total <= 32 ? 8 : 16;
+  const cols = sampledCount <= 8 ? sampledCount : sampledCount <= 32 ? 8 : 16;
 
   return (
     <main className="min-h-screen bg-zinc-50">
@@ -402,7 +407,7 @@ export default function SatPage() {
 
               {/* 搜索空间 + 日志 */}
               <div className="flex min-h-0 flex-col gap-3">
-                <InstrumentPanel label="SEARCH SPACE" meta={`2^${input.nVars} = ${total}`}>
+                <InstrumentPanel label="SEARCH SPACE" meta={`2^${input.nVars} = ${total.toLocaleString()}${cellStride > 1 ? ` · 抽样 ${sampledCount} 格` : ''}`}>
                   <div className="p-3">
                     <div
                       className="grid gap-1"
@@ -452,7 +457,7 @@ export default function SatPage() {
                     {[
                       { label: '决策', value: step.decisions },
                       { label: '回溯', value: step.backtracks },
-                      { label: '已查', value: step.total ? `${step.checked}` : '—' },
+                      { label: '已查', value: step.total ? `${step.checked} / ${step.total.toLocaleString()}` : '—' },
                     ].map((s) => (
                       <div key={s.label} className="px-3 py-1.5">
                         <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-zinc-600">
@@ -504,12 +509,20 @@ export default function SatPage() {
           {/* 控制面板 */}
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="变量数 (VARS)" value={nVars} min={3} max={9} step={1} onChange={setNVars} />
+              <Field
+                label="变量数 (VARS)"
+                value={nVars}
+                min={3}
+                max={22}
+                step={1}
+                onChange={setNVars}
+                format={(v) => `2^${v} = ${(2 ** v).toLocaleString()} 种赋值`}
+              />
               <Field
                 label="子句数 (CLAUSES)"
                 value={nClauses}
                 min={3}
-                max={40}
+                max={90}
                 step={1}
                 onChange={setNClauses}
               />

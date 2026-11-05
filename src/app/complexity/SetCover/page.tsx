@@ -25,14 +25,20 @@ interface SetCoverStep {
 const TITLE = '集合覆盖';
 const CLS = 'NPC' as const;
 
-/** 精确解：按顺序考虑每个集合，选或不选 */
+/** 精确解：按顺序考虑每个集合，选或不选（k 大时搜索树指数爆炸，带访问预算退化为贪心近似） */
 function exactCover(input: SetCoverInput): number[] {
   const { m, sets } = input;
   const covered = new Array(m).fill(false);
   const picked: number[] = [];
   let best: number[] | null = null;
+  let budget = 500000;
+  let exhausted = true;
 
   const dfs = (k: number) => {
+    if (budget-- <= 0) {
+      exhausted = false;
+      return;
+    }
     if (best && picked.length >= best.length) return;
     if (covered.every(Boolean)) {
       best = [...picked];
@@ -52,7 +58,31 @@ function exactCover(input: SetCoverInput): number[] {
   };
 
   dfs(0);
+  if (!exhausted) {
+    // 预算内没搜完：退回贪心近似解，保证判题仍有参照
+    return greedyApprox(input);
+  }
   return best ?? [];
+}
+
+/** 贪心近似：每轮挑新增覆盖最多的集合 */
+function greedyApprox(input: SetCoverInput): number[] {
+  const { m, sets } = input;
+  const covered = new Array(m).fill(false);
+  const picked: number[] = [];
+  while (covered.some((c) => !c)) {
+    let bestIdx = -1;
+    let bestGain = 0;
+    for (let i = 0; i < sets.length; i++) {
+      if (picked.includes(i)) continue;
+      const gain = sets[i].filter((e) => !covered[e]).length;
+      if (gain > bestGain) { bestGain = gain; bestIdx = i; }
+    }
+    if (bestIdx === -1) break;
+    picked.push(bestIdx);
+    for (const e of sets[bestIdx]) covered[e] = true;
+  }
+  return picked;
 }
 
 function coversAll(output: unknown, input: SetCoverInput): boolean {
@@ -182,7 +212,7 @@ function* exactGen(input: SetCoverInput): Generator<SetCoverStep, number[], void
   const covered = new Array(m).fill(false);
   const picked: number[] = [];
   let best: number[] | null = null;
-  let budget = 200000;
+  let budget = 2000000;
 
   yield { picked: [], covered: [...covered], note: '深度优先枚举子集，遇到更小的解就更新' };
 
@@ -445,8 +475,23 @@ export default function SetCoverPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="元素数 (ELEMENTS)" value={m} min={6} max={16} step={1} onChange={setM} />
-              <Field label="集合数 (SETS)" value={k} min={4} max={12} step={1} onChange={setK} />
+              <Field
+                label="元素数 (ELEMENTS)"
+                value={m}
+                min={6}
+                max={40}
+                step={1}
+                onChange={setM}
+              />
+              <Field
+                label="集合数 (SETS)"
+                value={k}
+                min={4}
+                max={24}
+                step={1}
+                onChange={setK}
+                format={(v) => `2^${v} = ${(2 ** v).toExponential(1)} 种选法`}
+              />
               <button
                 onClick={() => setSeed((s) => s + 1)}
                 className="w-full border border-zinc-200 bg-zinc-50 py-2 text-[11px] font-bold uppercase tracking-widest text-zinc-600 transition-colors hover:border-blue-500/50 hover:bg-white hover:text-blue-600"

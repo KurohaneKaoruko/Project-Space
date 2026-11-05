@@ -66,19 +66,27 @@ export function randomGraph(n: number, density: number, seed: number): [number, 
   return edges;
 }
 
-/** 随机点集：spread 越小越聚集 */
+/**
+ * 随机点集：spread ∈ [0,1]，0 = 聚成几簇，1 = 均匀散布整个画布。
+ * 坐标范围固定 0..120（相对值），渲染端按数据域 0..120 投影。
+ */
 export function randomPoints(n: number, spread: number, seed: number): [number, number][] {
   const rnd = mulberry32(seed);
   const points: [number, number][] = [];
   const clusters = spread < 0.5 ? 3 : 1;
-  const centers = Array.from({ length: clusters }, () => [20 + rnd() * 70, 20 + rnd() * 70]);
+  const centers = Array.from({ length: clusters }, () => [30 + rnd() * 60, 30 + rnd() * 60]);
   for (let i = 0; i < n; i++) {
     const [cx, cy] = centers[i % clusters];
-    const r = (1 - spread) * 22;
-    points.push([
-      Math.max(2, Math.min(118, cx + (rnd() - 0.5) * 2 * r)),
-      Math.max(2, Math.min(118, cy + (rnd() - 0.5) * 2 * r)),
-    ]);
+    // spread=0：半径 6 的紧密簇；spread=1：完全均匀铺满 0..120
+    if (spread > 0.92) {
+      points.push([rnd() * 120, rnd() * 120]);
+    } else {
+      const r = 6 + spread * 50;
+      points.push([
+        Math.max(0, Math.min(120, cx + (rnd() - 0.5) * 2 * r)),
+        Math.max(0, Math.min(120, cy + (rnd() - 0.5) * 2 * r)),
+      ]);
+    }
   }
   return points;
 }

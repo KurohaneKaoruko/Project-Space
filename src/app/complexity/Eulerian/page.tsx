@@ -162,7 +162,7 @@ function eulerianGraph(n: number, extra: number, seed: number): EulerInput {
 
   let added = 0;
   let guard = 0;
-  while (added < extra && guard++ < 600) {
+  while (added < extra && guard++ < 3000) {
     const a = Math.floor(rnd() * n);
     const b = Math.floor(rnd() * n);
     const c = Math.floor(rnd() * n);
@@ -314,7 +314,7 @@ export default function EulerianPage() {
   const layout = useMemo(() => {
     const W = 820;
     const H = 380;
-    const nodeR = input.n <= 8 ? 23 : input.n <= 12 ? 18 : 14;
+    const nodeR = input.n <= 8 ? 23 : input.n <= 12 ? 18 : input.n <= 24 ? 12 : input.n <= 32 ? 9 : 7;
     return {
       width: W,
       height: H,
@@ -496,12 +496,19 @@ export default function EulerianPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={4} max={12} step={1} onChange={setN} />
               <Field
-                label="附加三角 (TRIANGLES)"
+                label="节点数 (NODES)"
+                value={n}
+                min={4}
+                max={40}
+                step={1}
+                onChange={setN}
+              />
+              <Field
+                label="附加三角形 (EXTRA)"
                 value={extra}
                 min={0}
-                max={6}
+                max={12}
                 step={1}
                 onChange={setExtra}
                 format={(v) => (v === 0 ? '仅一个环' : `+${v * 3} 条边`)}

@@ -39,6 +39,7 @@ export type ProjectIconId =
   | 'MaxFlow'
   | 'Eulerian'
   | 'Factoring'
+  | 'DLP'
   | 'SAT'
   | 'SubsetSum'
   | 'Hamiltonian'
@@ -887,6 +888,39 @@ function IconSetCover() {
   );
 }
 
+function IconDLP() {
+  const ring = Array.from({ length: 8 }, (_, i) => {
+    const a = (i / 8) * Math.PI * 2 - Math.PI / 2;
+    return { x: 32 + 21 * Math.cos(a), y: 32 + 21 * Math.sin(a) };
+  });
+  return (
+    <Base>
+      <circle cx="32" cy="32" r="21" stroke="currentColor" strokeWidth="1.1" opacity="0.25" fill="none" />
+      {ring.map((p, i) => (
+        <circle
+          key={i}
+          cx={p.x}
+          cy={p.y}
+          r={i === 0 || i === 5 ? 4.2 : 2.6}
+          fill="currentColor"
+          opacity={i === 0 || i === 5 ? 0.95 : 0.45}
+        />
+      ))}
+      {/* 一次「跳跃」：g^k 直接落到 h */}
+      <line
+        x1={ring[0].x}
+        y1={ring[0].y}
+        x2={ring[5].x}
+        y2={ring[5].y}
+        stroke="currentColor"
+        strokeWidth="1.6"
+        opacity="0.8"
+        strokeDasharray="3 2"
+      />
+    </Base>
+  );
+}
+
 function IconGraphColoring() {
   const points = Array.from({ length: 5 }, (_, i) => {
     const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
@@ -992,6 +1026,7 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   MaxFlow: IconMaxFlow,
   Eulerian: IconEulerian,
   Factoring: IconFactoring,
+  DLP: IconDLP,
   SAT: IconSAT,
   SubsetSum: IconSubsetSum,
   Hamiltonian: IconHamiltonian,

@@ -325,6 +325,15 @@ export const projects: Project[] = [
     complexity: 'NP',
   },
   {
+    id: 'DLP',
+    title: '离散对数',
+    description:
+      '已知 g^x = h 求 x：模 p 乘法群与椭圆曲线（ECDLP）两种群可切换，暴力线性搜索与 Baby-step Giant-step 实时对比。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['complexity'],
+    complexity: 'NP',
+  },
+  {
     id: 'SAT',
     title: '3-SAT',
     description:

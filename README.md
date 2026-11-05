@@ -36,7 +36,7 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 | 分区 | 路由 | 当前内容 |
 | --- | --- | --- |
 | 首页 | `/` | 分类索引：每类一张图标卡片，点进去看该类的完整列表 |
-| P & NP | `/complexity` | 拓扑排序 / 最大流 / 欧拉回路（P）、整数分解（NP）、3-SAT / 子集和 / 哈密顿回路 / 顶点覆盖 / 最大团 / 集合覆盖 / 图着色（NP-C）、装箱、旅行商（NP-H） |
+| P & NP | `/complexity` | 拓扑排序 / 最大流 / 欧拉回路（P）、整数分解 / 离散对数（NP）、3-SAT / 子集和 / 哈密顿回路 / 顶点覆盖 / 最大团 / 集合覆盖 / 图着色（NP-C）、装箱、旅行商（NP-H） |
 | Games | `/games` | 2048、贪吃蛇、弹幕躲避、魔方 |
 | Simulations | `/simulations` | 生命游戏、兰顿蚂蚁、粒子生命、混沌摆、图灵机、二维图灵机、PoW 模拟器、N 体引力、布朗运动、鸟群算法、TSP 蚁群 |
 | Algorithms | `/algorithms` | TSP 蚁群、排序算法可视化、加密算法可视化、寻路可视化、哈夫曼编码树 |
@@ -69,6 +69,7 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 | `/complexity/MaxFlow` | 最大流 | P | Edmonds–Karp |
 | `/complexity/Eulerian` | 欧拉回路 | P | Hierholzer |
 | `/complexity/Factoring` | 整数分解 | NP | 试除法、Pollard's Rho |
+| `/complexity/DLP` | 离散对数（含 ECDLP） | NP | 暴力、Baby-step Giant-step |
 | `/complexity/SAT` | 3-SAT 可满足性 | NP-C | 暴力枚举、DPLL |
 | `/complexity/SubsetSum` | 子集和 | NP-C | DP 表逐格填充 |
 | `/complexity/Hamiltonian` | 哈密顿回路 | NP-C | 回溯 |

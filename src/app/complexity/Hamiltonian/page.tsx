@@ -40,6 +40,15 @@ function isHamiltonian(output: unknown, input: HamInput): boolean {
   return true;
 }
 
+/** (n-1)!/2 的近似值（对数法避免溢出）；用于展示搜索空间规模 */
+function factorialRatio(n: number): number {
+  if (n > 170) return Infinity;
+  let logSum = 0;
+  for (let i = 2; i <= n; i++) logSum += Math.log10(i);
+  logSum -= Math.log10(2);
+  return Math.pow(10, logSum);
+}
+
 /** 参考解：回溯找一个哈密顿回路 */
 function referenceSolve(input: HamInput): number[] | null {
   const { n, edges } = input;
@@ -51,7 +60,7 @@ function referenceSolve(input: HamInput): number[] | null {
   const path = [0];
   const used = new Array(n).fill(false);
   used[0] = true;
-  let budget = 300000;
+  let budget = 2000000;
 
   const dfs = (): boolean => {
     if (path.length === n) return adj[path[n - 1]].includes(path[0]);
@@ -127,7 +136,7 @@ function* hamGen(input: HamInput): Generator<HamStep, number[] | null, void> {
   const used = new Array(n).fill(false);
   used[0] = true;
   let backtracks = 0;
-  let budget = 300000;
+  let budget = 2000000;
 
   yield { path: [...path], active: 0, note: '从 0 出发', backtracks };
 
@@ -397,7 +406,20 @@ export default function HamiltonianPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={5} max={12} step={1} onChange={setN} />
+              <Field
+                label="节点数 (NODES)"
+                value={n}
+                min={5}
+                max={30}
+                step={1}
+                onChange={setN}
+                format={(v) => {
+                  const space = factorialRatio(v - 1);
+                  return Number.isFinite(space)
+                    ? `~${space.toExponential(2)} 条回路待穷举`
+                    : '天文数字条回路';
+                }}
+              />
               <Field
                 label="边密度 (DENSITY)"
                 value={Math.round(density * 100)}

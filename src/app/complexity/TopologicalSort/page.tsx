@@ -256,7 +256,7 @@ export default function TopologicalSortPage() {
   const order = solver.result ?? step.order;
 
   // 节点越多，半径越小、画布越高
-  const nodeR = input.n <= 10 ? 26 : input.n <= 16 ? 20 : 14;
+  const nodeR = input.n <= 10 ? 26 : input.n <= 16 ? 20 : input.n <= 32 ? 14 : 9;
   const layout = useMemo(() => {
     const W = 1000;
     const PAD_X = 90;
@@ -499,7 +499,7 @@ export default function TopologicalSortPage() {
         </div>
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={3} max={24} step={1} onChange={setN} />
+              <Field label="节点数 (NODES)" value={n} min={3} max={60} step={1} onChange={setN} />
               <Field
                 label="边密度 (DENSITY)"
                 value={Math.round(density * 100)}

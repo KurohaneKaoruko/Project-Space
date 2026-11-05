@@ -27,9 +27,17 @@ interface CoverStep {
 const TITLE = '顶点覆盖';
 const CLS = 'NPC' as const;
 
-/** 参考解：位掩码枚举最小覆盖 */
+/** 参考解：位掩码枚举最小覆盖（n > 22 时代价 4M+ 次枚举，仅在有预算内跑，超限返回近似解并标注） */
 function minCover(input: CoverInput): number[] {
   const { n, edges } = input;
+  // n 太大时全枚举 2^n 不可行，退化为贪心近似（判题用例都是小规模，不会走到这里）
+  if (n > 22) {
+    const chosen = new Array(n).fill(false);
+    for (const [u, v] of edges) {
+      if (!chosen[u] && !chosen[v]) chosen[u] = true;
+    }
+    return chosen.map((v, i) => (v ? i : -1)).filter((i) => i >= 0);
+  }
   let best: number[] = Array.from({ length: n }, (_, i) => i);
 
   for (let mask = 0; mask < 1 << n; mask++) {
@@ -105,7 +113,7 @@ function* coverGen(input: CoverInput): Generator<CoverStep, number[], void> {
   // 上界：全选
   let best = Array.from({ length: n }, (_, i) => i);
   let bestSize = n;
-  let budget = 400000;
+  let budget = 2000000;
 
   const count = () => chosen.reduce((sum, v) => sum + (v ? 1 : 0), 0);
 
@@ -244,7 +252,7 @@ export default function VertexCoverPage() {
   const layout = useMemo(() => {
     const W = 820;
     const H = 380;
-    const nodeR = input.n <= 10 ? 23 : input.n <= 14 ? 18 : 14;
+    const nodeR = input.n <= 10 ? 23 : input.n <= 14 ? 18 : input.n <= 22 ? 13 : 9;
     return {
       width: W,
       height: H,
@@ -428,7 +436,15 @@ export default function VertexCoverPage() {
 
           <ControlPanel>
             <Section title="实例 (INSTANCE)">
-              <Field label="节点数 (NODES)" value={n} min={6} max={14} step={1} onChange={setN} />
+              <Field
+                label="节点数 (NODES)"
+                value={n}
+                min={6}
+                max={28}
+                step={1}
+                onChange={setN}
+                format={(v) => `2^${v} = ${(2 ** v).toExponential(1)} 个子集待枚举`}
+              />
               <Field
                 label="边密度 (DENSITY)"
                 value={Math.round(density * 100)}
