@@ -1,17 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // 纯静态导出：全站 50 页 SSG，无 SSR/ISR/Server Action，
+  // 部署到 Cloudflare Pages（输出 out/，构建命令 pnpm build）
+  output: "export",
   // sourcemap 体积大且生成耗时；生产环境默认关闭，需要排查时再开
   productionBrowserSourceMaps: false,
-  async redirects() {
-    return [
-      // simulations / visualizations -> algorithms（蚁群已迁移至算法分类）
-      { source: '/simulations/Mandelbrot', destination: '/visualizations/Mandelbrot', permanent: true },
-      { source: '/simulations/DigitSumTurtle', destination: '/visualizations/DigitSumTurtle', permanent: true },
-      { source: '/simulations/TSPAntColony', destination: '/algorithms/TSPAntColony', permanent: true },
-      { source: '/visualizations/TSPAntColony', destination: '/algorithms/TSPAntColony', permanent: true },
-    ];
-  },
+  // 旧路径重定向改用 public/_redirects（Pages 原生支持；output: export 不支持 redirects()）
   webpack: (config, { dev, isServer }) => {
     if (!dev) {
       config.optimization.minimizer.forEach((plugin: any) => {

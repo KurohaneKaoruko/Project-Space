@@ -1,0 +1,5 @@
+# 旧路径重定向（原 next.config.ts redirects()，静态导出后由 Pages 处理）
+/simulations/Mandelbrot      /visualizations/Mandelbrot   301
+/simulations/DigitSumTurtle  /visualizations/DigitSumTurtle 301
+/simulations/TSPAntColony    /algorithms/TSPAntColony     301
+/visualizations/TSPAntColony /algorithms/TSPAntColony     301
