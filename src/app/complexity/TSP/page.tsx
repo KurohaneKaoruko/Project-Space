@@ -506,19 +506,28 @@ export default function TspPage() {
     const W = mapSize.w > 0 ? Math.max(320, mapSize.w) : 1000;
     // SVG 有 max-h-[480px]：测量高度按 480 封顶，viewBox 比例才与实际渲染框一致
     const H = mapSize.h > 0 ? Math.min(480, Math.max(240, mapSize.h)) : 480;
-    const PAD = 36;
-    // 固定 0..120 的数据域；X/Y 独立缩放铺满整个画布（距离仍按原始坐标计算，
-    // 视觉上只是投影拉伸，不影响算法与长度对比）
-    const SPAN = 120;
-    const scaleX = (W - PAD * 2) / SPAN;
-    const scaleY = (H - PAD * 2) / SPAN;
+    const PAD = 30;
+    // 按点云实际包围盒缩放（X/Y 独立，铺满画布不留大片空白）；
+    // 距离仍按原始坐标计算，投影只是视觉拉伸，不影响算法与长度对比
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const [x, y] of points) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    // 单点/重合点兜底：至少给 1 单位跨度
+    const spanX = Math.max(maxX - minX, 1);
+    const spanY = Math.max(maxY - minY, 1);
+    const scaleX = (W - PAD * 2) / spanX;
+    const scaleY = (H - PAD * 2) / spanY;
 
     return {
       width: W,
       height: H,
       pos: points.map(([x, y]) => ({
-        x: PAD + x * scaleX,
-        y: H - (PAD + y * scaleY),
+        x: PAD + (x - minX) * scaleX,
+        y: H - (PAD + (y - minY) * scaleY),
       })),
     };
   }, [points, mapSize]);

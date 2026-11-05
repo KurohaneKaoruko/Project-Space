@@ -82,9 +82,12 @@ export function randomPoints(n: number, spread: number, seed: number): [number, 
       points.push([rnd() * 120, rnd() * 120]);
     } else {
       const r = 6 + spread * 50;
+      // 越界用镜像反射（136 → 104）而非 clamp：截断会把所有越界点堆在边界上，
+      // n=1024 时约 15% 的点坐标完全相同，视觉上变成一条实线
+      const reflect = (v: number) => (v < 0 ? -v : v > 120 ? 240 - v : v);
       points.push([
-        Math.max(0, Math.min(120, cx + (rnd() - 0.5) * 2 * r)),
-        Math.max(0, Math.min(120, cy + (rnd() - 0.5) * 2 * r)),
+        reflect(cx + (rnd() - 0.5) * 2 * r),
+        reflect(cy + (rnd() - 0.5) * 2 * r),
       ]);
     }
   }

@@ -98,11 +98,11 @@ export function Section({
 /** 右侧控制面板外壳：标题 + 重置/播放 + 分组内容 */
 export default function ControlPanel({ children }: { children: React.ReactNode }) {
   return (
-    <aside className="w-full shrink-0 border-t border-zinc-200 bg-white p-5 lg:sticky lg:top-16 lg:h-full lg:max-h-[calc(100vh-5.5rem)] lg:w-[320px] lg:overflow-y-auto lg:border-l lg:border-t-0">
+    <aside className="w-full shrink-0 border-t border-zinc-200 bg-white p-4 lg:sticky lg:top-16 lg:h-full lg:max-h-[calc(100vh-5.5rem)] lg:w-[272px] lg:overflow-y-auto lg:border-l lg:border-t-0">
       <div className="flex items-start gap-2">
         <span className="mt-1 h-4 w-1 shrink-0 bg-blue-600" />
         <div>
-          <h2 className="text-lg font-bold text-zinc-900">控制面板 (CONTROL_PANEL)</h2>
+          <h2 className="text-base font-bold text-zinc-900">控制面板 (CONTROL_PANEL)</h2>
           <p className="mt-1 font-mono text-[10px] uppercase text-zinc-500">
             {'/// 参数调节 (PARAMETER_TUNING)'}
           </p>
