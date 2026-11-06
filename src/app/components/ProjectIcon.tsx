@@ -35,6 +35,7 @@ export type ProjectIconId =
   | 'Lissajous'
   | 'FourierSeries'
   | 'Boids'
+  | 'MontyHall'
   | 'TopologicalSort'
   | 'MaxFlow'
   | 'Eulerian'
@@ -1022,6 +1023,7 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Lissajous: IconLissajous,
   FourierSeries: IconFourierSeries,
   Boids: IconBoids,
+  MontyHall: IconMontyHall,
   TopologicalSort: IconTopologicalSort,
   MaxFlow: IconMaxFlow,
   Eulerian: IconEulerian,
@@ -1056,6 +1058,38 @@ function IconBoids() {
       </g>
       <g className="icon-motion" style={anim('boidsWave', 2.6, -0.6, 'ease-in-out')}>
         {bird(42, 31, 0.85, 0.6)}
+      </g>
+    </Base>
+  );
+}
+
+/** 三门问题：三扇门，中间那扇缓缓打开露出山羊 */
+function IconMontyHall() {
+  return (
+    <Base>
+      {/* 三扇门 */}
+      {[10, 27, 44].map((x, i) => (
+        <g key={x}>
+          <rect
+            x={x}
+            y={16}
+            width={12}
+            height={32}
+            rx={1.5}
+            stroke="currentColor"
+            strokeWidth={i === 1 ? 2.4 : 1.6}
+            fill={i === 1 ? 'currentColor' : 'none'}
+            fillOpacity={i === 1 ? 0.12 : 0}
+            className={i === 1 ? 'icon-motion' : undefined}
+            style={i === 1 ? anim('doorOpen', 2.4) : undefined}
+          />
+          <circle cx={x + 9.5} cy={32} r={1} fill="currentColor" opacity={i === 1 ? 0 : 0.7} />
+        </g>
+      ))}
+      {/* 中门后的山羊（简笔：角 + 头） */}
+      <g className="icon-motion" style={anim('keyPulse', 2.4, 1.2)}>
+        <path d="M28 44 l3 -5 3 5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <circle cx="31" cy="46.5" r="2.2" fill="currentColor" />
       </g>
     </Base>
   );

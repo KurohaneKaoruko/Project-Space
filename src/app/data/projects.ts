@@ -179,6 +179,14 @@ export const projects: Project[] = [
     // 呈现的是群体行为涌现，不是转向规则的执行步骤，故只归入模拟
     categories: ['simulations'],
   },
+  {
+    id: 'MontyHall',
+    title: '三门问题',
+    description:
+      'Monty Hall 概率悖论：手动选门体验主持人开门的信息量，蒙特卡洛批量模拟看「换门 2/3、坚持 1/3」的频率收敛曲线，附直觉陷阱解释。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['simulations'],
+  },
 
   /* ---------------- ALGORITHMS ---------------- */
   {

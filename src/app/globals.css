@@ -247,6 +247,9 @@ body {
 
 @keyframes keyPulse { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
 
+/* 三门问题：中门透明度呼吸，暗示门后藏着山羊 */
+@keyframes doorOpen { 0%, 100% { fill-opacity: 0.04 } 50% { fill-opacity: 0.22 } }
+
 @keyframes probe {
   0% { transform: translate(0, 0) }
   50% { transform: translate(22px, -5px) }
