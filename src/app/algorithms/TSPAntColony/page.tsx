@@ -127,7 +127,7 @@ export default function TSPAntColonyPage() {
     stats && Number.isFinite(stats.bestLength) ? stats.bestLength.toFixed(1) : '--';
 
   return (
-    <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
+    <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col pt-16">
       <Navigation title="TSP_ANT_COLONY" />
 
       <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">

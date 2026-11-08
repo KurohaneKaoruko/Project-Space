@@ -187,7 +187,7 @@ export default function DigitSumTurtlePage() {
     <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
       <Navigation title="DIGIT_SUM_TURTLE" />
 
-      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden pt-16">
         <div ref={wrapRef} className="h-64 shrink-0 lg:h-full lg:flex-1 relative overflow-hidden bg-zinc-950">
           <canvas
             ref={canvasRef}

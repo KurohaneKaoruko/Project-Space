@@ -175,7 +175,7 @@ export default function LissajousPage() {
     <div className="h-screen overflow-hidden bg-zinc-50 flex flex-col">
       <Navigation title="LISSAJOUS" />
 
-      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden pt-2 lg:pt-3">
+      <div className="flex-1 flex flex-col lg:flex-row h-full overflow-hidden pt-16 lg:pt-[76px]">
         {/* 画布区 */}
         <div className="relative flex-1 min-h-[320px] lg:min-h-0 p-3 lg:p-4">
           <div ref={wrapRef} className="relative h-full w-full overflow-hidden rounded-xl border border-zinc-800 shadow-2xl shadow-zinc-900/30">
