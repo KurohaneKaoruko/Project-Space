@@ -41,7 +41,7 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 | Simulations | `/simulations` | 生命游戏、兰顿蚂蚁、粒子生命、混沌摆、图灵机、二维图灵机、PoW 模拟器、N 体引力、布朗运动、鸟群算法、TSP 蚁群、三门问题 |
 | Algorithms | `/algorithms` | TSP 蚁群、排序算法可视化、加密算法可视化、寻路可视化、哈夫曼编码树 |
 | Visualizations | `/visualizations` | 分形几何、数位和海龟绘图、冰雹猜想、利萨茹曲线、傅里叶级数，以及排序 / 寻路 / 哈夫曼的图形部分 |
-| Tools | `/tools` | Brainfuck 解释器、加密算法可视化 |
+| Tools | `/tools` | 进制转换、Brainfuck 解释器 |
 
 > 分类**不是互斥**的：一个项目可以同时属于多个分类（例如「排序算法可视化」既是算法演示也是图形可视化），
 > 因此各分类条目之和大于项目总数。归属关系集中在 `src/app/data/projects.ts` 的 `categories` 数组里，
@@ -110,6 +110,7 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 
 ### Tools
 
+- `/tools/BaseConverter`：2~36 进制互转，BigInt 大数无精度墙，常用进制一览与字节对齐位宽视图。
 - `/tools/Brainfuck`：Brainfuck 解释器，支持运行/单步与内存窗。
 
 ## 功能亮点
