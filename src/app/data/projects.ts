@@ -215,8 +215,8 @@ export const projects: Project[] = [
       '7 种加密算法分步演示：凯撒、维吉尼亚、栅栏、XOR、AES-128（完整 10 轮状态矩阵）、RSA、Diffie-Hellman，支持加解密双向演示与逐步播放。',
     image: '/images/crypto-visualizer.svg',
     technologies: ['React', 'TypeScript'],
-    // 除了看步骤，也能对自己的文本做实际加解密
-    categories: ['algorithms', 'tools'],
+    // 分步演示算法执行过程，归算法演示；不承担日常加解密工具职能
+    categories: ['algorithms'],
   },
   {
     id: 'Pathfinding',
@@ -285,6 +285,14 @@ export const projects: Project[] = [
   },
 
   /* ---------------- TOOLS ---------------- */
+  {
+    id: 'BaseConverter',
+    title: '进制转换',
+    description:
+      '2~36 进制互转工具：BigInt 大数无精度损失，二/八/十/十六/32/36 进制一览，字节对齐位宽视图，支持分组分隔与一键复制。',
+    technologies: ['React', 'TypeScript', 'BigInt'],
+    categories: ['tools'],
+  },
   {
     id: 'Brainfuck',
     title: 'Brainfuck 解释器',
