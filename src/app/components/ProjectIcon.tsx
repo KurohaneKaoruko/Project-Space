@@ -27,6 +27,7 @@ export type ProjectIconId =
   | 'Mandelbrot'
   | 'DigitSumTurtle'
   | 'Collatz'
+  | 'BaseConverter'
   | 'Brainfuck'
   | 'NBody'
   | 'BrownianMotion'
@@ -405,6 +406,32 @@ function IconDigitSumTurtle() {
 }
 
 /* ---------------- TOOLS ---------------- */
+
+/** 进制转换：0/1 位流 + 底数雷达环 */
+function IconBaseConverter() {
+  return (
+    <Base>
+      {/* 二进制位流 */}
+      <g fontFamily="monospace" fontSize="11" fontWeight="bold" fill="currentColor" textAnchor="middle">
+        <text x="14" y="20" opacity="0.9">1</text>
+        <text x="26" y="20" opacity="0.4">0</text>
+        <text x="38" y="20" opacity="0.9">1</text>
+        <text x="50" y="20" opacity="0.4">1</text>
+      </g>
+      {/* 底数标记 2 / 8 / 10 / 16 沿弧线排布 */}
+      <g fontFamily="monospace" fontSize="9" fontWeight="bold" fill="currentColor" textAnchor="middle">
+        <text x="12" y="46" opacity="0.85">2</text>
+        <text x="24" y="54" opacity="0.5">8</text>
+        <text x="40" y="54" opacity="0.85">10</text>
+        <text x="52" y="46" opacity="0.5">16</text>
+      </g>
+      {/* 转换箭头，hover 时流动 */}
+      <g className="icon-motion" style={anim('bfBlink', 1.6)}>
+        <path d="M20 30 h20 m-5 -4 l5 4 l-5 4" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+      </g>
+    </Base>
+  );
+}
 
 function IconBrainfuck() {
   return (
@@ -1015,6 +1042,7 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   Mandelbrot: IconMandelbrot,
   DigitSumTurtle: IconDigitSumTurtle,
   Collatz: IconCollatz,
+  BaseConverter: IconBaseConverter,
   Brainfuck: IconBrainfuck,
   NBody: IconNBody,
   BrownianMotion: IconBrownianMotion,
