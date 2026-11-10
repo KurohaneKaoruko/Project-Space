@@ -220,7 +220,7 @@ const ICONS: Record<CategoryKey, () => React.ReactElement> = {
   algorithms: IconAlgorithms,
   visualizations: IconVisualizations,
   tools: IconTools,
-  complexity: IconComplexity,
+  pnp: IconComplexity,
 };
 
 export default function CategoryIcon({ id, className }: { id: CategoryKey; className?: string }) {

@@ -39,18 +39,34 @@ export type ProjectIconId =
   | 'MontyHall'
   | 'TopologicalSort'
   | 'MaxFlow'
+  | 'ShortestPath'
+  | 'ConvexHull'
   | 'Eulerian'
+  | 'MST'
+  | 'EditDistance'
   | 'Factoring'
   | 'DLP'
+  | 'GraphIso'
   | 'SAT'
   | 'SubsetSum'
+  | 'Knapsack'
+  | 'Sudoku'
   | 'Hamiltonian'
   | 'VertexCover'
+  | 'MaxIndependentSet'
   | 'MaxClique'
   | 'SetCover'
   | 'GraphColoring'
   | 'BinPacking'
-  | 'TSP';
+  | 'TSP'
+  | 'QR'
+  | 'SVP'
+  | 'SteinerTree'
+  | 'JobScheduling'
+  | 'LongestPath'
+  | 'ClosestPair'
+  | 'CoinChange'
+  | 'BitonicTSP';
 
 const S = 64; // viewBox 尺寸
 
@@ -664,8 +680,17 @@ function IconMaxFlow() {
     <Base>
       <circle cx="13" cy="32" r="8" stroke="currentColor" strokeWidth="1.8" fill="none" />
       <circle cx="51" cy="32" r="8" stroke="currentColor" strokeWidth="1.8" fill="none" />
-      <path d="M21 27 Q32 15 43 27" stroke="currentColor" strokeWidth="1.8" fill="none" />
-      <path d="M21 37 Q32 49 43 37" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      {/* 上路：流量沿边流动 */}
+      <path
+        d="M21 27 Q32 15 43 27"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        fill="none"
+        strokeDasharray="5 4"
+        className="icon-motion"
+        style={anim('edgeFlow', 1.6, 0, 'linear')}
+      />
+      <path d="M21 37 Q32 49 43 37" stroke="currentColor" strokeWidth="1.8" fill="none" opacity="0.6" />
       <path d="M38 23 l6 3 -6 3z" fill="currentColor" />
       <path d="M38 41 l6 -3 -6 -3z" fill="currentColor" />
     </Base>
@@ -739,20 +764,26 @@ function IconSubsetSum() {
   return (
     <Base>
       {[0, 1, 2, 3].map((row) =>
-        [0, 1, 2, 3].map((col) => (
-          <rect
-            key={`${row}-${col}`}
-            x={9 + col * 12}
-            y={9 + row * 12}
-            width={9}
-            height={9}
-            rx={1.5}
-            fill="currentColor"
-            fillOpacity={(row + col) % 3 === 0 ? 0.8 : 0.14}
-            stroke="currentColor"
-            strokeWidth={0.9}
-          />
-        )),
+        [0, 1, 2, 3].map((col) => {
+          const active = (row + col) % 3 === 0;
+          const isCursor = row === 1 && col === 2;
+          return (
+            <rect
+              key={`${row}-${col}`}
+              x={9 + col * 12}
+              y={9 + row * 12}
+              width={9}
+              height={9}
+              rx={1.5}
+              fill="currentColor"
+              fillOpacity={active ? 0.8 : 0.14}
+              stroke="currentColor"
+              strokeWidth={0.9}
+              className={isCursor ? 'icon-motion' : undefined}
+              style={isCursor ? anim('keyPulse', 1.8) : undefined}
+            />
+          );
+        }),
       )}
     </Base>
   );
@@ -772,7 +803,9 @@ function IconHamiltonian() {
         strokeWidth={2}
         strokeLinejoin="round"
         strokeDasharray="4 3"
-        opacity="0.5"
+        opacity="0.7"
+        className="icon-mst-probe"
+        style={anim('mstProbe', 2.2, 0, 'linear')}
       />
       {pts.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r={4.6} fill="currentColor" opacity={i === 0 ? 1 : 0.55} />
@@ -804,6 +837,9 @@ function IconEulerian() {
         fill="none"
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeDasharray="6 5"
+        className="icon-motion"
+        style={anim('mstProbe', 1.8, 0, 'linear')}
       />
       {pts.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r={4} fill="currentColor" opacity={i <= 4 ? 1 : 0.3} />
@@ -853,6 +889,8 @@ function IconVertexCover() {
           stroke="currentColor"
           strokeWidth="1.8"
           opacity={picked.has(i) ? 0.9 : 0.55}
+          className={i === 3 ? 'icon-motion' : undefined}
+          style={i === 3 ? anim('keyPulse', 2) : undefined}
         />
       ))}
     </Base>
@@ -880,6 +918,9 @@ function IconMaxClique() {
               stroke="currentColor"
               strokeWidth="1.6"
               opacity="0.5"
+              strokeDasharray="5 4"
+              className="icon-motion"
+              style={anim('edgeFlow', 1.8, i * 0.3, 'linear')}
             />
           ) : null,
         ),
@@ -898,6 +939,7 @@ function IconSetCover() {
       {rows.map((r) =>
         [0, 1, 2, 3, 4].map((c) => {
           const on = (r + c) % 3 === 0 || (r === 1 && c < 3);
+          const isScan = r === 1 && c === 2;
           return (
             <circle
               key={`${r}-${c}`}
@@ -908,6 +950,8 @@ function IconSetCover() {
               stroke="currentColor"
               strokeWidth="1.2"
               opacity={on ? 0.9 : 0.35}
+              className={isScan ? 'icon-motion' : undefined}
+              style={isScan ? anim('keyPulse', 1.8) : undefined}
             />
           );
         }),
@@ -944,6 +988,8 @@ function IconDLP() {
         strokeWidth="1.6"
         opacity="0.8"
         strokeDasharray="3 2"
+        className="icon-motion"
+        style={anim('edgeFlow', 1.4, 0, 'linear')}
       />
     </Base>
   );
@@ -970,6 +1016,8 @@ function IconGraphColoring() {
           fillOpacity={i % 2 === 0 ? 0.9 : 0.15}
           stroke="currentColor"
           strokeWidth={1.3}
+          className={i === 1 ? 'icon-motion' : undefined}
+          style={i === 1 ? anim('sudokuCycle', 2.1) : undefined}
         />
       ))}
     </Base>
@@ -991,6 +1039,8 @@ function IconBinPacking() {
           strokeWidth="1.6"
           fill="currentColor"
           fillOpacity={i === 1 ? 0.55 : 0.15}
+          className={i === 2 ? 'icon-motion' : undefined}
+          style={i === 2 ? anim('knapsackDrop', 2.2) : undefined}
         />
       ))}
     </Base>
@@ -1015,10 +1065,591 @@ function IconTSP() {
         strokeWidth={1.7}
         strokeLinejoin="round"
         opacity="0.75"
+        strokeDasharray="6 5"
+        className="icon-motion"
+        style={anim('mstProbe', 2.4, 0, 'linear')}
       />
       <line x1={18} y1={54} x2={12} y2={40} stroke="currentColor" strokeWidth={1.2} strokeDasharray="3 3" opacity="0.5" />
       {points.map(([x, y], i) => (
         <circle key={i} cx={x} cy={y} r={3.4} fill="currentColor" />
+      ))}
+    </Base>
+  );
+}
+
+/* ---------------- P & NP（新增） ---------------- */
+
+function IconMST() {
+  // 5 点：中心 1 + 四角，生成树 4 条边 + 落选的 2 条交叉虚线
+  const pts: [number, number][] = [
+    [32, 10],
+    [54, 26],
+    [46, 52],
+    [18, 52],
+    [10, 26],
+  ];
+  const tree: [number, number][] = [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+  ];
+  return (
+    <Base>
+      {/* 落选边：成环跳过 */}
+      <line x1={pts[0][0]} y1={pts[0][1]} x2={pts[2][0]} y2={pts[2][1]} stroke="currentColor" strokeWidth={1} strokeDasharray="3 3" opacity={0.28} />
+      <line x1={pts[4][0]} y1={pts[4][1]} x2={pts[1][0]} y2={pts[1][1]} stroke="currentColor" strokeWidth={1} strokeDasharray="3 3" opacity={0.28} />
+      {tree.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={pts[a][0]}
+          y1={pts[a][1]}
+          x2={pts[b][0]}
+          y2={pts[b][1]}
+          stroke="currentColor"
+          strokeWidth={2.1}
+          opacity={0.85}
+          className={i === 0 ? 'icon-mst-probe' : undefined}
+          style={i === 0 ? anim('mstProbe', 1.6, 0, 'linear') : undefined}
+        />
+      ))}
+      {pts.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={4.2} fill="currentColor" opacity={i === 0 ? 1 : 0.6} />
+      ))}
+    </Base>
+  );
+}
+
+function IconEditDistance() {
+  // 4×4 DP 表 + 光标格游走
+  return (
+    <Base>
+      {[0, 1, 2, 3].map((row) =>
+        [0, 1, 2, 3].map((col) => {
+          const isCursor = row === 1 && col === 2;
+          return (
+            <rect
+              key={`${row}-${col}`}
+              x={11 + col * 11}
+              y={11 + row * 11}
+              width={9}
+              height={9}
+              rx={1.5}
+              fill="currentColor"
+              fillOpacity={row + col <= 2 ? 0.75 : 0.14}
+              stroke="currentColor"
+              strokeWidth={0.9}
+            />
+          );
+        }),
+      )}
+      <rect
+        x={33}
+        y={22}
+        width={9}
+        height={9}
+        rx={1.5}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        className="icon-motion"
+        style={anim('edCursor', 2.4, 0, 'ease-in-out')}
+      />
+    </Base>
+  );
+}
+
+function IconKnapsack() {
+  // 背包轮廓 + 物品滑入
+  return (
+    <Base>
+      <path
+        d="M20 24 v-6 a4 4 0 0 1 4-4 h16 a4 4 0 0 1 4 4 v6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        opacity={0.55}
+      />
+      <rect x={16} y={24} width={32} height={28} rx={4} fill="currentColor" fillOpacity={0.1} stroke="currentColor" strokeWidth={2} opacity={0.8} />
+      <rect x={12} y={38} width={13} height={9} rx={1.5} fill="currentColor" fillOpacity={0.75} className="icon-motion" style={anim('knapsackDrop', 2.2)} />
+      <rect x={40} y={30} width={13} height={9} rx={1.5} fill="currentColor" fillOpacity={0.35} className="icon-motion" style={anim('knapsackDrop', 2.2, 1.1)} />
+    </Base>
+  );
+}
+
+function IconSudoku() {
+  // 3×3 宫格 + 中央候选数字轮换
+  return (
+    <Base>
+      {[0, 1, 2].map((row) =>
+        [0, 1, 2].map((col) => (
+          <rect
+            key={`${row}-${col}`}
+            x={11 + col * 15}
+            y={11 + row * 15}
+            width={13}
+            height={13}
+            rx={1.5}
+            fill="currentColor"
+            fillOpacity={(row * 3 + col) % 5 === 0 ? 0.5 : 0.12}
+            stroke="currentColor"
+            strokeWidth={0.9}
+          />
+        )),
+      )}
+      <text
+        x={32.5}
+        y={37}
+        textAnchor="middle"
+        fontSize={11}
+        fontFamily="monospace"
+        fontWeight={700}
+        fill="currentColor"
+        className="icon-motion"
+        style={anim('sudokuCycle', 2.1)}
+      >
+        7
+      </text>
+    </Base>
+  );
+}
+
+function IconShortestPath() {
+  // 5 点加权图 + 源点到目标的最短路高亮流动
+  const pts: [number, number][] = [
+    [10, 44],
+    [26, 16],
+    [44, 40],
+    [54, 14],
+    [50, 52],
+  ];
+  return (
+    <Base>
+      {/* 非最短路 */}
+      <line x1={26} y1={16} x2={54} y2={14} stroke="currentColor" strokeWidth={1.1} strokeDasharray="3 3" opacity={0.3} />
+      <line x1={10} y1={44} x2={50} y2={52} stroke="currentColor" strokeWidth={1.1} strokeDasharray="3 3" opacity={0.3} />
+      <line x1={44} y1={40} x2={50} y2={52} stroke="currentColor" strokeWidth={1.1} opacity={0.3} />
+      {/* 最短路径 0→1→2 */}
+      <polyline
+        points={`${pts[0][0]},${pts[0][1]} ${pts[1][0]},${pts[1][1]} ${pts[2][0]},${pts[2][1]}`}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        opacity={0.9}
+        className="icon-mst-probe"
+        style={anim('mstProbe', 1.8, 0, 'linear')}
+      />
+      {pts.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={4.4} fill="currentColor" opacity={i === 0 ? 1 : i === 2 ? 0.9 : 0.55} />
+      ))}
+      {/* 距离标注 */}
+      <text x={7} y={38} fontSize={7} fontFamily="monospace" fill="currentColor" opacity={0.8}>0</text>
+      <text x={46} y={46} fontSize={7} fontFamily="monospace" fill="currentColor" opacity={0.8}>3</text>
+    </Base>
+  );
+}
+
+function IconConvexHull() {
+  // 点云 + 包围多边形（沿周长流动的描边）
+  const pts: [number, number][] = [
+    [14, 40],
+    [22, 16],
+    [40, 10],
+    [52, 24],
+    [48, 48],
+    [26, 50],
+    [32, 30],
+    [38, 26],
+  ];
+  const hull: [number, number][] = [
+    [14, 40],
+    [22, 16],
+    [40, 10],
+    [52, 24],
+    [48, 48],
+    [26, 50],
+  ];
+  return (
+    <Base>
+      <polygon
+        points={hull.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="currentColor"
+        fillOpacity={0.08}
+        stroke="none"
+      />
+      <polygon
+        points={hull.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        strokeLinejoin="round"
+        opacity={0.9}
+        className="icon-mst-probe"
+        style={anim('mstProbe', 2.4, 0, 'linear')}
+      />
+      {pts.map(([x, y], i) => {
+        const onHull = hull.some(([hx, hy]) => hx === x && hy === y);
+        return <circle key={i} cx={x} cy={y} r={onHull ? 3.4 : 2.4} fill="currentColor" opacity={onHull ? 0.95 : 0.4} />;
+      })}
+    </Base>
+  );
+}
+
+function IconGraphIso() {
+  // 左右两张小图,配对点用同色实心表示
+  const left: [number, number][] = [
+    [12, 18],
+    [12, 42],
+    [28, 30],
+  ];
+  const right: [number, number][] = [
+    [50, 16],
+    [46, 46],
+    [36, 30],
+  ];
+  return (
+    <Base>
+      {/* G1: 三角 */}
+      <polygon
+        points={left.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.3}
+        opacity={0.45}
+      />
+      {/* G2: 同构三角(旋转) */}
+      <polygon
+        points={right.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.3}
+        opacity={0.45}
+      />
+      {/* 映射虚线 */}
+      <line x1={left[0][0]} y1={left[0][1]} x2={right[0][0]} y2={right[0][1]} stroke="currentColor" strokeWidth={0.9} strokeDasharray="2 3" opacity={0.75} className="icon-motion" style={anim('edgeFlow', 1.6, 0, 'linear')} />
+      <line x1={left[1][0]} y1={left[1][1]} x2={right[1][0]} y2={right[1][1]} stroke="currentColor" strokeWidth={0.9} strokeDasharray="2 3" opacity={0.75} className="icon-motion" style={anim('edgeFlow', 1.6, 0.5, 'linear')} />
+      <line x1={left[2][0]} y1={left[2][1]} x2={right[2][0]} y2={right[2][1]} stroke="currentColor" strokeWidth={0.9} strokeDasharray="2 3" opacity={0.75} className="icon-motion" style={anim('edgeFlow', 1.6, 1, 'linear')} />
+      {left.map(([x, y], i) => (
+        <circle key={`l${i}`} cx={x} cy={y} r={3.6} fill="currentColor" opacity={i === 0 ? 1 : 0.6} />
+      ))}
+      {right.map(([x, y], i) => (
+        <circle key={`r${i}`} cx={x} cy={y} r={3.6} fill="currentColor" opacity={i === 0 ? 1 : 0.6} />
+      ))}
+    </Base>
+  );
+}
+
+function IconMaxIndependentSet() {
+  // 5 点图:独立集 3 点实心,其余空心,独立集内部的"无边"用间隔表示
+  const pts: [number, number][] = [
+    [32, 10],
+    [54, 28],
+    [44, 54],
+    [20, 54],
+    [10, 28],
+  ];
+  const independent = [0, 2, 4];
+  const edges: [number, number][] = [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [4, 0],
+    [1, 3],
+  ];
+  return (
+    <Base>
+      {edges.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={pts[a][0]}
+          y1={pts[a][1]}
+          x2={pts[b][0]}
+          y2={pts[b][1]}
+          stroke="currentColor"
+          strokeWidth={1.1}
+          opacity={0.3}
+        />
+      ))}
+      {pts.map(([x, y], i) => {
+        const chosen = independent.includes(i);
+        return chosen ? (
+          <circle key={i} cx={x} cy={y} r={5} fill="currentColor" className={i === 0 ? 'icon-motion' : undefined} style={i === 0 ? anim('keyPulse', 2) : undefined} />
+        ) : (
+          <circle key={i} cx={x} cy={y} r={4.2} fill="none" stroke="currentColor" strokeWidth={1.4} opacity={0.45} />
+        );
+      })}
+    </Base>
+  );
+}
+
+function IconQR() {
+  // 平方表网格:部分格子点亮(QR 值),目标格脉冲
+  const lit = [1, 4, 9, 16, 6, 13];
+  return (
+    <Base>
+      {[0, 1, 2, 3].map((row) =>
+        [0, 1, 2, 3].map((col) => {
+          const idx = row * 4 + col + 1;
+          const isLit = lit.includes(idx);
+          const isTarget = idx === 16;
+          return (
+            <rect
+              key={`${row}-${col}`}
+              x={11 + col * 11}
+              y={11 + row * 11}
+              width={9.5}
+              height={9.5}
+              rx={1.5}
+              fill="currentColor"
+              fillOpacity={isTarget ? 0.75 : isLit ? 0.45 : 0.1}
+              stroke="currentColor"
+              strokeWidth={0.7}
+              strokeOpacity={isTarget ? 0.9 : 0.3}
+              className={isTarget ? 'icon-motion' : undefined}
+              style={isTarget ? anim('keyPulse', 2.2) : undefined}
+            />
+          );
+        }),
+      )}
+    </Base>
+  );
+}
+
+function IconSVP() {
+  // 斜向网格(格点)+ 一条最短向量高亮
+  const origin: [number, number] = [16, 48];
+  const b1: [number, number] = [11, -6];
+  const b2: [number, number] = [7, 10];
+  const pt = (i: number, j: number): [number, number] => [
+    origin[0] + b1[0] * i + b2[0] * j,
+    origin[1] + b1[1] * i + b2[1] * j,
+  ];
+  return (
+    <Base>
+      {[0, 1, 2, 3].map((j) =>
+        [0, 1, 2, 3].map((i) => {
+          const [x, y] = pt(i, j);
+          if (x < 6 || x > 58 || y < 6 || y > 58) return null;
+          return <circle key={`${i}-${j}`} cx={x} cy={y} r={2} fill="currentColor" opacity={0.4} />;
+        }),
+      )}
+      <line x1={origin[0]} y1={origin[1]} x2={origin[0] + b1[0]} y2={origin[1] + b1[1]} stroke="currentColor" strokeWidth={1} opacity={0.35} />
+      <line x1={origin[0]} y1={origin[1]} x2={origin[0] + b2[0]} y2={origin[1] + b2[1]} stroke="currentColor" strokeWidth={1} opacity={0.35} />
+      <line
+        x1={origin[0]}
+        y1={origin[1]}
+        x2={origin[0] + b1[0] + b2[0]}
+        y2={origin[1] + b1[1] + b2[1]}
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        className="icon-motion"
+        style={anim('keyPulse', 2)}
+      />
+      <circle cx={origin[0]} cy={origin[1]} r={3.4} fill="currentColor" />
+      <circle cx={origin[0] + b1[0] + b2[0]} cy={origin[1] + b1[1] + b2[1]} r={3.4} fill="currentColor" />
+    </Base>
+  );
+}
+
+function IconSteinerTree() {
+  // 三个终端方块 + 汇聚到中心斯坦纳点的连接树
+  const terminals: [number, number][] = [
+    [13, 14],
+    [51, 18],
+    [32, 52],
+  ];
+  const center: [number, number] = [32, 28];
+  return (
+    <Base>
+      {terminals.map(([x, y], i) => (
+        <line
+          key={i}
+          x1={center[0]}
+          y1={center[1]}
+          x2={x}
+          y2={y}
+          stroke="currentColor"
+          strokeWidth={1.9}
+          strokeLinecap="round"
+          opacity={0.85}
+          strokeDasharray="46"
+          className="icon-motion"
+          style={anim('mstProbe', 2, i * 0.4, 'linear')}
+        />
+      ))}
+      <circle cx={center[0]} cy={center[1]} r={3.6} fill="currentColor" opacity={0.7} />
+      {terminals.map(([x, y], i) => (
+        <rect key={`t${i}`} x={x - 4} y={y - 4} width={8} height={8} rx={1.5} fill="currentColor" />
+      ))}
+    </Base>
+  );
+}
+
+function IconJobScheduling() {
+  // 迷你甘特图:3 台机器条 + 作业块
+  const machines = 3;
+  const blocks: [number, number, number][] = [
+    [0, 0, 10],
+    [0, 10, 9],
+    [1, 0, 8],
+    [1, 8, 8],
+    [1, 16, 5],
+    [2, 0, 7],
+    [2, 7, 6],
+  ];
+  return (
+    <Base>
+      {Array.from({ length: machines }, (_, m) => (
+        <rect
+          key={`row${m}`}
+          x={10}
+          y={13 + m * 14}
+          width={44}
+          height={11}
+          rx={1.5}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={0.9}
+          opacity={0.35}
+        />
+      ))}
+      {blocks.map(([m, off, len], i) => (
+        <rect
+          key={i}
+          x={10 + off}
+          y={14.5 + m * 14}
+          width={len}
+          height={8}
+          rx={1}
+          fill="currentColor"
+          fillOpacity={0.5 + 0.3 * ((i % 3) / 2)}
+          className={i === blocks.length - 1 ? 'icon-motion' : undefined}
+          style={i === blocks.length - 1 ? anim('edCursor', 2.2) : undefined}
+        />
+      ))}
+    </Base>
+  );
+}
+
+function IconLongestPath() {
+  // 图 + 一条蜿蜒长路径(与最短路径图标形成对照:路径更长更绕)
+  const pts: [number, number][] = [
+    [12, 46],
+    [24, 14],
+    [40, 44],
+    [46, 12],
+    [54, 40],
+  ];
+  return (
+    <Base>
+      <line x1={12} y1={46} x2={40} y2={44} stroke="currentColor" strokeWidth={1.1} strokeDasharray="3 3" opacity={0.3} />
+      <line x1={24} y1={14} x2={54} y2={40} stroke="currentColor" strokeWidth={1.1} strokeDasharray="3 3" opacity={0.3} />
+      {/* 蜿蜒长路径 0→1→2→3→4 */}
+      <polyline
+        points={pts.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        opacity={0.9}
+        className="icon-mst-probe"
+        style={anim('mstProbe', 2.2, 0, 'linear')}
+      />
+      {pts.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={4.2} fill="currentColor" opacity={0.95} />
+      ))}
+    </Base>
+  );
+}
+
+function IconClosestPair() {
+  // 点云 + 两点间最短连线脉冲
+  const pts: [number, number][] = [
+    [14, 16],
+    [30, 26],
+    [48, 14],
+    [20, 44],
+    [36, 50],
+    [52, 40],
+    [33, 32],
+    [34, 38],
+  ];
+  return (
+    <Base>
+      {pts.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={i === 6 || i === 7 ? 4.4 : 3} fill="currentColor" opacity={i === 6 || i === 7 ? 1 : 0.4} />
+      ))}
+      <line x1={33} y1={32} x2={34} y2={38} stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" className="icon-motion" style={anim('keyPulse', 1.8)} />
+    </Base>
+  );
+}
+
+function IconCoinChange() {
+  // 递减高度的硬币柱(DP 条形图缩影) + 目标金额标记
+  const bars = [5, 8, 11, 14, 17];
+  return (
+    <Base>
+      {bars.map((h, i) => (
+        <rect
+          key={i}
+          x={11 + i * 9}
+          y={50 - h}
+          width={7}
+          height={h}
+          rx={1.5}
+          fill="currentColor"
+          fillOpacity={0.3 + 0.14 * i}
+          className={i === bars.length - 1 ? 'icon-motion' : undefined}
+          style={i === bars.length - 1 ? anim('edCursor', 2) : undefined}
+        />
+      ))}
+      <line x1={9} y1={50} x2={57} y2={50} stroke="currentColor" strokeWidth={1.4} opacity={0.7} />
+    </Base>
+  );
+}
+
+function IconBitonicTSP() {
+  // 双链:上链蓝调实线、下链虚线,在两端闭合(简化为单色)
+  const upper = [
+    [10, 34],
+    [22, 18],
+    [38, 12],
+    [54, 20],
+  ];
+  const lower = [
+    [10, 34],
+    [24, 46],
+    [42, 48],
+    [54, 20],
+  ];
+  return (
+    <Base>
+      <polyline
+        points={upper.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        opacity={0.9}
+        className="icon-mst-probe"
+        style={anim('mstProbe', 2.2, 0, 'linear')}
+      />
+      <polyline
+        points={lower.map(([x, y]) => `${x},${y}`).join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+        strokeDasharray="4 3"
+        opacity={0.5}
+      />
+      {upper.map(([x, y], i) => (
+        <circle key={`u${i}`} cx={x} cy={y} r={3.4} fill="currentColor" opacity={0.95} />
+      ))}
+      {lower.slice(1, 3).map(([x, y], i) => (
+        <circle key={`l${i}`} cx={x} cy={y} r={3} fill="currentColor" opacity={0.55} />
       ))}
     </Base>
   );
@@ -1054,14 +1685,30 @@ const ICONS: Record<ProjectIconId, () => React.ReactElement> = {
   MontyHall: IconMontyHall,
   TopologicalSort: IconTopologicalSort,
   MaxFlow: IconMaxFlow,
+  ShortestPath: IconShortestPath,
+  ConvexHull: IconConvexHull,
   Eulerian: IconEulerian,
+  MST: IconMST,
+  EditDistance: IconEditDistance,
   Factoring: IconFactoring,
   DLP: IconDLP,
+  GraphIso: IconGraphIso,
   SAT: IconSAT,
   SubsetSum: IconSubsetSum,
+  Knapsack: IconKnapsack,
+  Sudoku: IconSudoku,
   Hamiltonian: IconHamiltonian,
   VertexCover: IconVertexCover,
+  MaxIndependentSet: IconMaxIndependentSet,
   MaxClique: IconMaxClique,
+  QR: IconQR,
+  SVP: IconSVP,
+  SteinerTree: IconSteinerTree,
+  JobScheduling: IconJobScheduling,
+  LongestPath: IconLongestPath,
+  ClosestPair: IconClosestPair,
+  CoinChange: IconCoinChange,
+  BitonicTSP: IconBitonicTSP,
   SetCover: IconSetCover,
   GraphColoring: IconGraphColoring,
   BinPacking: IconBinPacking,

@@ -24,7 +24,7 @@ export type CategoryKey =
   | 'algorithms'
   | 'visualizations'
   | 'tools'
-  | 'complexity';
+  | 'pnp';
 
 /** 计算复杂度类别，仅 P & NP 分类下的条目使用 */
 export type ComplexityClass = 'P' | 'NP' | 'NPC' | 'NPH';
@@ -310,7 +310,7 @@ export const projects: Project[] = [
     description:
       'DAG 上的线性排序：Kahn 与 DFS 逆后序两种内置算法，逐步演示入队、出队与入度更新，可导入自己的实现跑同一套用例。',
     technologies: ['React', 'TypeScript', 'Web Worker'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'P',
   },
   {
@@ -319,7 +319,25 @@ export const projects: Project[] = [
     description:
       '从源点到汇点最多能推多少流量：Edmonds–Karp 逐条增广，边上实时显示 流量/容量，可调网络规模。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'ShortestPath',
+    title: '最短路径',
+    description:
+      '从源点到每个点的最短距离：Dijkstra 贪心确定 + 边松弛逐步推进，节点距离实时更新，可调节点数与边密度。同一张图找「最长」简单路径就是 NP 困难——见最长路径页。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'ConvexHull',
+    title: '凸包',
+    description:
+      '用橡皮筋套住所有点：Andrew 单调链排序后上下链扫描，压栈弹栈逐步包围点云，实时显示凸包面积。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
     complexity: 'P',
   },
   {
@@ -328,7 +346,52 @@ export const projects: Project[] = [
     description:
       '一笔画走过每条边恰好一次并回到起点：Hierholzer 逐边推进、退栈归位，可调点数与附加边数。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'MST',
+    title: '最小生成树',
+    description:
+      '用最少总权重的边把所有点连通：Kruskal 按边权排序逐条判定，并查集实时判环，采纳/成环跳过一目了然。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'EditDistance',
+    title: '编辑距离',
+    description:
+      '把一个串变成另一个串最少要几次插入/删除/替换：Levenshtein DP 表逐格填充，决策过程逐格标注。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'ClosestPair',
+    title: '最近点对',
+    description:
+      '一堆点里找距离最近的两个：x 排序 + 滑动窗口剪枝扫描线推进，均摊 O(n log n)，暴力对数实时对比。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'CoinChange',
+    title: '找零钱',
+    description:
+      '最少几枚硬币凑出目标金额：DP 表条形图逐格填充，贪心大面额优先实时对照——标准币制贪心恰好最优，任意币制可能失败。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'P',
+  },
+  {
+    id: 'BitonicTSP',
+    title: '双单调 TSP',
+    description:
+      '欧几里得 TSP 的可解特例：按 x 排序后两条不相交链生长，蓝绿双色实时可视化，一般 TSP 是 NP-H、双单调结构 DP 只要 O(n²)。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
     complexity: 'P',
   },
   {
@@ -337,7 +400,7 @@ export const projects: Project[] = [
     description:
       "把 n 拆成质因子乘积：试除法与 Pollard's Rho 对比，展示因子逐步拆出的过程，可导入自己的分解实现。",
     technologies: ['React', 'TypeScript', 'Web Worker'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NP',
   },
   {
@@ -346,7 +409,25 @@ export const projects: Project[] = [
     description:
       '已知 g^x = h 求 x：模 p 乘法群与椭圆曲线（ECDLP）两种群可切换，暴力线性搜索与 Baby-step Giant-step 实时对比。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
+    complexity: 'NP',
+  },
+  {
+    id: 'GraphIso',
+    title: '图同构',
+    description:
+      '两张图能否点对点地"长得一样"：双图并排回溯配对，邻域一致性剪枝，配对顶点同色高亮，可导入自己的求解器。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'NP',
+  },
+  {
+    id: 'QR',
+    title: '二次剩余',
+    description:
+      'x 是不是某个数的平方（mod n）：暴力扫描平方表 vs 因数分解 + 欧拉判据双解法对照，展示为什么"不知道分解就很难"。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
     complexity: 'NP',
   },
   {
@@ -355,7 +436,7 @@ export const projects: Project[] = [
     description:
       '合取范式的可满足性判定：暴力枚举与 DPLL 两种内置算法，实时显示子句满足状态、决策与回溯次数，可导入自己的求解器。',
     technologies: ['React', 'TypeScript', 'Web Worker'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -364,7 +445,25 @@ export const projects: Project[] = [
     description:
       '给一组数字和目标值，判断能否选出若干数之和恰好等于目标：DP 表逐格填充，可调物品数与目标，可导入自己的实现。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
+    complexity: 'NPC',
+  },
+  {
+    id: 'Knapsack',
+    title: '0/1 背包',
+    description:
+      '容量有限的背包能装下的最大价值：DP 表逐格填充 + 回溯点亮选中物品，可调物品数与容量，可导入自己的实现。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'NPC',
+  },
+  {
+    id: 'Sudoku',
+    title: '数独',
+    description:
+      '9×9 棋盘每行/列/宫都要 1-9：MRV 挑候选最少的格子 + 回溯试数，冲突高亮、回退可见，可导入自己的求解器。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -373,7 +472,7 @@ export const projects: Project[] = [
     description:
       '找一条经过每个点恰好一次并回到起点的回路：回溯搜索实时可视化，可调节点数与边密度，可导入自己的实现。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -382,7 +481,16 @@ export const projects: Project[] = [
     description:
       '选出最少的点，使每条边至少有一个端点被选中：分支定界实时剪枝，可调点数与边密度。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
+    complexity: 'NPC',
+  },
+  {
+    id: 'MaxIndependentSet',
+    title: '最大独立集',
+    description:
+      '选出最多的点，使选中的点两两不相邻：分支定界逐点二选一，冲突边红色警示，历史最优绿色虚线环。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -391,7 +499,7 @@ export const projects: Project[] = [
     description:
       '找出两两相邻的最大点集：回溯搜索 + 候选剪枝，实时显示当前团、候选点与历史最优。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -400,7 +508,7 @@ export const projects: Project[] = [
     description:
       '用尽量少的集合覆盖全部元素：贪心与精确搜索对比，逐轮点亮已覆盖元素，可导入自己的实现。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -409,7 +517,7 @@ export const projects: Project[] = [
     description:
       '用 k 种颜色给图着色：回溯与贪心两种内置算法，动态演示取色与回退，可导入自己的实现。',
     technologies: ['React', 'TypeScript', 'Web Worker'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NPC',
   },
   {
@@ -418,16 +526,52 @@ export const projects: Project[] = [
     description:
       '把大小不一的物品装进容量相同的箱子，用尽量少的箱子：First-Fit Decreasing 逐件装箱，可调物品数与容量。',
     technologies: ['React', 'TypeScript'],
-    categories: ['complexity'],
+    categories: ['pnp'],
     complexity: 'NPH',
   },
   {
     id: 'TSP',
     title: '旅行商问题',
     description:
-      '最短闭合回路：最近邻、2-opt、暴力最优三种内置算法，可视化回路构造过程并给出与最优解的差距，可导入自己的实现。',
+      '最短闭合回路：最近邻、2-opt、暴力最优三种内置算法，可视化回路构造过程并给出与最优解的差距，可导入自己的实现。限定「双单调」结构后 DP 精确解只要 O(n²)——见双单调 TSP 页。',
     technologies: ['React', 'TypeScript', 'Web Worker'],
-    categories: ['complexity'],
+    categories: ['pnp'],
+    complexity: 'NPH',
+  },
+  {
+    id: 'LongestPath',
+    title: '最长路径',
+    description:
+      '同一张图找权最大的简单路径：DFS 穷举 + 回溯，与最短路径（Dijkstra 多项式解）对照——最短是 P、最长是 NP 困难。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'NPH',
+  },
+  {
+    id: 'SVP',
+    title: '格最短向量',
+    description:
+      '格上找最短非零向量（SVP）：二维格基变换 + 枚举整系数组合 i·b₁+j·b₂，格点网与候选向量同屏可视化，密码学格基体制的核心困难问题。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'NPH',
+  },
+  {
+    id: 'SteinerTree',
+    title: '斯坦纳树',
+    description:
+      '用最短的边把指定终端连起来（可以借用额外点）：枚举子集 + 最短路融合的 Dreyfus 精确算法，生长中的树实时可见。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
+    complexity: 'NPH',
+  },
+  {
+    id: 'JobScheduling',
+    title: '作业调度',
+    description:
+      'n 个作业放到 m 台机器，让最后完工时间最短（P||Cmax）：LPT 贪心 vs 枚举最优对照，甘特图逐格填充，机器负载条实时变化。',
+    technologies: ['React', 'TypeScript'],
+    categories: ['pnp'],
     complexity: 'NPH',
   },
 ];
@@ -452,12 +596,12 @@ export interface Category {
  */
 export const categories: Category[] = [
   {
-    key: 'complexity',
+    key: 'pnp',
     no: '00',
     title: 'P & NP',
     label: '复杂度',
     subtitle: 'COMPUTATIONAL_COMPLEXITY_CLASSES',
-    href: '/complexity',
+    href: '/pnp',
     featured: true,
     pageTitle: 'P & NP',
   },

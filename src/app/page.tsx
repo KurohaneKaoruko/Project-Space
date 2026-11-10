@@ -3,7 +3,7 @@ import Navigation from './components/Navigation';
 import CategoryIcon from './components/CategoryIcon';
 import StaggerCleanup from './components/StaggerCleanup';
 import { categories, Category, projectCount, projectsIn } from './data/projects';
-import { CLASS_META } from './complexity/lib/types';
+import { CLASS_META } from './pnp/lib/types';
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 

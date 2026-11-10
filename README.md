@@ -36,7 +36,7 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 | 分区 | 路由 | 当前内容 |
 | --- | --- | --- |
 | 首页 | `/` | 分类索引：每类一张图标卡片，点进去看该类的完整列表 |
-| P & NP | `/complexity` | 拓扑排序 / 最大流 / 欧拉回路（P）、整数分解 / 离散对数（NP）、3-SAT / 子集和 / 哈密顿回路 / 顶点覆盖 / 最大团 / 集合覆盖 / 图着色（NP-C）、装箱、旅行商（NP-H） |
+| P & NP | `/pnp` | 拓扑排序 / 最大流 / 最短路径 / 最长路径 / 凸包 / 最近点对 / 欧拉回路 / 最小生成树 / 编辑距离 / 找零钱（P）、整数分解 / 离散对数 / 图同构 / 二次剩余（NP）、3-SAT / 子集和 / 0/1 背包 / 数独 / 哈密顿回路 / 顶点覆盖 / 最大独立集 / 最大团 / 集合覆盖 / 图着色（NP-C）、装箱 / 旅行商 / 双单调 TSP / 格最短向量 / 斯坦纳树 / 作业调度（NP-H） |
 | Games | `/games` | 2048、贪吃蛇、弹幕躲避、魔方 |
 | Simulations | `/simulations` | 生命游戏、兰顿蚂蚁、粒子生命、混沌摆、图灵机、二维图灵机、PoW 模拟器、N 体引力、布朗运动、鸟群算法、TSP 蚁群、三门问题 |
 | Algorithms | `/algorithms` | TSP 蚁群、排序算法可视化、加密算法可视化、寻路可视化、哈夫曼编码树 |
@@ -65,20 +65,36 @@ Project-Rosmarin 是一个“可玩 + 可看 + 可用”的前端项目集合：
 
 | 路由 | 问题 | 复杂度 | 内置算法 |
 | --- | --- | --- | --- |
-| `/complexity/TopologicalSort` | DAG 拓扑排序 | P | Kahn、DFS 逆后序 |
-| `/complexity/MaxFlow` | 最大流 | P | Edmonds–Karp |
-| `/complexity/Eulerian` | 欧拉回路 | P | Hierholzer |
-| `/complexity/Factoring` | 整数分解 | NP | 试除法、Pollard's Rho |
-| `/complexity/DLP` | 离散对数（含 ECDLP） | NP | 暴力、Baby-step Giant-step |
-| `/complexity/SAT` | 3-SAT 可满足性 | NP-C | 暴力枚举、DPLL |
-| `/complexity/SubsetSum` | 子集和 | NP-C | DP 表逐格填充 |
-| `/complexity/Hamiltonian` | 哈密顿回路 | NP-C | 回溯 |
-| `/complexity/VertexCover` | 顶点覆盖 | NP-C | 分支定界 |
-| `/complexity/MaxClique` | 最大团 | NP-C | 回溯 + 候选剪枝 |
-| `/complexity/SetCover` | 集合覆盖 | NP-C | 贪心、精确搜索 |
-| `/complexity/GraphColoring` | k 色图着色 | NP-C | 回溯、贪心 |
-| `/complexity/BinPacking` | 装箱 | NP-H | First-Fit Decreasing |
-| `/complexity/TSP` | 旅行商（最优化） | NP-H | 最近邻、2-opt、蚁群、暴力最优 |
+| `/pnp/TopologicalSort` | DAG 拓扑排序 | P | Kahn、DFS 逆后序 |
+| `/pnp/MaxFlow` | 最大流 | P | Edmonds–Karp |
+| `/pnp/ShortestPath` | 单源最短路径 | P | Dijkstra（贪心 + 松弛） |
+| `/pnp/LongestPath` | 最长简单路径 | NP-H | DFS 穷举 + 回溯（与最短路径对照：最短 P / 最长 NP-H） |
+| `/pnp/ConvexHull` | 凸包 | P | Andrew 单调链 |
+| `/pnp/ClosestPair` | 最近点对 | P | 排序 + 滑动窗口剪枝（均摊 O(n log n)） |
+| `/pnp/Eulerian` | 欧拉回路 | P | Hierholzer |
+| `/pnp/MST` | 最小生成树 | P | Kruskal（并查集判环） |
+| `/pnp/EditDistance` | 编辑距离（Levenshtein） | P | DP 表逐格填充 |
+| `/pnp/Factoring` | 整数分解 | NP | 试除法、Pollard's Rho |
+| `/pnp/DLP` | 离散对数（含 ECDLP） | NP | 暴力、Baby-step Giant-step |
+| `/pnp/GraphIso` | 图同构 | NP | 回溯 + 邻域一致性剪枝 |
+| `/pnp/QR` | 二次剩余 | NP | 暴力平方表、因数分解 + 欧拉判据 |
+| `/pnp/SAT` | 3-SAT 可满足性 | NP-C | 暴力枚举、DPLL |
+| `/pnp/SubsetSum` | 子集和 | NP-C | DP 表逐格填充 |
+| `/pnp/Knapsack` | 0/1 背包 | NP-C | DP 表 + 回溯选物 |
+| `/pnp/CoinChange` | 找零钱（最少硬币） | P | DP 表逐格填充；贪心对照（任意币制不保证最优） |
+| `/pnp/Sudoku` | 数独 | NP-C | MRV + 回溯 |
+| `/pnp/Hamiltonian` | 哈密顿回路 | NP-C | 回溯 |
+| `/pnp/VertexCover` | 顶点覆盖 | NP-C | 分支定界 |
+| `/pnp/MaxIndependentSet` | 最大独立集 | NP-C | 分支定界（逐点二选一） |
+| `/pnp/MaxClique` | 最大团 | NP-C | 回溯 + 候选剪枝 |
+| `/pnp/SetCover` | 集合覆盖 | NP-C | 贪心、精确搜索 |
+| `/pnp/GraphColoring` | k 色图着色 | NP-C | 回溯、贪心 |
+| `/pnp/BinPacking` | 装箱 | NP-H | First-Fit Decreasing |
+| `/pnp/TSP` | 旅行商（最优化） | NP-H | 最近邻、2-opt、蚁群、暴力最优 |
+| `/pnp/BitonicTSP` | 双单调 TSP | P | 双单调结构 DP（O(n²)）——一般 TSP NP-H 的可解特例 |
+| `/pnp/SVP` | 格最短向量（SVP） | NP-H | 整系数组合枚举（高维精确解超多项式） |
+| `/pnp/SteinerTree` | 斯坦纳树 | NP-H | Dreyfus–Wagner 子集 DP |
+| `/pnp/JobScheduling` | 作业调度（P‖C_max） | NP-H | LPT 贪心、分支定界枚举最优 |
 
 ### Games
 

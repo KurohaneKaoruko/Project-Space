@@ -3,3 +3,5 @@
 /simulations/DigitSumTurtle  /visualizations/DigitSumTurtle 301
 /simulations/TSPAntColony    /algorithms/TSPAntColony     301
 /visualizations/TSPAntColony /algorithms/TSPAntColony     301
+/complexity/*                /pnp/:splat                  301
+/complexity                  /pnp                         301
