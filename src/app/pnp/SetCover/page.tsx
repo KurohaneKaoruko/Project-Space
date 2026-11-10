@@ -31,7 +31,7 @@ function exactCover(input: SetCoverInput): number[] {
   const covered = new Array(m).fill(false);
   const picked: number[] = [];
   let best: number[] | null = null;
-  let budget = 500000;
+  let budget = 1000000000;
   let exhausted = true;
 
   const dfs = (k: number) => {
@@ -479,7 +479,7 @@ export default function SetCoverPage() {
                 label="元素数 (ELEMENTS)"
                 value={m}
                 min={6}
-                max={40}
+                max={120}
                 step={1}
                 onChange={setM}
               />
@@ -487,7 +487,7 @@ export default function SetCoverPage() {
                 label="集合数 (SETS)"
                 value={k}
                 min={4}
-                max={24}
+                max={60}
                 step={1}
                 onChange={setK}
                 format={(v) => `2^${v} = ${(2 ** v).toExponential(1)} 种选法`}

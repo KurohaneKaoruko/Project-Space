@@ -125,7 +125,7 @@ function* backtrackGen(input: ColorInput): Generator<ColorStep, number[] | null,
 
   const colors = new Array<number | null>(n).fill(null);
   let backtracks = 0;
-  let budget = 2000000;
+  let budget = 1000000000;
 
   const ok = (node: number, color: number) => adj[node].every((v) => colors[v] !== color);
 
@@ -438,7 +438,7 @@ export default function GraphColoringPage() {
                 label="节点数 (NODES)"
                 value={n}
                 min={4}
-                max={60}
+                max={120}
                 step={1}
                 onChange={setN}
                 format={(v) => `k^${v} ≈ 10^${(Math.log10(3) * v).toFixed(1)} 种着色（k=3）`}
@@ -452,7 +452,7 @@ export default function GraphColoringPage() {
                 onChange={(v) => setDensity(v / 100)}
                 format={(v) => `${v}%`}
               />
-              <Field label="颜色数 (K)" value={k} min={2} max={12} step={1} onChange={setK} />
+              <Field label="颜色数 (K)" value={k} min={2} max={20} step={1} onChange={setK} />
               <button
                 onClick={() => setSeed((s) => s + 1)}
                 className="w-full border border-zinc-200 bg-zinc-50 py-2 text-[11px] font-bold uppercase tracking-widest text-zinc-600 transition-colors hover:border-blue-500/50 hover:bg-white hover:text-blue-600"

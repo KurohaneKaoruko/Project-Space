@@ -2,7 +2,8 @@ import Link from 'next/link';
 import Navigation from '../components/Navigation';
 import ProjectIcon from '../components/ProjectIcon';
 import StaggerCleanup from '../components/StaggerCleanup';
-import { CLASS_META } from '../complexity/lib/types';
+import HoverCardClamp from '../components/HoverCardClamp';
+import { CLASS_META } from '../pnp/lib/types';
 import {
   CategoryKey,
   categoryMap,
@@ -15,19 +16,21 @@ const CLASS_ORDER = ['P', 'NP', 'NPC', 'NPH'] as const;
 
 /**
  * 分类页：编号、标题、条目全部由 categoryKey 推导。
- * P & NP 用带描述的卡片网格（信息密度更高），其余分类沿用紧凑图标网格。
+ * 全部分类统一用紧凑图标网格；P & NP 额外带复杂度徽章，
+ * 项目详情（描述、复杂度全称）悬停时以浮层卡片显示。
  */
 export default function CategoryPage({ categoryKey }: { categoryKey: CategoryKey }) {
   const category = categoryMap[categoryKey];
   const items = projectsIn(categoryKey);
-  const isComplexity = categoryKey === 'complexity';
+  const isComplexity = categoryKey === 'pnp';
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen overflow-x-clip">
       <Navigation />
       <StaggerCleanup />
+      <HoverCardClamp />
 
-      <div className="flex min-h-screen flex-col px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <div className="flex min-h-screen flex-col overflow-x-clip px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-[1500px]">
           <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-zinc-200 pb-5">
             <div>
@@ -62,7 +65,7 @@ export default function CategoryPage({ categoryKey }: { categoryKey: CategoryKey
           )}
 
           {isComplexity ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-3 gap-x-2 gap-y-5 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 2xl:grid-cols-9">
               {items.map((project, index) => {
                 const meta = project.complexity ? CLASS_META[project.complexity] : null;
                 return (
@@ -70,41 +73,37 @@ export default function CategoryPage({ categoryKey }: { categoryKey: CategoryKey
                     key={project.id}
                     href={projectHref(project)}
                     aria-label={project.title}
-                    className="stagger-in group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-500/40 hover:shadow-xl hover:shadow-zinc-900/5"
+                    className="stagger-in group relative flex flex-col items-center gap-2 px-2 py-3"
                     style={{ '--stagger': index } as React.CSSProperties}
                   >
-                    <div className="flex items-start justify-between">
-                      <span className="font-mono text-[11px] text-zinc-300">
-                        {String(index + 1).padStart(2, '0')}
+                    <div className="h-16 w-16 transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-translate-y-0.5">
+                      <ProjectIcon id={project.id} className="h-full w-full" />
+                    </div>
+                    <span className="line-clamp-2 text-center text-[13px] font-bold leading-snug text-zinc-600 transition-colors group-hover:text-blue-600">
+                      {project.title}
+                    </span>
+                    {meta && (
+                      <span
+                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 font-mono text-[9px] font-bold leading-none ${meta.chip}`}
+                      >
+                        <i className={`h-1 w-1 rounded-full ${meta.dot}`} />
+                        {meta.label}
                       </span>
-                      {meta && (
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[10px] font-bold ${meta.chip}`}
-                          title={meta.full}
-                        >
-                          <i className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />
-                          {meta.label}
+                    )}
+
+                    {/* 悬停详情卡：图标下方浮出，指向条目本身；data-hovercard 供越界夹紧 */}
+                    <span
+                      data-hovercard
+                      className="pointer-events-none absolute left-1/2 top-full z-30 mt-1 w-64 -translate-x-1/2 translate-y-1 rounded-xl border border-zinc-200 bg-white p-3 text-left opacity-0 shadow-xl shadow-zinc-900/10 transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-1.5 py-0.5 font-mono text-[9px] font-bold ${meta?.chip ?? 'border-zinc-200 bg-zinc-50 text-zinc-500'}`}>
+                          {meta?.label ?? '—'}
                         </span>
-                      )}
-                    </div>
-
-                    <div className="mt-4 flex items-center gap-3">
-                      <div className="h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-110">
-                        <ProjectIcon id={project.id} className="h-full w-full" />
-                      </div>
-                      <h2 className="text-lg font-bold tracking-tight text-zinc-900 transition-colors group-hover:text-blue-600">
-                        {project.title}
-                      </h2>
-                    </div>
-
-                    <p className="mt-3 line-clamp-2 text-[12px] leading-relaxed text-zinc-500">
-                      {project.description}
-                    </p>
-
-                    <div className="mt-auto flex items-center gap-1.5 pt-4 font-mono text-[10px] uppercase tracking-widest text-zinc-400 transition-colors group-hover:text-blue-600">
-                      打开
-                      <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-                    </div>
+                        <span className="truncate font-mono text-[10px] text-zinc-400">{meta?.full}</span>
+                      </span>
+                      <span className="mt-1.5 block text-[11px] leading-relaxed text-zinc-500">{project.description}</span>
+                    </span>
                   </Link>
                 );
               })}

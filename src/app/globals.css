@@ -138,10 +138,15 @@ body {
   will-change: transform, opacity;
 }
 
-/* 动画结束后不再需要提升为合成层 */
+/* 动画结束后不再需要提升为合成层；
+   同时移除 animation 本身——fill: forwards 会让 transform/opacity
+   动画的合成层与层叠上下文永久残留，导致后出现的兄弟条目
+   绘制在悬停详情卡（z-20）之上，卡片被图标文字“透视” */
 .stagger-in[data-entered='true'] {
-  will-change: auto;
+  animation: none;
+  opacity: 1;
   transform: none;
+  will-change: auto;
 }
 
 @keyframes riseIn {
@@ -267,6 +272,27 @@ body {
 /* 分类图标：节点图的边沿线流动 */
 .cat-edge { stroke-dasharray: 5 5; }
 @keyframes edgeFlow { to { stroke-dashoffset: -20 } }
+
+/* MST：正在判定的边沿虚线爬行 */
+.icon-mst-probe { stroke-dasharray: 6 6; }
+@keyframes mstProbe { to { stroke-dashoffset: -24 } }
+
+/* 编辑距离：光标格在 DP 表上逐格游走 */
+@keyframes edCursor {
+  0%, 100% { transform: translate(0, 0) }
+  25% { transform: translate(12px, 0) }
+  50% { transform: translate(12px, 12px) }
+  75% { transform: translate(0, 12px) }
+}
+
+/* 0/1 背包：物品滑入背包 */
+@keyframes knapsackDrop {
+  0%, 100% { transform: translate(0, -3px); opacity: 0.35 }
+  45%, 60% { transform: translate(0, 2px); opacity: 0.9 }
+}
+
+/* 数独：候选数字轮换 */
+@keyframes sudokuCycle { 0%, 100% { opacity: 0.15 } 33% { opacity: 0.85 } 66% { opacity: 0.35 } }
 
 /* ===== 路由切换骨架屏 ===== */
 .skeleton-pulse {

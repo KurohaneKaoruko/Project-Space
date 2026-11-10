@@ -40,7 +40,7 @@ function buildAdj(input: CliqueInput) {
 function maxClique(input: CliqueInput): number[] {
   const adj = buildAdj(input);
   let best: number[] = [];
-  let budget = 2000000;
+  let budget = 1000000000;
 
   const expand = (R: number[], P: number[]) => {
     if (--budget <= 0) return;
@@ -124,7 +124,7 @@ const CASES: TestCase<CliqueInput, number[]>[] = [
 function* cliqueGen(input: CliqueInput): Generator<CliqueStep, number[], void> {
   const adj = buildAdj(input);
   let best: number[] = [];
-  let budget = 2000000;
+  let budget = 1000000000;
 
   function* expand(R: number[], P: number[]): Generator<CliqueStep, void, void> {
     if (--budget <= 0) {
@@ -420,7 +420,7 @@ export default function MaxCliquePage() {
                 label="节点数 (NODES)"
                 value={n}
                 min={6}
-                max={40}
+                max={80}
                 step={1}
                 onChange={setN}
                 format={(v) => `2^${v} = ${(2 ** v).toExponential(1)} 个子图待筛`}

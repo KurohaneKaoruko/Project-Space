@@ -313,12 +313,12 @@ export default function SubsetSumPage() {
                 label="物品数 (ITEMS)"
                 value={count}
                 min={4}
-                max={24}
+                max={40}
                 step={1}
                 onChange={setCount}
                 format={(v) => `2^${v} = ${(2 ** v).toLocaleString()} 个子集（暴力搜索空间）`}
               />
-              <Field label="目标和 (TARGET)" value={target} min={20} max={600} step={1} onChange={setTarget} />
+              <Field label="目标和 (TARGET)" value={target} min={20} max={2000} step={1} onChange={setTarget} />
               <button
                 onClick={() => setSeed((s) => s + 1)}
                 className="w-full border border-zinc-200 bg-zinc-50 py-2 text-[11px] font-bold uppercase tracking-widest text-zinc-600 transition-colors hover:border-blue-500/50 hover:bg-white hover:text-blue-600"

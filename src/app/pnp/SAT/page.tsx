@@ -513,7 +513,7 @@ export default function SatPage() {
                 label="变量数 (VARS)"
                 value={nVars}
                 min={3}
-                max={22}
+                max={32}
                 step={1}
                 onChange={setNVars}
                 format={(v) => `2^${v} = ${(2 ** v).toLocaleString()} 种赋值`}

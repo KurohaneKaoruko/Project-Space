@@ -113,7 +113,7 @@ function* coverGen(input: CoverInput): Generator<CoverStep, number[], void> {
   // 上界：全选
   let best = Array.from({ length: n }, (_, i) => i);
   let bestSize = n;
-  let budget = 2000000;
+  let budget = 1000000000;
 
   const count = () => chosen.reduce((sum, v) => sum + (v ? 1 : 0), 0);
 
@@ -440,7 +440,7 @@ export default function VertexCoverPage() {
                 label="节点数 (NODES)"
                 value={n}
                 min={6}
-                max={28}
+                max={60}
                 step={1}
                 onChange={setN}
                 format={(v) => `2^${v} = ${(2 ** v).toExponential(1)} 个子集待枚举`}

@@ -60,7 +60,7 @@ function referenceSolve(input: HamInput): number[] | null {
   const path = [0];
   const used = new Array(n).fill(false);
   used[0] = true;
-  let budget = 2000000;
+  let budget = 1000000000;
 
   const dfs = (): boolean => {
     if (path.length === n) return adj[path[n - 1]].includes(path[0]);
@@ -136,7 +136,7 @@ function* hamGen(input: HamInput): Generator<HamStep, number[] | null, void> {
   const used = new Array(n).fill(false);
   used[0] = true;
   let backtracks = 0;
-  let budget = 2000000;
+  let budget = 1000000000;
 
   yield { path: [...path], active: 0, note: '从 0 出发', backtracks };
 
@@ -410,7 +410,7 @@ export default function HamiltonianPage() {
                 label="节点数 (NODES)"
                 value={n}
                 min={5}
-                max={30}
+                max={80}
                 step={1}
                 onChange={setN}
                 format={(v) => {

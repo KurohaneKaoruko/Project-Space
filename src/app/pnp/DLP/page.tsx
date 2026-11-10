@@ -34,6 +34,30 @@ interface DlpInput {
   H: ElArg;
   /** G 的阶 */
   order: number;
+  /** 私钥明文：仅供可视化画「读者视角」的幽灵标记，算法逻辑绝不使用 */
+  x?: number;
+}
+
+/** 指数轨道数据：算法不消费，只喂给指数标尺与侧栏标注 */
+interface StepViz {
+  /** 暴力：当前线性指数 k */
+  k?: number;
+  /** BSGS baby：刚写入表的 j */
+  babyJ?: number;
+  /** BSGS giant：大步编号 i */
+  giantI?: number;
+  /** 巨步/野袋鼠的「幽灵指数」：借读者视角的 x 算出的真实位置 */
+  ghostExp?: number;
+  /** BSGS：命中的 baby 表下标 j */
+  hitJ?: number;
+  /** 袋鼠：轮次（从 1 计） */
+  round?: number;
+  /** 袋鼠：各驯服袋鼠的已知指数位置 start+dist */
+  tameExps?: number[];
+  /** 袋鼠：野袋鼠累计跳距 */
+  wildDist?: number;
+  /** 袋鼠：踩到第几只驯服袋鼠（0 起） */
+  hitTame?: number;
 }
 
 interface DlpStep {
@@ -45,6 +69,7 @@ interface DlpStep {
   table?: El[];
   /** 袋鼠算法：一群驯服袋鼠的位置 */
   tames?: El[];
+  viz?: StepViz;
 }
 
 const TITLE = '离散对数';
@@ -360,6 +385,7 @@ function* bruteGen(input: DlpInput): Generator<DlpStep, number, void> {
     trail: [],
     tried: 1,
     phase: 'brute',
+    viz: { k: 1 },
     note: `从生成元开始，每次再${mulWord}一次，逐个比对目标`,
   };
 
@@ -370,6 +396,7 @@ function* bruteGen(input: DlpInput): Generator<DlpStep, number, void> {
         trail: [...trail],
         tried: i,
         phase: 'brute',
+        viz: { k: i },
         note: `第 ${i} 步命中目标，x = ${i}`,
       };
       return i;
@@ -382,6 +409,7 @@ function* bruteGen(input: DlpInput): Generator<DlpStep, number, void> {
       trail: [...trail],
       tried: i + 1,
       phase: 'brute',
+      viz: { k: i + 1 },
       note: `第 ${i + 1} 个元素 = ${elText(R)}`,
     };
   }
@@ -395,6 +423,7 @@ function* bsgsGen(input: DlpInput): Generator<DlpStep, number, void> {
   const G = toEl(input.kind, input.G);
   const H = toEl(input.kind, input.H);
   const order = input.order;
+  const truth = input.x; // 读者视角的答案，仅用于画幽灵标记
 
   const m = Math.ceil(Math.sqrt(order));
   const table: El[] = [];
@@ -410,7 +439,8 @@ function* bsgsGen(input: DlpInput): Generator<DlpStep, number, void> {
       tried: j + 1,
       phase: 'baby',
       table: [...table],
-      note: `baby 表：第 ${j} 项 = ${elText(R)}`,
+      viz: { babyJ: j, ghostExp: truth },
+      note: `baby 表：g^${j} = ${elText(R)} 存入哈希表（${j + 1}/${m} 项）`,
     };
     R = combine(R, G, ctx);
   }
@@ -437,7 +467,8 @@ function* bsgsGen(input: DlpInput): Generator<DlpStep, number, void> {
         tried: m + i + 1,
         phase: 'giant',
         table: [...table],
-        note: `巨步 ${i}：命中 baby 表第 ${j} 项 → x = ${i}×${m} + ${j} = ${k}`,
+        viz: { giantI: i, hitJ: j, ghostExp: truth },
+        note: `巨步 ${i} 落进 baby 区：h·g^−${i * m} = g^${j} → x = ${i}×${m} + ${j} = ${k}`,
       };
       return k;
     }
@@ -448,7 +479,8 @@ function* bsgsGen(input: DlpInput): Generator<DlpStep, number, void> {
       tried: m + i + 1,
       phase: 'giant',
       table: [...table],
-      note: `巨步 ${i}：当前元素 ${elText(gamma)}，不在表里`,
+      viz: { giantI: i, ghostExp: truth },
+      note: `巨步 ${i}：g^${i * m}·h⁻¹ 侧的元素 ${elText(gamma)}，不在 baby 表里`,
     };
     gamma = combine(gamma, inv, ctx);
   }
@@ -490,6 +522,7 @@ function* kangarooGen(input: DlpInput): Generator<DlpStep, number, void> {
       trail: [],
       tried: 0,
       phase: 'kangaroo',
+      viz: { round: round + 1, tameExps: tames.map((t) => t.start), wildDist: 0, ghostExp: input.x },
       note: `第 ${round + 1} 轮：${HERD} 只驯服袋鼠铺开，野袋鼠从 H 起跳`,
     };
 
@@ -505,6 +538,13 @@ function* kangarooGen(input: DlpInput): Generator<DlpStep, number, void> {
           trail: [],
           tried,
           phase: 'kangaroo',
+          viz: {
+            round: round + 1,
+            tameExps: tames.map((item) => item.start + item.dist),
+            wildDist,
+            hitTame: hit,
+            ghostExp: input.x,
+          },
           note: `野袋鼠踩到第 ${hit + 1} 只的足迹 → x = ${t.start} + ${t.dist} − ${wildDist} = ${x}`,
         };
         return x;
@@ -525,7 +565,13 @@ function* kangarooGen(input: DlpInput): Generator<DlpStep, number, void> {
         trail: [],
         tried,
         phase: 'kangaroo',
-        note: `第 ${round + 1} 轮 · 第 ${step + 1} 跳：野袋鼠跳 ${JUMPS[jw]} 步`,
+        viz: {
+          round: round + 1,
+          tameExps: tames.map((t) => t.start + t.dist),
+          wildDist,
+          ghostExp: input.x,
+        },
+        note: `第 ${round + 1} 轮 · 第 ${step + 1} 跳：野袋鼠跳 ${JUMPS[jw]} 步（累计 ${wildDist}）`,
       };
     }
   }
@@ -635,8 +681,10 @@ export default function DlpPage() {
       G: fromEl(inst.G),
       H: fromEl(H),
       order: inst.order,
+      // 教学用：把私钥透传给可视化（幽灵标记），求解器逻辑不读它
+      x: kind === 'modp' ? x : undefined,
     }),
-    [kind, p, inst, H],
+    [kind, p, inst, H, x],
   );
 
   const factory = useCallback(
@@ -690,10 +738,24 @@ export default function DlpPage() {
           y: round2(Hh / 2 + 150 * Math.sin(angle)),
         };
       },
+      /** 指数标尺（底部条）：把指数 k ∈ [0, order] 映射到条带 x 坐标 */
+      expX: (k: number) => round2(pad + (k / Math.max(1, inst.order)) * (W - 2 * pad)),
     };
-  }, [p]);
+  }, [p, inst.order]);
 
   const { sx, sy } = view;
+  const orderN = inst.order;
+  const mBaby = Math.ceil(Math.sqrt(orderN));
+
+  /** 指数 → 环上元素位置（仅乘法群，用于幽灵标记） */
+  const ringPosOfExp = useCallback(
+    (k: number) => {
+      if (inst.G.t !== 'n') return null;
+      const v = powMod(inst.G.v, ((k % orderN) + orderN) % orderN, p);
+      return view.ring(v);
+    },
+    [inst.G, orderN, p, view],
+  );
 
   const posOf = useCallback(
     (E: El): { x: number; y: number } | null => {
@@ -938,6 +1000,96 @@ export default function DlpPage() {
                           >
                             H
                           </text>
+                        </g>
+                      )}
+
+                      {/* ===== 指数标尺：把「算法在指数空间的位置」画成底部条带 ===== */}
+                      {kind === 'modp' && step.viz && (
+                        <g>
+                          {/* 条带底 */}
+                          <rect x={view.pad} y={view.H - 20} width={view.W - 2 * view.pad} height={8} rx={4} fill="#ffffff" opacity={0.07} />
+                          {/* BSGS：baby 区覆盖带（0..m） */}
+                          {(step.phase === 'baby' || step.phase === 'giant') && (
+                            <rect
+                              x={view.pad}
+                              y={view.H - 20}
+                              width={(Number(view.expX(mBaby)) - Number(view.pad)) * 1}
+                              height={8}
+                              rx={4}
+                              fill="#a78bfa"
+                              opacity={0.16}
+                            />
+                          )}
+                          {/* BSGS baby：已入表的 [0..j] */}
+                          {step.phase === 'baby' && step.viz.babyJ !== undefined && (
+                            <rect x={view.pad} y={view.H - 20} width={Number(view.expX(step.viz.babyJ)) - Number(view.pad)} height={8} rx={4} fill="#a78bfa" opacity={0.5} />
+                          )}
+                          {/* BSGS giant：巨步 i 的幽灵落点 = x − i·m（读者视角） */}
+                          {step.phase === 'giant' && step.viz.ghostExp !== undefined && step.viz.giantI !== undefined && (() => {
+                            const gx = ((step.viz.ghostExp - step.viz.giantI * mBaby) % orderN + orderN) % orderN;
+                            const pos = ringPosOfExp(gx);
+                            return (
+                              <g>
+                                {/* 指数标尺上的幽灵位置 */}
+                                <line x1={view.expX(gx)} x2={view.expX(gx)} y1={view.H - 26} y2={view.H - 8} stroke="#a78bfa" strokeWidth={2} opacity={0.9} />
+                                {/* 环上的幽灵元素（紫色空心圈）：与当前琥珀点重合即命中 */}
+                                {pos && (
+                                  <circle cx={pos.x} cy={pos.y} r={9} fill="none" stroke="#a78bfa" strokeWidth={1.6} strokeDasharray="3 3" opacity={0.95} />
+                                )}
+                                <text x={Number(view.expX(gx))} y={view.H - 30} textAnchor="middle" fontSize="9" fontFamily="monospace" fill="#a78bfa">
+                                  {gx}
+                                </text>
+                              </g>
+                            );
+                          })()}
+                          {/* 暴力：线性推进的实心进度 */}
+                          {step.phase === 'brute' && step.viz.k !== undefined && (
+                            <>
+                              <rect x={view.pad} y={view.H - 20} width={Number(view.expX(step.viz.k)) - Number(view.pad)} height={8} rx={4} fill="#3b82f6" opacity={0.45} />
+                              <line x1={view.expX(step.viz.k)} x2={view.expX(step.viz.k)} y1={view.H - 26} y2={view.H - 8} stroke="#fbbf24" strokeWidth={2} />
+                            </>
+                          )}
+                          {/* 答案刻度（读者视角，算法看不见）：始终显示 */}
+                          {input.x !== undefined && (() => {
+                            const px = view.expX(input.x);
+                            return (
+                              <g>
+                                <line x1={px} x2={px} y1={view.H - 24} y2={view.H - 4} stroke="#fb7185" strokeWidth={1.2} strokeDasharray="2 3" opacity={0.9} />
+                                <text x={px} y={view.H - 34} textAnchor="middle" fontSize="9" fontFamily="monospace" fill="#fb7185">
+                                  x={input.x}
+                                </text>
+                              </g>
+                            );
+                          })()}
+                          {/* 袋鼠：驯服袋鼠（绿三角）与野袋鼠幽灵（琥珀）在指数轴的位置 */}
+                          {step.phase === 'kangaroo' && step.viz.tameExps && (
+                            <g>
+                              {step.viz.tameExps.map((e, i) => (
+                                <g key={`te-${i}`}>
+                                  <path
+                                    d={`M${Number(view.expX(e)) - 4},${view.H - 8} L${Number(view.expX(e)) + 4},${view.H - 8} L${Number(view.expX(e))},${view.H - 16} Z`}
+                                    fill="#34d399"
+                                    opacity={step.viz?.hitTame === i ? 1 : 0.75}
+                                  />
+                                  {step.viz?.hitTame === i && (
+                                    <circle cx={view.expX(e)} cy={view.H - 12} r={5} fill="none" stroke="#fbbf24" strokeWidth={1.5} />
+                                  )}
+                                </g>
+                              ))}
+                              {/* 野袋鼠的幽灵位置：x − wildDist（读者视角） */}
+                              {step.viz.ghostExp !== undefined && step.viz.wildDist !== undefined && (() => {
+                                const wx = ((step.viz.ghostExp - step.viz.wildDist) % orderN + orderN) % orderN;
+                                return (
+                                  <g>
+                                    <line x1={view.expX(wx)} x2={view.expX(wx)} y1={view.H - 16} y2={view.H - 6} stroke="#fbbf24" strokeWidth={2} />
+                                    <text x={Number(view.expX(wx))} y={view.H - 19} textAnchor="middle" fontSize="8" fontFamily="monospace" fill="#fbbf24">
+                                      野{wx}
+                                    </text>
+                                  </g>
+                                );
+                              })()}
+                            </g>
+                          )}
                         </g>
                       )}
 
